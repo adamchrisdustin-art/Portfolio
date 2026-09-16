@@ -1,0 +1,46 @@
+name: CMS Data Pipeline
+
+# Weekly, not daily - CMS Provider Data Catalog updates on its own cadence
+# (roughly monthly for this dataset), and GitHub Actions free-tier minutes
+# on a public repo are unlimited but there's no reason to burn a run
+# looking for changes that won't be there yet.
+on:
+  schedule:
+    - cron: "0 13 * * 1" # Mondays 13:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - run: npm ci
+
+      - name: Pull CMS data
+        run: npm run cms:pull
+
+      - name: Diff against previous snapshot
+        run: npm run cms:watch
+
+      - name: Write analyst brief
+        run: npm run cms:analyze
+        env:
+          # Optional - see pipeline/analystAgent.ts. Pipeline still runs
+          # (rule-based summary only) if this secret isn't set.
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Commit updated data
+        run: |
+          git config user.name "cms-pipeline-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/cms
+          git diff --cached --quiet || git commit -m "chore: weekly CMS data pull $(date -u +%Y-%m-%d)"
+          git push
