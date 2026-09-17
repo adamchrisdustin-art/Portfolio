@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { projects } from "@/lib/projects";
+import { dataVizEmbeds } from "@/lib/dataViz";
 import ProjectCard from "@/components/ProjectCard";
+import TableauEmbed from "@/components/TableauEmbed";
 
 export const metadata: Metadata = {
   title: "Portfolio",
@@ -27,6 +29,36 @@ export default function PortfolioPage() {
           <ProjectCard key={p.slug} project={p} />
         ))}
       </div>
+
+      {dataVizEmbeds.length > 0 && (
+        <div style={{ marginTop: 56 }}>
+          <h2 style={{ fontSize: "1.4rem", margin: "0 0 8px" }}>
+            Data Visualization &amp; Complex Analysis
+          </h2>
+          <p style={{ maxWidth: 640, color: "var(--text-muted)", marginBottom: 24 }}>
+            Live, interactive Tableau workbooks — not screenshots. Full profile:{" "}
+            <a
+              href="https://public.tableau.com/app/profile/adam1482/vizzes"
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "var(--accent-strong)", fontWeight: 600 }}
+            >
+              public.tableau.com/app/profile/adam1482
+            </a>
+          </p>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))",
+              gap: 20,
+            }}
+          >
+            {dataVizEmbeds.map((viz) => (
+              <TableauEmbed key={viz.slug} viz={viz} />
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
