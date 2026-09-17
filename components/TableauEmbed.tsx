@@ -17,7 +17,11 @@ export default function TableauEmbed({ viz }: { viz: DataVizEmbed }) {
         style={{
           position: "relative",
           width: "100%",
-          aspectRatio: "4 / 3",
+          // Sized off the viewport instead of a fixed content aspect
+          // ratio, so it scales with the actual browser window rather
+          // than cropping/letterboxing to an arbitrary guessed ratio.
+          // Floor/ceiling keep it sane on very short or very tall windows.
+          height: "clamp(360px, 75vh, 820px)",
           borderRadius: 8,
           overflow: "hidden",
           border: "1px solid var(--border)",
