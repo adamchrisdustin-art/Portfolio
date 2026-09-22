@@ -11,11 +11,15 @@ export interface DataVizEmbed {
   /** Direct link to view/interact with the full viz on Tableau Public. */
   profileUrl: string;
   /**
-   * The workbook's Fixed Size in Tableau (Dashboard > Size panel), in px.
-   * TableauEmbed uses this to scale the iframe to fit the card's width.
-   * Keep this in sync if the workbook's size changes in Tableau. Only
-   * correct if the workbook stays Fixed Size - Automatic/Range scale
-   * content inside Tableau itself before it reaches the browser.
+   * The ACTUAL rendered pixel size of the embedded view - TableauEmbed
+   * scales the iframe to fit the card's width using this. Not always the
+   * same as Tableau's own Dashboard > Size panel value: Tableau Public's
+   * :embed=y view can render wider than the authored canvas (extra
+   * chrome/padding outside what Size reports), so find the right numbers
+   * by eye against the live embed, not just by reading the Size panel.
+   * Only correct if the workbook stays Fixed Size in Tableau -
+   * Automatic/Range scale content inside Tableau itself before it
+   * reaches the browser.
    */
   nativeWidth: number;
   nativeHeight: number;
