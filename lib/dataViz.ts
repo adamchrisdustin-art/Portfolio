@@ -10,6 +10,18 @@ export interface DataVizEmbed {
   tableauPath: string;
   /** Direct link to view/interact with the full viz on Tableau Public. */
   profileUrl: string;
+  /**
+   * Render size (px) to hand the viz - deliberately generous/larger than
+   * the workbook actually needs, NOT the container size. This only works
+   * correctly if the workbook is published as Fixed Size in Tableau, not
+   * Automatic/Range (those scale content inside Tableau itself, before it
+   * ever reaches the browser - no amount of sizing here can undo that).
+   * Giving it room this large means nothing inside ever gets told to
+   * shrink; TableauEmbed's scrollable wrapper handles whatever doesn't
+   * fit the visible card instead of clipping or scaling it.
+   */
+  renderWidth?: number;
+  renderHeight?: number;
 }
 
 export const dataVizEmbeds: DataVizEmbed[] = [
