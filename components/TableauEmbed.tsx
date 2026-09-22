@@ -4,17 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import type { DataVizEmbed } from "@/lib/dataViz";
 
-// Switched from transform: scale() to the CSS `zoom` property. The
-// transform version was mathematically guaranteed to fit (scale computed
-// as clientWidth/nativeWidth, so scaled width == clientWidth exactly) but
-// still rendered cropped in testing - transform only affects paint, not
-// layout, and combined with position:absolute + overflow:hidden that's a
-// known cross-browser trouble spot (some engines clip against the
-// pre-transform box). `zoom` instead changes the actual laid-out size
-// directly, so the element's real dimensions - and therefore overflow
-// behavior - are unambiguous. No absolute positioning or manual height
-// math needed either: the wrapper just shrink-wraps to the zoomed
-// iframe's real size.
+// Renders the iframe at the workbook's native pixel size, then uses CSS
+// `zoom` (not transform: scale) to shrink it to fit the card's measured
+// width - zoom affects actual layout size, not just paint, so the
+// wrapper can shrink-wrap to it with no manual height math or
+// absolute-positioning/overflow edge cases.
 export default function TableauEmbed({ viz }: { viz: DataVizEmbed }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState<number | null>(null);

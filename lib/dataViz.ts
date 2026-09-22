@@ -11,17 +11,11 @@ export interface DataVizEmbed {
   /** Direct link to view/interact with the full viz on Tableau Public. */
   profileUrl: string;
   /**
-   * The workbook's real native canvas size in px (its Fixed Size in
-   * Tableau) - NOT the display size. Used only to compute the correct
-   * aspect ratio so the embed can be told "fill 100% of the card's
-   * width" without distorting or forcing an arbitrary zoom level.
-   * Pulled from Tableau's own static preview image
-   * (public.tableau.com/static/images/.../1.png) rather than guessed -
-   * re-derive the same way if the dashboard's layout changes.
-   * This only produces a correct, undistorted result if the workbook
-   * stays published as Fixed Size in Tableau - Automatic/Range scale
-   * content inside Tableau itself, before it reaches the browser, which
-   * no sizing here can undo.
+   * The workbook's Fixed Size in Tableau (Dashboard > Size panel), in px.
+   * TableauEmbed uses this to scale the iframe to fit the card's width.
+   * Keep this in sync if the workbook's size changes in Tableau. Only
+   * correct if the workbook stays Fixed Size - Automatic/Range scale
+   * content inside Tableau itself before it reaches the browser.
    */
   nativeWidth: number;
   nativeHeight: number;
@@ -43,9 +37,7 @@ export const dataVizEmbeds: DataVizEmbed[] = [
     tableauPath: "SuperstoreExecutiveDashboard_16834477538370/ExecutiveDashboard",
     profileUrl:
       "https://public.tableau.com/app/profile/adam1482/viz/SuperstoreExecutiveDashboard_16834477538370/ExecutiveDashboard",
-    // Confirmed directly from Tableau's Dashboard > Size panel (ground
-    // truth). Reverted 2026-09-22 back to 1200x1200 (was briefly 1000x1200).
-    nativeWidth: 1200,
+    nativeWidth: 1600,
     nativeHeight: 1200,
   },
 ];
