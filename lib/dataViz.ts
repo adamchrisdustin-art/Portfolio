@@ -43,8 +43,10 @@ export const dataVizEmbeds: DataVizEmbed[] = [
     tableauPath: "SuperstoreExecutiveDashboard_16834477538370/ExecutiveDashboard",
     profileUrl:
       "https://public.tableau.com/app/profile/adam1482/viz/SuperstoreExecutiveDashboard_16834477538370/ExecutiveDashboard",
-    // From public.tableau.com/static/images/Su/SuperstoreExecutiveDashboard_16834477538370/ExecutiveDashboard/1.png
-    nativeWidth: 3200,
-    nativeHeight: 3254,
+    // Confirmed directly from Tableau's Dashboard > Size panel (ground
+    // truth - a preview-image-based guess used here previously turned out
+    // to be wrong, see git history).
+    nativeWidth: 1200,
+    nativeHeight: 1200,
   },
 ];
