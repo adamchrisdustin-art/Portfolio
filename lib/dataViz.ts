@@ -37,7 +37,7 @@ export const dataVizEmbeds: DataVizEmbed[] = [
     tableauPath: "SuperstoreExecutiveDashboard_16834477538370/ExecutiveDashboard",
     profileUrl:
       "https://public.tableau.com/app/profile/adam1482/viz/SuperstoreExecutiveDashboard_16834477538370/ExecutiveDashboard",
-    nativeWidth: 1600,
+    nativeWidth: 1620,
     nativeHeight: 1200,
   },
 ];
