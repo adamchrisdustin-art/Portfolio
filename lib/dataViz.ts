@@ -45,8 +45,9 @@ export const dataVizEmbeds: DataVizEmbed[] = [
       "https://public.tableau.com/app/profile/adam1482/viz/SuperstoreExecutiveDashboard_16834477538370/ExecutiveDashboard",
     // Confirmed directly from Tableau's Dashboard > Size panel (ground
     // truth - a preview-image-based guess used here previously turned out
-    // to be wrong, see git history).
-    nativeWidth: 1200,
+    // to be wrong, see git history). Updated 2026-09-22 to match Adam's
+    // resize from 1200x1200 to 1000x1200.
+    nativeWidth: 1000,
     nativeHeight: 1200,
   },
 ];
