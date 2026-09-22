@@ -11,17 +11,20 @@ export interface DataVizEmbed {
   /** Direct link to view/interact with the full viz on Tableau Public. */
   profileUrl: string;
   /**
-   * Render size (px) to hand the viz - deliberately generous/larger than
-   * the workbook actually needs, NOT the container size. This only works
-   * correctly if the workbook is published as Fixed Size in Tableau, not
-   * Automatic/Range (those scale content inside Tableau itself, before it
-   * ever reaches the browser - no amount of sizing here can undo that).
-   * Giving it room this large means nothing inside ever gets told to
-   * shrink; TableauEmbed's scrollable wrapper handles whatever doesn't
-   * fit the visible card instead of clipping or scaling it.
+   * The workbook's real native canvas size in px (its Fixed Size in
+   * Tableau) - NOT the display size. Used only to compute the correct
+   * aspect ratio so the embed can be told "fill 100% of the card's
+   * width" without distorting or forcing an arbitrary zoom level.
+   * Pulled from Tableau's own static preview image
+   * (public.tableau.com/static/images/.../1.png) rather than guessed -
+   * re-derive the same way if the dashboard's layout changes.
+   * This only produces a correct, undistorted result if the workbook
+   * stays published as Fixed Size in Tableau - Automatic/Range scale
+   * content inside Tableau itself, before it reaches the browser, which
+   * no sizing here can undo.
    */
-  renderWidth?: number;
-  renderHeight?: number;
+  nativeWidth: number;
+  nativeHeight: number;
 }
 
 export const dataVizEmbeds: DataVizEmbed[] = [
@@ -40,5 +43,8 @@ export const dataVizEmbeds: DataVizEmbed[] = [
     tableauPath: "SuperstoreExecutiveDashboard_16834477538370/ExecutiveDashboard",
     profileUrl:
       "https://public.tableau.com/app/profile/adam1482/viz/SuperstoreExecutiveDashboard_16834477538370/ExecutiveDashboard",
+    // From public.tableau.com/static/images/Su/SuperstoreExecutiveDashboard_16834477538370/ExecutiveDashboard/1.png
+    nativeWidth: 3200,
+    nativeHeight: 3254,
   },
 ];
