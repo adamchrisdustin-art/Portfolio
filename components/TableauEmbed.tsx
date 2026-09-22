@@ -1,21 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import type { DataVizEmbed } from "@/lib/dataViz";
 
-// Plain iframe again, not <tableau-viz> - three different attempts to get
-// that custom element to size correctly (fit-to-box, an oversized fixed
-// box, a CSS aspect-ratio) all produced wrong/zoomed results, and its
-// internal sizing logic isn't documented enough to debug blind without a
-// real browser to inspect. This uses a much simpler, well-understood
-// technique instead: render the iframe at the workbook's TRUE native
-// pixel size (confirmed from Tableau's own Size panel, not guessed), then
-// scale the whole thing down with a measured `transform: scale()` so its
-// rendered width always exactly matches the container - never a sliver
-// wider, never clipped, never distorted. Height follows the same uniform
-// scale factor, so nothing stretches out of proportion; if it's still
-// taller than comfortably fits, the outer wrapper scrolls vertically
-// (never horizontally - width is intentionally locked to the container).
+// Switched from transform: scale() to the CSS `zoom` property. The
+// transform version was mathematically guaranteed to fit (scale computed
+// as clientWidth/nativeWidth, so scaled width == clientWidth exactly) but
+// still rendered cropped in testing - transform only affects paint, not
+// layout, and combined with position:absolute + overflow:hidden that's a
+// known cross-browser trouble spot (some engines clip against the
+// pre-transform box). `zoom` instead changes the actual laid-out size
+// directly, so the element's real dimensions - and therefore overflow
+// behavior - are unambiguous. No absolute positioning or manual height
+// math needed either: the wrapper just shrink-wraps to the zoomed
+// iframe's real size.
 export default function TableauEmbed({ viz }: { viz: DataVizEmbed }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState<number | null>(null);
@@ -36,7 +35,14 @@ export default function TableauEmbed({ viz }: { viz: DataVizEmbed }) {
   }, [viz.nativeWidth]);
 
   const src = `https://public.tableau.com/views/${viz.tableauPath}?:showVizHome=no&:embed=y&:toolbar=yes&:tabs=no`;
-  const scaledHeight = scale ? viz.nativeHeight * scale : undefined;
+
+  // `zoom` isn't in React's CSSProperties typings despite being supported
+  // at runtime in every current browser - cast rather than fight the type.
+  const iframeStyle: CSSProperties = {
+    border: 0,
+    display: "block",
+    ...(scale !== null ? ({ zoom: scale } as CSSProperties) : {}),
+  };
 
   return (
     <div className="card" style={{ padding: 20 }}>
@@ -48,18 +54,12 @@ export default function TableauEmbed({ viz }: { viz: DataVizEmbed }) {
         ref={wrapperRef}
         style={{
           width: "100%",
-          // Before the first measurement, avoid a flash of the full
-          // native height - once scale is known this becomes the exact
-          // scaled-down height so there's no leftover blank space.
-          height: scaledHeight ?? 0,
           maxHeight: "80vh",
-          position: "relative",
           overflowY: "auto",
           overflowX: "hidden",
           borderRadius: 8,
           border: "1px solid var(--border)",
           background: "var(--surface-2)",
-          transition: "height 0.15s ease",
         }}
       >
         {scale !== null && (
@@ -69,14 +69,7 @@ export default function TableauEmbed({ viz }: { viz: DataVizEmbed }) {
             width={viz.nativeWidth}
             height={viz.nativeHeight}
             loading="lazy"
-            style={{
-              border: 0,
-              position: "absolute",
-              top: 0,
-              left: 0,
-              transform: `scale(${scale})`,
-              transformOrigin: "top left",
-            }}
+            style={iframeStyle}
           />
         )}
       </div>
