@@ -1,13 +1,12 @@
 /**
  * Analyst agent (Track C, ROADMAP.md step 3).
  *
- * Turns the watcher's diff.json into a short written brief. Two modes:
- *
- *  - No OPENAI_API_KEY set: rule-based summary only (counts + a sample of
- *    the most notable changes). Zero API cost - this is the default, and
- *    is a complete, honest output on its own.
- *  - OPENAI_API_KEY set: also asks a model for a 2-3 sentence plain-
- *    language read on the diff, appended under the rule-based summary.
+ * Turns the watcher's diff.json into a short written brief. The rule-based
+ * summary (counts + a sample of the most notable changes) is always free
+ * and always produced. The LLM call is additional and only happens when
+ * BOTH are true: OPENAI_API_KEY is set, AND the diff actually contains a
+ * material change - a "nothing changed" narrative from a model adds
+ * nothing over the free summary, so that case never spends a call.
  *
  * CLAUDE.md's budget guardrails ("hard spend caps before any agent goes
  * live," "default to Haiku/cheapest tier, escalate only where needed")
@@ -54,6 +53,10 @@ function latestDiffFile(): string | null {
     .filter((f) => f.endsWith(".json"))
     .sort();
   return files.length ? `${dir}/${files[files.length - 1]}` : null;
+}
+
+function hasMaterialChange(diff: Diff): boolean {
+  return diff.added.length > 0 || diff.removed.length > 0 || diff.changed.length > 0;
 }
 
 function ruleBasedSummary(diff: Diff): string {
@@ -133,7 +136,12 @@ async function main() {
 
   const diff: Diff = JSON.parse(fs.readFileSync(diffFile, "utf-8"));
   const ruleBased = ruleBasedSummary(diff);
-  const llm = await llmSummary(diff, ruleBased);
+  const materialChange = hasMaterialChange(diff);
+
+  // Skip the paid call entirely when there's nothing to analyze - a
+  // "nothing changed" narrative from an LLM adds no information over the
+  // free rule-based summary above, so don't spend a call producing one.
+  const llm = materialChange ? await llmSummary(diff, ruleBased) : null;
 
   const brief = [
     `# CMS Hospital General Information — Brief`,
@@ -145,6 +153,12 @@ async function main() {
 
   if (llm) {
     brief.push("", "## Analyst read (gpt-4o-mini)", llm);
+  } else if (!materialChange) {
+    brief.push(
+      "",
+      "## Analyst read",
+      "Skipped - no material change to analyze, so no LLM call was made (nothing for it to add over the summary above)."
+    );
   } else {
     brief.push(
       "",
