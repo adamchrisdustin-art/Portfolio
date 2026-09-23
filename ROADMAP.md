@@ -57,6 +57,8 @@
 
 **Cost:** GitHub Actions free tier (public repo) + capped OpenAI API spend if the LLM read is enabled, same discipline as Track B.
 
+**Superseding plan (2026-09-23):** the CMS pipeline above is being expanded into a much larger "Healthcare Intelligence Executive Dashboard" project - a multi-agent (12 specialized agents), multi-dataset, multi-LLM-provider executive dashboard modeled on the kind of questions an Optum/UnitedHealthcare executive team would ask, built public-data-first (no proprietary/PHI data, ever). Full plan: `docs/cms-intelligence/` (`00_README_START_HERE.md` for the phase sequence, `00_MASTER_ORCHESTRATOR.md` for the full spec). This is a materially larger scope than the bullets above - see that plan's own Phase 1-7 breakdown rather than tracking it as a few more Track C checkboxes. **Open budget question**: Phase 6 of that plan calls for evaluating multiple paid LLM providers (Claude, OpenAI, others) side by side - reconcile this against the project's overall <$100/year guardrail before that phase starts, either by keeping evaluation runs small/one-time rather than ongoing, or by explicitly revising the budget ceiling for this specific initiative.
+
 ---
 
 ## Track D — Snowflake Hands-On Essentials (credential layer, not a dependency)
