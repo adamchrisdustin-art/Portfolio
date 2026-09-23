@@ -64,25 +64,29 @@ real user traffic — rerun `ux-ui-audit` against the deployed site once
 Track B's chat assistant ships, since that's the first genuinely
 interactive surface.
 
-## What's NOT done yet (be honest with yourself before calling this live)
+## What's live now
 
-- **No resume.pdf exists.** `/resume.pdf` is linked from Home and Contact
-  but the file isn't in `public/` — I didn't fabricate a PDF from the
-  knowledge base without you reviewing the actual formatted document
-  first. Add the real file before deploying, or the links 404.
-- **Not deployed.** No Vercel/Netlify project or Porkbun DNS wired up yet
-  — that's the next concrete step (ROADMAP Track A).
+- **Deployed**: https://www.adamdustin.me, via Vercel + Porkbun DNS. See `DEPLOYMENT.md` for the actual configuration (DNS records, domain setup, auth notes) — don't reconstruct this from memory if it ever needs redoing.
+- **GitHub repo**: https://github.com/adamchrisdustin-art/Portfolio (public). The CMS project card's "Pipeline source" link points here for real.
+- **`public/resume.pdf` exists** — generated from `resume/resume.html` (source of truth; see `resume/README.md` for how to regenerate it after editing).
+- **CMS pipeline cron is live**: `.github/workflows/cms-pipeline.yml` has run automatically on schedule (confirmed via `gh run list`), pulling real data and committing it back weekly.
+- **Portfolio → Data Visualization & Complex Analysis** section embeds a live Tableau Public dashboard (`lib/dataViz.ts` / `components/TableauEmbed.tsx`) — if you resize the workbook in Tableau, update `nativeWidth`/`nativeHeight` there to match (see the comment on that field for why the right number isn't always what Tableau's own Size panel reports).
+
+## What's NOT done yet (be honest with yourself before calling this fully done)
+
 - **Track B (Salesforce playground + chat assistant) not started.** The
   Portfolio card for it is marked `planned`, not `live` — don't change
   that until it's real.
-- **GitHub repo doesn't exist yet either** — the "Pipeline source" link
-  on the CMS project card is a placeholder pointing at a guessed
-  org/repo path; fix it once this is actually pushed somewhere.
 - **`OPENAI_API_KEY` isn't set anywhere yet.** The pipeline runs today
   with zero API cost (rule-based summaries only) — that's the correct
-  default, not a bug. Set the secret in GitHub Actions (with a hard usage
+  default, not a bug. Set it as a GitHub Actions secret (with a hard usage
   cap set at platform.openai.com first) once you actually want the LLM
   read in the weekly brief.
+- **CMS project card description on `/portfolio`** was written generically
+  (see the comment in `lib/dataViz.ts`) — review it against what the live
+  Tableau dashboard actually shows and tighten if needed.
+- **CMS Intelligence Executive Dashboard** (the much larger 12-agent
+  project) is planned but not started — see `docs/cms-intelligence/`.
 
 ## Verified live during this build
 
