@@ -273,74 +273,49 @@ detected.
 
 ---
 
-## Charts (Phase 5 addendum, 2026-09-23 — two passes)
+## Chart conventions (binding on every chart component, not just Phase 5)
 
-**First pass** shipped `components/Sparkline.tsx`, an inline-SVG line
-chart for real multi-snapshot time series (see `EVIDENCE_MODEL.md`'s
-`series` field). Reasoned at the time that richer chart types "weren't
-worth building without more period-over-period history" — **that
-reasoning was wrong**, and Adam called it out directly: a bar chart of
-current facility counts, a donut of ownership-type share, or a boxplot
-of a value's distribution across states make no trend claim at all —
-they visualize a single real cross-section, which this system already
-had plenty of. Conflating "not enough history for a trend chart" with
-"no charts at all" was the actual mistake.
+Learned the hard way across several rounds of direct feedback on the
+live page — stated here as rules, not narrated as history:
 
-**Second pass** (same day) fixed this properly, per the `dataviz` skill
-(loaded before writing any chart code, per that skill's own instruction)
-— see `EVIDENCE_MODEL.md`'s `chart` field (`ChartBar` / `ChartDonut` /
-`ChartBoxPlot`) and `components/charts/`:
+- **Center every chart within its card, and wrap it in a horizontally
+  scrolling container.** A chart wider than its card must scroll, never
+  clip or overflow the card edge. Enforced today in every component
+  under `components/charts/` (`BarChart`, `DonutChart`, `BoxPlot`,
+  `LineChart`) via `{ overflowX: "auto", display: "flex",
+  justifyContent: "center" }` — copy this wrapper for any new chart.
+- **Compute label-column width from the actual longest label**, never a
+  fixed guess — a hardcoded 64px column once clipped real labels (e.g.
+  "Diagnostic Radiology") off the edge. See `BarChart.tsx`'s
+  `estimateTextWidth`/`labelWidth` for the pattern.
+- **Boxplot whiskers use the standard Tukey convention** (1.5× IQR from
+  the box), never raw sample min/max — a raw-range whisker lets one real
+  outlier flatten every other group's box into an unreadable sliver.
+  Real values beyond the whisker are outliers, plotted individually, not
+  discarded. Implemented once in `intelligence/metrics/metrics.ts`'s
+  `tukeyBox()` — reuse it, don't reimplement.
+- **One hue for magnitude comparisons** (bar/boxplot — this site's amber
+  accent); **the categorical palette for part-to-whole/identity charts**
+  (donut), always with a legend when there are 2+ slices. See
+  `components/charts/chartTheme.ts`.
+- **No dual-axis charts** (two y-scales) — a documented anti-pattern.
+  **No fabricated geography** — a map needs real, verified boundary-path
+  data; guessing at one misrepresents geography, so omit the chart and
+  say why instead.
+- **Never fabricate data to fill a chart type.** An insight or dataset
+  with no natural chart segmentation simply has no `chart` field — same
+  discipline as the `series` field for trend charts.
+- A single current value is a stat tile (`StatTile.tsx`), not a one-bar
+  bar chart.
 
-- `BarChart.tsx` — magnitude comparisons (facility count by state,
-  episodes-per-agency by state, payment-to-charge ratio by provider
-  type), single hue (this site's amber accent — sequential color job per
-  the skill, not the skill's generic blue default) so charts read as
-  part of the same product.
-- `DonutChart.tsx` — part-to-whole/identity (hospital ownership-type
-  share), the skill's validated categorical palette with a legend
-  (skill's "legend always present for 2+ slices" rule).
-- `BoxPlot.tsx` — distribution across a segmentation (spending-ratio by
-  state), standard Tukey whiskers (1.5× IQR) with real outliers plotted
-  as individual points rather than a raw min/max whisker — the first
-  version used raw min/max, which let one real outlier (a California
-  agency at 5.27 vs. a typical ~1.0) stretch the axis and flatten every
-  other state's box into an unreadable sliver; fixed to the standard
-  convention after visually inspecting the rendered chart, per the
-  skill's step 7 ("render it and look at it").
-- `StatTile.tsx` — the KPI row at the top of the dashboard (agents run,
-  insights returned, datasets wired, layers with real findings) — real
-  sums, per the skill's "a single current value is a stat tile, not a
-  one-bar bar chart" rule.
-
-Every chart is real, computed data — never fabricated to fill a chart
-type. An insight with no natural chart (e.g. a single national baseline
-number with no segmentation) simply has no `chart` field, same discipline
-as `series`.
-
-**Third pass** (same day): after seeing the two charts above rendered on
-agent-finding cards, Adam clarified he *also* wanted — separately from
-those, not instead of them — a standalone Tableau-style analytics section
-covering the underlying data broadly, referencing two real Tableau
-Public dashboards (a hospital summary and a clinic performance
-dashboard) as the target look. Built `components/AnalyticsExplorer.tsx`
-("Data Explorer"), a distinct section with its own dark header band,
-positioned between "How this works" and the agent-finding cards, backed
-by `cms-intelligence/analytics/overview.ts` — a new computation module
-reading the same three real adapters directly (not filtered through
-what an agent judged insight-worthy). Deliberately did **not** replicate
-one thing from the reference dashboards: a dual-axis chart (two
-y-scales) — the dataviz skill's #1 documented anti-pattern — used the
-same real data without it instead. Also deliberately skipped a
-geographic US state map (no verified state-boundary path data available,
-and guessing at one would misrepresent geography) and a patient-flow
-Sankey (no public CMS source here has patient-level clinical flow data)
-— both noted explicitly in the section's own footer text rather than
-silently omitted. Caught and fixed a real data bug while building this:
-the home-health star-rating bar chart initially showed a bogus "-★"
-category with 4,410 agencies — CMS's suppression marker (`-`) being
-treated as a rating value rather than excluded; fixed with a numeric
-validity check, same suppression discipline used elsewhere in this
-project. 74 tests passing.
+These conventions produced `components/Sparkline.tsx` (multi-snapshot
+trend lines), `components/charts/{BarChart,DonutChart,BoxPlot,
+StatTile}.tsx` (single-snapshot cross-sections — a chart needs no
+history to be real, it only needs real data), and
+`components/AnalyticsExplorer.tsx` ("Data Explorer" — a standalone
+BI-style section separate from agent-finding cards, backed by
+`cms-intelligence/analytics/overview.ts`, reading the real adapters
+directly rather than only what an agent judged insight-worthy).
 
 ## Shared components across all seven layers
 
