@@ -35,6 +35,15 @@ jobs:
       - name: Pull CMS Home Health Care Agencies
         run: npx tsx cms-intelligence/data/adapters/pull-home-health.ts
 
+      - name: Pull CMS Medicare Physician & Other Practitioners
+        run: npx tsx cms-intelligence/data/adapters/pull-physician-other-practitioners.ts
+
+      - name: Pull Federal Register CMS documents
+        run: npx tsx cms-intelligence/data/adapters/pull-federal-register.ts
+
+      - name: Pull CMS MA/Part D Monthly Enrollment by Plan
+        run: npx tsx cms-intelligence/data/adapters/pull-ma-part-d.ts
+
       - name: Commit updated snapshot
         run: |
           git config user.name "healthcare-intelligence-bot"

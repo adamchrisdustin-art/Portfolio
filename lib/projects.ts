@@ -27,19 +27,6 @@ export const projects: Project[] = [
     ],
   },
   {
-    slug: "cms-market-intelligence-agents",
-    title: "CMS Market Intelligence Agents",
-    status: "in-progress",
-    summary:
-      "A watcher/analyst agent pipeline that pulls CMS.gov provider and reimbursement data on a schedule, detects what actually changed since the last pull, and writes a plain-language brief — reimbursement trends, bed size, and provider counts by care setting. Built to demonstrate the same discipline RevOps reporting requires: define the metric once, then let the pipeline keep it current instead of re-running the same query by hand.",
-    stack: ["GitHub Actions (cron)", "TypeScript", "DuckDB", "CMS.gov Data API", "OpenAI API"],
-    links: [
-      // TODO: confirm the real GitHub org/user this repo gets pushed to
-      // before deploying - placeholder, not yet verified.
-      { label: "Pipeline source", href: "https://github.com/adamchrisdustin-art/adamdustin-me/tree/main/pipeline" },
-    ],
-  },
-  {
     slug: "salesforce-playground",
     title: "Salesforce Playground + Conversational Admin Assistant",
     status: "planned",

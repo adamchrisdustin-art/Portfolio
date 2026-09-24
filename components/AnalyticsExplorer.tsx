@@ -81,6 +81,26 @@ export default function AnalyticsExplorer({ overview }: { overview: AnalyticsOve
               <BoxPlot chart={overview.spendingRatioBoxplot} />
             </div>
           )}
+          {overview.federalRegisterDocumentTypeDonut && (
+            <div className="card" style={panelStyle}>
+              <DonutChart chart={overview.federalRegisterDocumentTypeDonut} />
+            </div>
+          )}
+          {overview.federalRegisterRulesByMonthBar && (
+            <div className="card" style={panelStyle}>
+              <BarChart chart={overview.federalRegisterRulesByMonthBar} />
+            </div>
+          )}
+          {overview.maPartDOrgTypeDonut && (
+            <div className="card" style={panelStyle}>
+              <DonutChart chart={overview.maPartDOrgTypeDonut} />
+            </div>
+          )}
+          {overview.maPartDPlanTypeBar && (
+            <div className="card" style={panelStyle}>
+              <BarChart chart={overview.maPartDPlanTypeBar} />
+            </div>
+          )}
           {overview.facilityCountSeries && (
             <div className="card" style={panelStyle}>
               <LineChart series={overview.facilityCountSeries} />

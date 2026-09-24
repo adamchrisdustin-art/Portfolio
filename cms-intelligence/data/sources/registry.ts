@@ -3,7 +3,7 @@
  * human-readable version of this same data, and
  * 04_PHASE_4_DATA_SOURCE_AND_PIPELINE.md for the required field list.
  *
- * Three entries are "verified-implemented" as of the Phase 5 addendum
+ * Four entries are "verified-implemented" as of the Phase 5/6 addenda
  * (2026-09-23) - each was actually live-queried (see each adapter
  * file's header comment for how) and has a real adapter reading real
  * data already committed to this repo. Every other entry from the
@@ -104,6 +104,66 @@ const VERIFIED_ENTRIES: SourceRegistryEntry[] = [
     verificationStatus: "verified-implemented",
     relatedQuestionIds: ["Q011", "Q012", "Q026", "Q027", "Q028", "Q031", "Q088"],
   },
+  {
+    sourceId: "federal-register:cms-documents",
+    sourceName: "Federal Register - CMS documents",
+    owner: "Office of the Federal Register / National Archives",
+    urlOrApi: "https://www.federalregister.gov/api/v1/documents.json",
+    datasetDescription: "Rules, proposed rules, and notices published by CMS (agency slug centers-for-medicare-medicaid-services) - the first real source for the previously-stub Policy, Regulation & CMS Program Intelligence agent. Added per Adam's 2026-09-23 data-source priority order (Federal Register named first: verified live, free, no key).",
+    population: "n/a",
+    geography: "national",
+    grain: "one row per Federal Register document (document_number)",
+    latestVintage: "2026-09-23",
+    publicationDate: null,
+    updateFrequency: "Federal Register documents publish daily; this project's own re-check cadence is capped at quarterly per COST_AND_OPERATING_MODEL.md, same as every other source here.",
+    expectedNextUpdate: null,
+    identifiers: ["document_number"],
+    joinKeys: [],
+    historicalCoverage: "Each pull covers a trailing 120-day publication window only (not full history) - deliberately bounded, since this project's own use case is 'what's currently in motion,' not a historical regulatory archive. This project builds its own history by re-pulling on its own cadence, same pattern as every other source here.",
+    restrictions: "none - public, unauthenticated",
+    knownSuppression: "none - this is public rulemaking metadata, not patient- or provider-level data subject to small-cell suppression",
+    knownLimitations: [
+      "Bounded to a 120-day trailing window per pull, not the full CMS regulatory history.",
+      "type=Rule confirms a rule was finalized and published, not that its real-world payment/provider/beneficiary/utilization impact has been observed - that routing and impact judgment is this agent's LLM step (Q077-Q080), not yet run for the live dashboard.",
+      "effective_on and comments_close_on are null for documents where CMS hasn't published one (e.g. some notices) - never treated as a real date in that case.",
+    ],
+    methodologyNotes: "Federal Register's own v1 documents API, agency and publication-date filters, single bounded request per pull (see federalRegisterDocuments.ts for the exact query). Verified independently on 2026-09-23 via a live query, per this project's standing 'never invent a source' rule.",
+    lastVerified: "2026-09-23",
+    lastSchemaCheck: "2026-09-23",
+    changeStatus: "stable",
+    verificationStatus: "verified-implemented",
+    relatedQuestionIds: ["Q073", "Q074", "Q075", "Q076"],
+  },
+  {
+    sourceId: "cms:ma-part-d-enrollment",
+    sourceName: "Medicare Advantage/Part D Monthly Enrollment by Plan",
+    owner: "CMS",
+    urlOrApi: "https://www.cms.gov/data-research/statistics-trends-and-reports/medicare-advantagepart-d-contract-and-enrollment-data/monthly-enrollment-plan",
+    datasetDescription: "Plan-level Medicare Advantage/Part D enrollment, organization type, plan type, and Part D benefit flag. Second item in Adam's 2026-09-23 data-source priority order. A different platform from the other 3 real CMS sources (not the Provider Data Catalog - a live metastore search there returned zero enrollment datasets) - a monthly zip (CSV+XLSX) discovered by crawling CMS's real page structure, not a query API. This entry supersedes the prior candidate-unverified placeholder of the same sourceId.",
+    population: "medicare-advantage",
+    geography: "national only - no state/county field in this specific file (a separate CMS file, monthly-enrollment-contract/plan/state/county, would be needed for geography)",
+    grain: "one row per contract x plan (real Contract Number/Plan ID columns exist but are deliberately dropped at parse time - see the adapter's header)",
+    latestVintage: "2026-09",
+    publicationDate: "2026-09",
+    updateFrequency: "CMS publishes this file monthly, by the 15th; this project's own re-check cadence is capped at quarterly per COST_AND_OPERATING_MODEL.md.",
+    expectedNextUpdate: null,
+    identifiers: [],
+    joinKeys: ["organizationType", "planType"],
+    historicalCoverage: "CMS keeps a per-month archive back to 2006 on the same page (this project only pulls the latest available month) - this project builds its own history by re-pulling on its own cadence, same pattern as every other source here.",
+    restrictions: "none - public, unauthenticated, but requires a User-Agent header (cms.gov rejects requests without one - a real, observed requirement)",
+    knownSuppression: "CMS marks enrollment <=10 as \"*\" (real HIPAA small-cell suppression, documented in the file's own real README) - excluded, never imputed.",
+    knownLimitations: [
+      "No state/county geography in this file - Q046-Q048 (geographic enrollment/penetration questions) are not addressed by this source alone.",
+      "Real per-row organization/plan names exist in the source file but are deliberately never persisted past the adapter (CLAUDE.md forbids naming specific real carriers, e.g. UnitedHealthcare/Optum, in anything published to the site) - only category fields (Organization Type, Plan Type, Offers Part D) are kept.",
+      "Plan-level, not member-level - a benefit-design/structure signal, not a claims or cost measure.",
+    ],
+    methodologyNotes: "Adapter re-discovers the latest month's real download URL at pull time by crawling CMS's real page structure (index page -> period page -> real .zip href) rather than hardcoding a URL that changes monthly. Zip parsed with `fflate` (this repo's first binary-format dependency, added because CMS ships this dataset only as a zip, unlike every other source here). Verified independently on 2026-09-23 via a real download and content inspection, per this project's standing 'never invent a source' rule.",
+    lastVerified: "2026-09-23",
+    lastSchemaCheck: "2026-09-23",
+    changeStatus: "stable",
+    verificationStatus: "verified-implemented",
+    relatedQuestionIds: ["Q049", "Q053"],
+  },
 ];
 
 /**
@@ -198,32 +258,10 @@ const CANDIDATE_ENTRIES: SourceRegistryEntry[] = [
     verificationStatus: "candidate-unverified",
     relatedQuestionIds: ["Q021"],
   },
-  {
-    sourceId: "cms:ma-part-d-enrollment",
-    sourceName: "MA / Part D Contract and Enrollment",
-    owner: "CMS",
-    urlOrApi: null,
-    datasetDescription: "MA/Part D plan and county-level enrollment.",
-    population: "medicare-advantage",
-    geography: "plan/county-level",
-    grain: "unverified",
-    latestVintage: null,
-    publicationDate: null,
-    updateFrequency: "CMS has historically published MA/Part D enrollment monthly - not independently confirmed for the current cycle.",
-    expectedNextUpdate: null,
-    identifiers: [],
-    joinKeys: [],
-    historicalCoverage: "unverified",
-    restrictions: "unverified",
-    knownSuppression: "unverified",
-    knownLimitations: ["Not yet live-verified."],
-    methodologyNotes: "Needs its own verification pass - likely a different platform than the Provider Data Catalog (CMS's MA/Part D public-use-file landing pages).",
-    lastVerified: null,
-    lastSchemaCheck: null,
-    changeStatus: "unknown",
-    verificationStatus: "candidate-unverified",
-    relatedQuestionIds: ["Q046", "Q047"],
-  },
+  // Note: "MA / Part D Contract and Enrollment" was a candidate here
+  // through Phase 5; it's now verified-implemented as
+  // "cms:ma-part-d-enrollment" (see VERIFIED_ENTRIES above) as of
+  // 2026-09-23. Removed from this list rather than left duplicated.
   {
     sourceId: "cms:marketplace-puf",
     sourceName: "Exchange / Marketplace Public Use Files",

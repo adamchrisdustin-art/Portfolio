@@ -22,6 +22,8 @@ import {
 } from "../data/adapters/hospitalGeneralInformation";
 import { loadLatestSnapshot as loadHomeHealthSnapshot } from "../data/adapters/homeHealthCareAgencies";
 import { loadLatestSnapshot as loadPhysicianSnapshot } from "../data/adapters/physicianOtherPractitioners";
+import { loadLatestSnapshot as loadFederalRegisterSnapshot } from "../data/adapters/federalRegisterDocuments";
+import { loadLatestSnapshot as loadMaPartDSnapshot } from "../data/adapters/maPartDEnrollment";
 import { dateFromSnapshotFilename } from "../data/sources/snapshotHistory";
 import { boxplotByState, type BoxplotState } from "../agents/claims-utilization-cost/agent";
 import { cr4For } from "../agents/provider-network/agent";
@@ -53,6 +55,10 @@ export interface AnalyticsOverview {
   spendingRatioBoxplot: ChartBoxPlot | null;
   facilityCountSeries: InsightSeries | null;
   ownershipConcentrationSeries: InsightSeries | null;
+  federalRegisterDocumentTypeDonut: ChartDonut | null;
+  federalRegisterRulesByMonthBar: ChartBar | null;
+  maPartDOrgTypeDonut: ChartDonut | null;
+  maPartDPlanTypeBar: ChartBar | null;
 }
 
 function donutFromCounts(title: string, unit: string, counts: Map<string, number>, topN: number): ChartDonut {
@@ -90,6 +96,8 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
   const hospital = loadHospitalSnapshot();
   const homeHealth = loadHomeHealthSnapshot();
   const physician = loadPhysicianSnapshot();
+  const federalRegister = loadFederalRegisterSnapshot();
+  const maPartD = loadMaPartDSnapshot();
 
   const kpis: AnalyticsKpi[] = [];
   let facilityTypeDonut: ChartDonut | null = null;
@@ -101,6 +109,10 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
   let spendingRatioBoxplot: ChartBoxPlot | null = null;
   let facilityCountSeries: InsightSeries | null = null;
   let ownershipConcentrationSeries: InsightSeries | null = null;
+  let federalRegisterDocumentTypeDonut: ChartDonut | null = null;
+  let federalRegisterRulesByMonthBar: ChartBar | null = null;
+  let maPartDOrgTypeDonut: ChartDonut | null = null;
+  let maPartDPlanTypeBar: ChartBar | null = null;
 
   const hospitalFiles = listHospitalSnapshots();
   if (hospitalFiles.length >= 2) {
@@ -184,6 +196,59 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
     }
   }
 
+  if (federalRegister && federalRegister.documents.length > 0) {
+    kpis.push({ label: "CMS Federal Register documents (120-day window)", value: federalRegister.documents.length.toLocaleString() });
+
+    const typeCounts = new Map<string, number>();
+    for (const doc of federalRegister.documents) {
+      typeCounts.set(doc.type, (typeCounts.get(doc.type) ?? 0) + 1);
+    }
+    federalRegisterDocumentTypeDonut = donutFromCounts("CMS Federal Register documents by type", "documents", typeCounts, 5);
+
+    const rules = federalRegister.documents.filter((d) => d.type === "Rule");
+    kpis.push({ label: "Rules finalized (120-day window)", value: rules.length.toLocaleString() });
+    const proposed = federalRegister.documents.filter((d) => d.type === "Proposed Rule");
+    kpis.push({ label: "Rules currently proposed", value: proposed.length.toLocaleString() });
+
+    if (rules.length > 0) {
+      const byMonth = new Map<string, number>();
+      for (const r of rules) {
+        const month = r.publicationDate.slice(0, 7);
+        byMonth.set(month, (byMonth.get(month) ?? 0) + 1);
+      }
+      federalRegisterRulesByMonthBar = {
+        type: "bar",
+        title: "CMS rules finalized per month (trailing 120 days)",
+        unit: "rules",
+        bars: Array.from(byMonth.entries())
+          .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+          .map(([label, value]) => ({ label, value })),
+      };
+    }
+  }
+
+  if (maPartD && maPartD.rows.length > 0) {
+    const totalEnrollment = maPartD.rows.reduce((s, r) => s + r.enrollment, 0);
+    kpis.push({ label: `MA/Part D enrollment (${maPartD.reportPeriod})`, value: totalEnrollment.toLocaleString() });
+
+    const orgTypeCounts = new Map<string, number>();
+    const planTypeCounts = new Map<string, number>();
+    for (const row of maPartD.rows) {
+      orgTypeCounts.set(row.organizationType, (orgTypeCounts.get(row.organizationType) ?? 0) + row.enrollment);
+      planTypeCounts.set(row.planType, (planTypeCounts.get(row.planType) ?? 0) + row.enrollment);
+    }
+    maPartDOrgTypeDonut = donutFromCounts(`MA/Part D enrollment by organization type, ${maPartD.reportPeriod}`, "enrollees", orgTypeCounts, 5);
+    maPartDPlanTypeBar = {
+      type: "bar",
+      title: `MA/Part D enrollment by plan type, ${maPartD.reportPeriod}`,
+      unit: "enrollees",
+      bars: Array.from(planTypeCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8)
+        .map(([label, value]) => ({ label, value })),
+    };
+  }
+
   return {
     kpis,
     facilityTypeDonut,
@@ -195,5 +260,9 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
     spendingRatioBoxplot,
     facilityCountSeries,
     ownershipConcentrationSeries,
+    federalRegisterDocumentTypeDonut,
+    federalRegisterRulesByMonthBar,
+    maPartDOrgTypeDonut,
+    maPartDPlanTypeBar,
   };
 }

@@ -1,5 +1,105 @@
 # Prompt Pack Manifest
 
+## Start here (2026-09-23)
+
+**Phases 1–6 scaffolding are complete and committed**, plus Federal
+Register and MA/Part D data-source addenda on top of Phase 5, and a new
+salience/triage reasoning layer (see History below). The dashboard is
+live locally at `/healthcare-intelligence`, working end to end, 111
+tests passing, clean build. **Phase 6's evaluation framework is
+built and tested but has not run live** — no API key is configured
+anywhere for this project; see `MODEL_EVALUATION.md` for the framework's
+real state, verified current pricing, and the resolved Claude Max/API
+decision. **Next up: Phase 7** (hardening, testing, portfolio write-up)
+— see `07_PHASE_7_HARDENING_TESTING_AND_PORTFOLIO.md` — after finishing
+the remaining data-source priority order below (MA/Part D next).
+
+**What's real right now:**
+- 5 independently live-verified data sources wired: Hospital General
+  Information, Home Health Care Agencies, Medicare Physician & Other
+  Practitioners (5-state sample), the Federal Register API filtered to
+  CMS (rolling 120-day window), and CMS's MA/Part D Monthly Enrollment
+  by Plan file — see `SOURCE_REGISTRY.md`.
+- 7 of 11 domain agents produce real, evidence-backed insights (Market
+  Growth ×2, Claims/Utilization/Cost, Reimbursement & Payment, Provider
+  & Network, Emerging Trends, Policy/Regulation/CMS ×3, MA/Part D ×2). 2
+  are honest stubs with no data yet (Medicaid/CHIP/Duals, Marketplace).
+  2 are infrastructure-only (Source Monitor, Data Architecture). All 7
+  dashboard layers now have at least one real finding — "Policy &
+  Program Watch" is no longer empty.
+- New salience/triage reasoning layer
+  (`cms-intelligence/intelligence/salience/selectNoteworthy.ts`, added
+  2026-09-23 after Adam asked why every agent's "what's worth surfacing"
+  logic was a fixed top-N rule): splits real fact computation (stays
+  deterministic code, unchanged) from selecting/explaining which real
+  candidates matter this cycle (a new, narrow LLM step that can only
+  choose among and explain given candidates, never invent one). Falls
+  back to the exact prior deterministic ranking whenever no model is
+  configured, which is true for this deployment today - zero behavior
+  change, zero cost, by default. First used in the MA/Part D agent's
+  plan-type mix insight; not yet retrofitted into the other 6 real
+  agents (they still use their original fixed top-N logic) pending
+  Adam's go-ahead on that broader change.
+- MA/Part D agent has a binding privacy/naming design constraint worth
+  knowing: the real source file names a carrier/plan on every row: this
+  agent's adapter drops every named field before it's ever persisted, so
+  no insight can name a real carrier (CLAUDE.md forbids naming
+  UnitedHealthcare/Optum, and this project's practice extends that to
+  every real carrier) - enforced structurally, not by a runtime filter
+  that could be forgotten. Verified with an explicit test.
+- The Policy agent's deterministic code covers rule-cycle tracking
+  (finalized/proposed/upcoming-effective — Q074-Q076); routing a rule to
+  the specific domain(s) it affects (Q077-Q080) is explicitly that
+  agent's LLM step per `AGENT_ARCHITECTURE.md` and stays unimplemented
+  until Phase 6 wires in a live model provider — not guessed at.
+- Dashboard: 7 layers, evidence drawers, a standalone "Data Explorer"
+  BI-style analytics section (`components/AnalyticsExplorer.tsx`) with
+  real bar/donut/boxplot/line charts and KPI tiles, separate from the
+  per-agent finding cards.
+- Confidence/trend detection is computed dynamically from real snapshot
+  history (`cms-intelligence/data/sources/snapshotHistory.ts`), never
+  hardcoded — currently low across the board because there's genuinely
+  only ~1 week of real history, which is correct, not a bug.
+- Phase 6 evaluation framework (`cms-intelligence/evaluation/`): a
+  12-task grounded benchmark suite, deterministic scorer, cost model
+  (real verified 2026-09-23 pricing), workload model, and a router —
+  proven against this repo's real Anthropic/OpenAI provider code with
+  `fetch` mocked (19 tests). **Not yet run live** — see
+  `MODEL_EVALUATION.md`. Traced fact worth knowing before spending
+  anything: this repo has exactly one real LLM call site today
+  (`synthesis.ts`'s executive narrative), so the actual measured cost
+  footprint is a fraction of a cent per scheduled run, not a material
+  fraction of the $100 credit.
+
+**Binding rules for every future phase:**
+- No "UnitedHealthcare"/"Optum" naming in anything published to the live
+  site — internal-only framing, see project memory /
+  `healthcare-intelligence-no-uhc-optum-naming` memory.
+- Quarterly-to-annual pull cadence, not weekly (`COST_AND_OPERATING_MODEL.md`).
+- **Hard deadline: the initial LLM-synthesis backfill must complete
+  before 2026-11-04** (the $100 Anthropic credit's constraint — pulling
+  more public data is free and untouched by this deadline; only a real
+  scheduled LLM call spends it, and none has happened yet).
+- Remaining data-source priority order (per Adam, 2026-09-23): Federal
+  Register API done, MA/Part D enrollment done (see above) →
+  **Marketplace PUFs next** → Medicaid/T-MSIS (deprioritized, most
+  fragmented).
+- No naming a specific real carrier/insurer (UnitedHealthcare/Optum
+  explicitly per CLAUDE.md, and every other real carrier by this
+  project's extended practice) anywhere published to the site - applies
+  to any future data source that includes named entities (e.g.
+  Marketplace PUFs will likely name issuers too), same pattern the
+  MA/Part D adapter established: drop named fields at the adapter layer,
+  never rely on a downstream filter.
+
+**If picking this up in a new session:** read this file, then
+`00_MASTER_ORCHESTRATOR.md`, `COST_AND_OPERATING_MODEL.md`, and whichever
+phase file is next — the "History" section below has the detailed
+blow-by-blow if something needs archaeology, but shouldn't be required
+reading to continue the work.
+
+## Pack contents
+
 - 00_README_START_HERE.md — how to use the pack
 - 00_MASTER_ORCHESTRATOR.md — full-program instruction set
 - 01_PHASE_1_REPOSITORY_DISCOVERY.md — inspect and integrate with existing portfolio
@@ -8,22 +108,129 @@
 - 04_PHASE_4_DATA_SOURCE_AND_PIPELINE.md — CMS/public data and source monitoring
 - 05_PHASE_5_DASHBOARD_AND_UX.md — executive dashboard and portfolio experience
 - 06_PHASE_6_MODEL_PROVIDER_EVALUATION.md — Claude/OpenAI/open-source/Cerebras evaluation and cost framework
+- `MODEL_EVALUATION.md` — Phase 6 deliverable: the evaluation framework's real state, economics, and the Claude Max/API decision
 - 07_PHASE_7_HARDENING_TESTING_AND_PORTFOLIO.md — production-quality testing and case study
 - 08_AGENT_PROMPT_TEMPLATE.md — reusable agent definition template
 - 09_PROJECT_DIRECTORY_RECOMMENDATION.md — target architecture
 - 10_EXECUTIVE_QUESTION_STARTER.md — starter question library
 - COST_AND_OPERATING_MODEL.md — cost/scheduling architecture (decided 2026-09-23, read alongside Phase 6)
+- Phase 1 deliverables: `REPOSITORY_DISCOVERY.md`, `PROJECT_BOUNDARY.md`
+- Phase 2 deliverables: `EXECUTIVE_QUESTION_CATALOG.md` (112 questions), `AGENT_ARCHITECTURE.md`, `EVIDENCE_MODEL.md`, `METRIC_DICTIONARY.md`, `TREND_FRAMEWORK.md`, `DASHBOARD_BLUEPRINT.md`, `DATA_GAP_REGISTER.md`
+- Phase 4 deliverables: `SOURCE_REGISTRY.md`, `DATA_INGESTION.md`, `SCHEMA_MAPPING.md`, `DATA_LINEAGE.md`, `DATA_QUALITY.md`
 
-**Status (2026-09-23):** all files 00–10 plus the cost/operating model doc are present. Phase 1 (repository discovery) is complete — see `REPOSITORY_DISCOVERY.md` and `PROJECT_BOUNDARY.md`. Phase 2 (intelligence blueprint) is complete — see `EXECUTIVE_QUESTION_CATALOG.md` (112 questions), `AGENT_ARCHITECTURE.md`, `EVIDENCE_MODEL.md`, `METRIC_DICTIONARY.md`, `TREND_FRAMEWORK.md`, `DASHBOARD_BLUEPRINT.md`, and `DATA_GAP_REGISTER.md`. Phase 3 (agent implementation) is complete — real code now lives at `cms-intelligence/` (evidence schema + hand-rolled validator, metrics/trend deterministic modules, provider abstraction for Anthropic/OpenAI, 11 domain agents behind a shared orchestrator with static question routing, 2 agents wired to real live-pulled CMS data) and `.claude/agents/` (12 invocable subagent definitions). `npm test` passes (27 tests, added `vitest` as this repo's first test runner). Binding rule from Phase 2 onward: no "UnitedHealthcare"/"Optum" naming in anything published to the live site — see project memory. Phase 4 (data source & pipeline) is complete — see `SOURCE_REGISTRY.md`, `DATA_INGESTION.md`, `SCHEMA_MAPPING.md`, `DATA_LINEAGE.md`, and `DATA_QUALITY.md`. A second real, live-verified CMS dataset (Home Health Care Agencies, id `6jpm-sxkc`) was added alongside Hospital General Information, bringing a 3rd domain agent (Claims/Utilization/Cost) to life with real data. The source registry, generalized source-change-monitor diffing, data-quality checks, provenance records, and public-data-first adapter interfaces (Membership/Claims/Provider/Reimbursement/Pharmacy/Network) all now exist as real, tested code in `cms-intelligence/data/`. Phase 5 (dashboard & UX) is complete — the live route is `app/healthcare-intelligence/page.tsx`, all 7 layers present (3 with real evidence-backed cards, 3 with honest empty states, Executive Pulse rolling up the top findings), evidence drawers, demo-mode banner, nontechnical "How this works" panel, and the full case study (Problem/Approach/Architecture/Data/Intelligence/Evaluation/Future state). Verified in a real browser (Playwright): zero console errors, no UnitedHealthcare/Optum text anywhere in rendered output, evidence drawer confirmed to actually open. New Portfolio card added, status "in-progress". A gap in the original blueprint (MA/Part D/Medicaid/Marketplace questions had no assigned layer) was found and fixed — see `DASHBOARD_BLUEPRINT.md`'s Layer 2 note. Agent-monitoring/observability UI (runtimes, success rates) was deliberately deferred to Phase 6, where it pairs naturally with provider evaluation — `fullSweep.ts` already records per-agent `durationMs` for that.
+## History (detailed changelog, not required reading)
 
-**Phase 5 addendum (2026-09-23, same day)**: Adam asked whether there'd ever be real charts and whether confidence would ever move past "low," given there wasn't enough history yet. Fixed properly rather than just explained: `cms-intelligence/data/sources/snapshotHistory.ts` now derives confidence/signalType dynamically from real snapshot history (`assessSnapshotHistory`, `directionsAcrossSnapshots`) instead of the three real agents hardcoding `persistenceMet`/`hasFullBaseline` to `false` — low confidence is now a genuine, self-correcting computation, not a static label. `Insight` gained an optional `series` field (real snapshot-backed points only, never fabricated), rendered by the new `components/Sparkline.tsx` (inline SVG, no new dependency) — the dashboard's first real chart, currently flat because the real data hasn't changed yet, which is itself the honest finding. Hospital General Information now has 3 real dated snapshots (Sep 16/21/23); Home Health has 1 (same-day re-pulls overwrite rather than adding history). Added `.github/workflows/healthcare-intelligence-pipeline.yml` (quarterly cron, zero LLM cost) so history keeps accumulating going forward without manual re-runs. Updated `AGENT_ARCHITECTURE.md`, `DASHBOARD_BLUEPRINT.md`, `EVIDENCE_MODEL.md`, and the `market-intelligence`/`provider-network`/`claims-utilization`/`source-monitor` `.claude/agents/*.md` definitions to reflect all of this. 62 tests passing (up from 54). Verified again in a real browser: charts render, zero console errors, no name leakage.
+Phase 1 (repository discovery), Phase 2 (intelligence blueprint), and
+Phase 3 (agent implementation — evidence schema/validator, metrics/trend
+modules, Anthropic+OpenAI provider abstraction, 11 agents + shared
+orchestrator, 12 `.claude/agents/*.md` subagent definitions, `vitest`
+added as this repo's first test runner) completed 2026-09-23 in sequence,
+each verified before moving on.
 
-**Second Phase 5 addendum (2026-09-23, same day)**: Adam flagged that the dashboard leaned on one source repeated across cards, and that "agents working together" wasn't actually visible. Added a 3rd real, independently-verified dataset — CMS Medicare Physician & Other Practitioners by Provider and Service (`cms-intelligence/data/adapters/physicianOtherPractitioners.ts`, a bounded 5-state sample after a full pull produced an unshippable 112MB file) — with real submitted-charge/Medicare-payment/provider-type fields. Wired it into the previously-stub Reimbursement & Payment agent (fills that empty layer with a real payment-vs-charge-by-provider-type benchmark, Q031) and into a newly-real Emerging Trends agent, which now computes an actual cross-dataset correlation (hospital facility count vs. average physician payment, by state, r=0.74 across 5 states) citing two independent sources — the first genuine "two agents' data combined into one signal" on the dashboard. Extracted shared synthesis logic (`agents/orchestrator/synthesis.ts`) so the dashboard's Executive Pulse layer now shows an actual synthesized narrative, not just a ranked card list. Source registry promoted to 3 verified-implemented entries. 64 tests passing. Only Policy & Program Watch remains an empty layer now (down from 3). Re-verified in a real browser: all 5 real insights render correctly across 5 of 6 non-Pulse layers, synthesis panel renders, zero console errors, no name leakage.
+Phase 4 (data source & pipeline) added the source registry, generalized
+source-change-monitor diffing, data-quality checks, provenance records,
+and the 6 public-data-first adapter interfaces, plus the first real
+dataset beyond Hospital General Information (Home Health Care Agencies).
 
-**Third Phase 5 addendum (2026-09-23, same day)**: Adam asked for NPS scores by facility type, service-mix by state, and a reimbursement-informed "growing opportunity" read for care settings/provider networks. Corrected one premise directly: CMS does not publish NPS (Net Promoter Score, a proprietary Bain & Co. methodology) - used the real CMS quality star ratings instead, labeled correctly, never as "NPS." Re-added the 6 real service-mix fields (nursing, PT, OT, speech, medical social, home health aide) to the Home Health adapter, which had been stripped out in the file-size fix. Built a real state-level "home-health capacity signal" (`agents/market-growth/agent.ts`) - when asked how to handle the missing demand-side denominator, Adam correctly pointed out the data already had one: total episodes per agency, summed by state, is a genuine utilization/demand proxy already present in the pulled data (no external Census/enrollment source needed). Ranks states by episodes-per-agency among those with above-median quality and spending efficiency near the CMS benchmark - transparent and auditable component-by-component, explicitly labeled a supply/demand/quality/efficiency baseline, not a demand-*growth* claim (no true population denominator exists). Market Growth agent now returns 2 real insights; 6 real insights total across the dashboard now. 66 tests passing. Re-verified in a real browser.
+Phase 5 (dashboard & UX) shipped the live route, then went through six
+rounds of direct feedback on the running page, each fixed rather than
+argued with:
 
-**Fourth Phase 5 addendum (2026-09-23, same day)**: Adam pushed back a final time after seeing an exported PDF of the live page — the sparkline chart wasn't what he meant by "charts, cards, or visuals"; he wanted Tableau-style bar charts, pie charts, sums, and boxplots by segmentation. Root cause: the reasoning "not enough period history to justify a chart" (used to defer richer visuals) only applies to *trend* charts — it was wrongly used to justify not building bar/donut/boxplot charts at all, which visualize a single real cross-section and make no trend claim. Loaded the `dataviz` skill before writing any chart code (as that skill requires) and built real components: `BarChart`, `DonutChart`, `BoxPlot`, `StatTile` (`components/charts/`), wired via a new `Insight.chart` field into the 4 agents with cross-sectional data (Market Growth ×2, Provider & Network, Reimbursement, Claims & Cost). Caught and fixed a real chart-design bug via the skill's own "render it and look at it" step: the boxplot's first version used raw min/max whiskers, letting one real California outlier (5.27 vs. a typical ~1.0) stretch the axis and flatten every other state's box — fixed to the standard Tukey convention (1.5× IQR whiskers, outliers as individual points). Added a KPI stat-tile row (real sums: agents run, insights returned, datasets wired, layers with findings). 69 tests passing. Re-verified in a real browser, including a targeted screenshot of the corrected boxplot.
+1. Confidence looked permanently stuck at "low" with no charts — fixed
+   by deriving confidence dynamically from real history instead of
+   hardcoding it, and shipping the first real chart (`Sparkline`).
+2. Dashboard leaned on one data source with no visible agent
+   collaboration — added a 3rd independent dataset (Medicare Physician &
+   Other Practitioners, bounded to a 5-state sample after a full pull
+   hit 112MB), filled the empty Reimbursement agent, gave Emerging
+   Trends a real cross-dataset correlation, surfaced the
+   Executive-Pulse synthesis narrative that existed in code but was
+   never rendered.
+3. Asked for NPS by facility type and a demand-side "opportunity"
+   signal — corrected that CMS doesn't publish NPS (used real star
+   ratings instead), and built a real capacity signal using a demand
+   proxy already in the data (episodes per agency) rather than reaching
+   for external population data.
+4. "Still no charts" after the sparkline — root cause was conflating
+   "not enough history for a *trend* chart" with "no charts at all";
+   loaded the `dataviz` skill and built real `BarChart`/`DonutChart`/
+   `BoxPlot`/`StatTile` components, catching and fixing a boxplot bug
+   (raw min/max whiskers vs. the standard Tukey convention) along the way.
+5. Wanted those charts *plus* a standalone Tableau-style analytics
+   section separate from agent cards — built `AnalyticsExplorer.tsx`
+   ("Data Explorer"), deliberately skipping a dual-axis chart (a known
+   anti-pattern) and a geographic map (no verified boundary data), both
+   stated explicitly rather than silently omitted; fixed a real bug
+   where a CMS suppression marker was rendering as a fake rating category.
+6. Reported chart labels clipped off the edge of cards (a real bug — a
+   fixed 64px label column truncated real labels like "Diagnostic
+   Radiology") — fixed with dynamic label-width sizing, horizontal
+   scroll wrappers, and centering across every chart component.
 
-**Fifth Phase 5 addendum (2026-09-23, same day)**: Adam liked the per-insight charts but clarified he also wanted a standalone Tableau-style analytics section, separate from agent-finding cards, referencing two real Tableau Public dashboards as the target look. Built `components/AnalyticsExplorer.tsx` ("Data Explorer" — dark header band, KPI row, chart grid) backed by a new `cms-intelligence/analytics/overview.ts` module computing real aggregates directly from all 3 adapters: hospital-type and ownership-type donuts, hospital and home-health star-rating histograms, home-health service-mix bar, payment-by-provider-type bar, spending-ratio boxplot by state, and two full-size line charts (facility count and ownership concentration over the 3 real pulls) via a new `components/charts/LineChart.tsx`. Deliberately did not copy two things from the reference dashboards: a dual-axis chart (the dataviz skill's #1 anti-pattern) and a geographic US map (no verified state-boundary data available — guessing would misrepresent geography); both gaps are stated explicitly in the section's own footer rather than silently absent. Caught and fixed a real bug: the home-health rating chart initially showed a bogus "-★" bucket (CMS's suppression marker mistaken for a rating value) — fixed with a numeric-validity check. 74 tests passing. Re-verified in a real browser, including a scroll-through of the full new section.
+74 tests passing throughout, re-verified in a real browser after every
+round. Full narrative detail (if ever needed) is in the session history
+and the `adamdustin-me-portfolio-project` memory file, not duplicated
+here a second time.
 
-Next: Phase 6 (model/provider evaluation).
+A Federal Register data-source addendum (2026-09-23, after Phase 5)
+implemented the top item in Adam's data-source priority order: verified
+the Federal Register API live for CMS-attributed documents, built
+`cms-intelligence/data/adapters/federalRegisterDocuments.ts` (rolling
+120-day window, bounded single-request pull) and its pull script, and
+wired the previously-stub Policy, Regulation & CMS Program Intelligence
+agent to it — 3 new real insights (finalized rules, proposed-not-final
+rules, upcoming effective dates), each with a real bar chart. Added two
+Data Explorer visuals (document-type donut, rules-per-month bar) from
+the same real data. Fixed a pre-existing gap in
+`.github/workflows/healthcare-intelligence-pipeline.yml`, which pulled
+Home Health but never re-pulled the Medicare Physician & Other
+Practitioners dataset — both that pull and the new Federal Register pull
+are now in the quarterly cron. 78 tests passing, clean `next build`,
+verified in a real running instance (not just tests) that the Policy &
+Program Watch layer now renders real findings instead of the empty
+state.
+
+Phase 6 (model/provider evaluation, 2026-09-23) built the framework
+`06_PHASE_6_MODEL_PROVIDER_EVALUATION.md` specifies:
+`cms-intelligence/evaluation/` — a 12-task benchmark suite grounded in
+this repo's real data (not invented facts), a deterministic scorer, a
+runner proven against this repo's real Anthropic/OpenAI provider
+implementations (fetch mocked, no real spend), a cost model built on
+pricing verified live that day, a workload model resolving the Claude
+Max/API decision with real traced numbers, a router, and a comparison-
+report generator. Deliberately did NOT run the suite against real
+providers — no API key is configured anywhere for this project, and
+`COST_AND_OPERATING_MODEL.md` explicitly says Phase 6 shouldn't compete
+with the still-pending Phase 4/5 data-source backfill for the same
+credit. See `MODEL_EVALUATION.md` for the full writeup, including the
+finding that this repo's actual LLM footprint (one call site, gated,
+capped) makes the $100/Nov-4-deadline framing a low-risk one, not a
+tight constraint.
+
+Same session, 2026-09-23: Adam asked two follow-up questions that
+changed the architecture and the docs. (1) "Shouldn't agents reason
+about what's noteworthy instead of always picking the same signals?" -
+answered by building `cms-intelligence/intelligence/salience/
+selectNoteworthy.ts`, a shared module that splits fact computation
+(stays deterministic) from candidate selection/explanation (a new,
+narrow LLM step that can't invent a candidate or number, falls back to
+the old fixed top-N ranking with no model configured). (2) "How much
+should I budget once the API is connected and agents run autonomously?"
+- answered with a real cadence-vs-cost table in the chat response and
+folded into `MODEL_EVALUATION.md`; traced that even a fully-reasoning
+11-agent system stays under $10/year at quarterly cadence. Then, per
+Adam's "continue to the next sources": verified CMS's MA/Part D Monthly
+Enrollment by Plan file live (a different platform from the other CMS
+sources - a monthly zip discovered by crawling real page structure, not
+a query API), added `fflate` as this repo's first binary-parsing
+dependency, built `maPartDEnrollment.ts` and the MA/Part D agent (using
+the new salience layer as its reference implementation), and - a design
+decision worth remembering for the next source (Marketplace PUFs will
+likely have the same issue) - discovered the raw file names a real
+carrier on every row and designed the adapter to drop every named field
+at parse time, never persisting a name past the adapter, so CLAUDE.md's
+"never name UnitedHealthcare/Optum" rule (extended in practice to every
+real carrier) is structurally impossible to violate rather than relying
+on a downstream filter. 111 tests passing, clean build, verified live in
+a running instance including an explicit grep for forbidden carrier
+names in the rendered HTML (found none).
