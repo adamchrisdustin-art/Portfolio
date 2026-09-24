@@ -118,7 +118,7 @@ export default async function HealthcareIntelligencePage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 14 }}>
           <StatTile label="Specialist agents run this cycle" value={String(sweep.agentStatuses.length)} />
           <StatTile label="Evidence-backed insights" value={String(sweep.allInsights.length)} />
-          <StatTile label="Real data sources wired" value="5" />
+          <StatTile label="Real data sources wired" value="6" />
           <StatTile
             label="Layers with real findings"
             value={`${Object.values(sweep.insightsByLayer).filter((l) => l.length > 0).length} / 6`}
@@ -215,19 +215,17 @@ export default async function HealthcareIntelligencePage() {
           <div>
             <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Data</h3>
             <p style={{ margin: 0, color: "var(--text-muted)" }}>
-              Currently live: CMS Hospital General Information (facility type, ownership, emergency services, star
-              rating), CMS Home Health Care Agencies (quality ratings and a risk-adjusted Medicare spending measure),
-              CMS Medicare Physician &amp; Other Practitioners (submitted charges vs. actual Medicare payment by
-              provider type and state — a 5-state sample, not the full national file), the Federal Register API
-              filtered to CMS as the publishing agency (finalized rules, proposed rules, and their effective/comment
-              dates — a rolling 120-day window, not full regulatory history), and CMS&apos;s Medicare Advantage/Part D
-              Monthly Enrollment by Plan file (enrollment by plan type and organization type nationally — never by
-              named carrier; see the case study below). The first three are public, no-registration CMS Provider Data
-              Catalog / Datastore datasets; the fourth is a separate public federal API; the fifth is a monthly public
-              file, not a query API — chosen because each is directly queryable or reliably fetchable and updates on
-              a predictable cadence, which matters for a project run on a fixed budget and a once-a-quarter refresh
-              schedule rather than a live production feed. Two independent CMS sources sharing the same states is
-              also what makes the Emerging Signals cross-check below possible.
+              Currently live: CMS Hospital General Information, CMS Home Health Care Agencies, CMS Medicare Physician
+              &amp; Other Practitioners (a 5-state sample, not the full national file), the Federal Register API
+              filtered to CMS as the publishing agency (a rolling 120-day window, not full regulatory history), CMS&apos;s
+              Medicare Advantage/Part D Monthly Enrollment by Plan file, and CMS&apos;s ACA Marketplace Rate PUF — the
+              last two never surface a named carrier, only category fields (plan type, organization type) or opaque
+              identifiers used solely as counts (see the case study below). The first three are public,
+              no-registration CMS Provider Data Catalog / Datastore datasets; the rest are separate public federal
+              sources — chosen because each is directly fetchable and updates on a predictable cadence, which matters
+              for a project run on a fixed budget and a once-a-quarter refresh schedule rather than a live production
+              feed. Two independent CMS sources sharing the same states is also what makes the Emerging Signals
+              cross-check below possible.
             </p>
           </div>
           <div>

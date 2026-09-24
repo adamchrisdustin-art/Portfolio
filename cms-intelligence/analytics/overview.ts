@@ -24,6 +24,8 @@ import { loadLatestSnapshot as loadHomeHealthSnapshot } from "../data/adapters/h
 import { loadLatestSnapshot as loadPhysicianSnapshot } from "../data/adapters/physicianOtherPractitioners";
 import { loadLatestSnapshot as loadFederalRegisterSnapshot } from "../data/adapters/federalRegisterDocuments";
 import { loadLatestSnapshot as loadMaPartDSnapshot } from "../data/adapters/maPartDEnrollment";
+import { loadLatestSnapshot as loadMarketplaceSnapshot } from "../data/adapters/marketplaceRatePuf";
+import { tukeyBox } from "../intelligence/metrics/metrics";
 import { dateFromSnapshotFilename } from "../data/sources/snapshotHistory";
 import { boxplotByState, type BoxplotState } from "../agents/claims-utilization-cost/agent";
 import { cr4For } from "../agents/provider-network/agent";
@@ -59,6 +61,8 @@ export interface AnalyticsOverview {
   federalRegisterRulesByMonthBar: ChartBar | null;
   maPartDOrgTypeDonut: ChartDonut | null;
   maPartDPlanTypeBar: ChartBar | null;
+  marketplacePremiumBoxplot: ChartBoxPlot | null;
+  marketplacePlanAvailabilityBar: ChartBar | null;
 }
 
 function donutFromCounts(title: string, unit: string, counts: Map<string, number>, topN: number): ChartDonut {
@@ -98,6 +102,7 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
   const physician = loadPhysicianSnapshot();
   const federalRegister = loadFederalRegisterSnapshot();
   const maPartD = loadMaPartDSnapshot();
+  const marketplace = loadMarketplaceSnapshot();
 
   const kpis: AnalyticsKpi[] = [];
   let facilityTypeDonut: ChartDonut | null = null;
@@ -113,6 +118,8 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
   let federalRegisterRulesByMonthBar: ChartBar | null = null;
   let maPartDOrgTypeDonut: ChartDonut | null = null;
   let maPartDPlanTypeBar: ChartBar | null = null;
+  let marketplacePremiumBoxplot: ChartBoxPlot | null = null;
+  let marketplacePlanAvailabilityBar: ChartBar | null = null;
 
   const hospitalFiles = listHospitalSnapshots();
   if (hospitalFiles.length >= 2) {
@@ -249,6 +256,46 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
     };
   }
 
+  if (marketplace && marketplace.rows.length > 0) {
+    // Same disclosed empirical exclusion as commercial-marketplace/agent.ts - see that file's header for why $0/$9999 exact values are excluded.
+    const plausible = marketplace.rows.filter((r) => r.individualRate > 0 && r.individualRate < 9999);
+    kpis.push({ label: `Marketplace plan-rate rows sampled (${marketplace.planYear})`, value: plausible.length.toLocaleString() });
+
+    const byState = new Map<string, number[]>();
+    for (const r of plausible) {
+      if (!byState.has(r.state)) byState.set(r.state, []);
+      byState.get(r.state)!.push(r.individualRate);
+    }
+    const boxes = Array.from(byState.entries())
+      .filter(([, values]) => values.length >= 20)
+      .map(([state, values]) => ({ label: state, ...tukeyBox(values) }))
+      .sort((a, b) => a.median - b.median);
+    if (boxes.length > 0) {
+      marketplacePremiumBoxplot = {
+        type: "boxplot",
+        title: `Individual Marketplace premium distribution by state (age ${marketplace.referenceAge}, tobacco-neutral)`,
+        unit: "usd/month",
+        boxes,
+      };
+    }
+
+    const plansByArea = new Map<string, Set<string>>();
+    for (const r of plausible) {
+      const key = `${r.state} / ${r.ratingArea}`;
+      if (!plansByArea.has(key)) plansByArea.set(key, new Set());
+      plansByArea.get(key)!.add(r.planId);
+    }
+    marketplacePlanAvailabilityBar = {
+      type: "bar",
+      title: "Distinct Marketplace plans sampled per rating area",
+      unit: "plans",
+      bars: Array.from(plansByArea.entries())
+        .map(([label, plans]) => ({ label, value: plans.size }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 8),
+    };
+  }
+
   return {
     kpis,
     facilityTypeDonut,
@@ -264,5 +311,7 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
     federalRegisterRulesByMonthBar,
     maPartDOrgTypeDonut,
     maPartDPlanTypeBar,
+    marketplacePremiumBoxplot,
+    marketplacePlanAvailabilityBar,
   };
 }

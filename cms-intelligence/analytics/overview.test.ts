@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildAnalyticsOverview } from "./overview";
 
-/** Runs against the real committed data (all 5 sources) - not mocked. */
+/** Runs against the real committed data (all 6 sources) - not mocked. */
 describe("buildAnalyticsOverview", () => {
   it("computes real KPIs with no fabricated values", () => {
     const overview = buildAnalyticsOverview();
@@ -27,6 +27,22 @@ describe("buildAnalyticsOverview", () => {
     for (const bar of overview.federalRegisterRulesByMonthBar.bars) {
       expect(bar.value).toBeGreaterThan(0);
       expect(bar.label).toMatch(/^\d{4}-\d{2}$/);
+    }
+  });
+
+  it("Marketplace boxplot has correctly ordered whiskers and Marketplace charts never name a real carrier", () => {
+    const overview = buildAnalyticsOverview();
+    if (overview.marketplacePremiumBoxplot) {
+      for (const box of overview.marketplacePremiumBoxplot.boxes) {
+        expect(box.whiskerLow).toBeLessThanOrEqual(box.q1);
+        expect(box.q3).toBeLessThanOrEqual(box.whiskerHigh);
+      }
+    }
+    const forbiddenNamePatterns = ["unitedhealthcare", "optum", "humana", "aetna", "cigna", "kaiser"].map((n) => new RegExp(`\\b${n}\\b`, "i"));
+    for (const chart of [overview.marketplacePremiumBoxplot, overview.marketplacePlanAvailabilityBar]) {
+      if (!chart) continue;
+      const text = JSON.stringify(chart);
+      for (const pattern of forbiddenNamePatterns) expect(text).not.toMatch(pattern);
     }
   });
 

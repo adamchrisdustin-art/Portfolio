@@ -64,3 +64,57 @@ export function mixShare(categoryValue: number, totalValue: number): number {
   }
   return (categoryValue / totalValue) * 100;
 }
+
+export interface Quartiles {
+  q1: number;
+  median: number;
+  q3: number;
+}
+
+/** Linear-interpolation quartiles - standard method, no external stats library needed. Input must already be sorted ascending. */
+export function quartiles(sortedAscendingValues: number[]): Quartiles {
+  const at = (p: number) => {
+    const idx = p * (sortedAscendingValues.length - 1);
+    const lo = Math.floor(idx);
+    const hi = Math.ceil(idx);
+    if (lo === hi) return sortedAscendingValues[lo];
+    return sortedAscendingValues[lo] + (sortedAscendingValues[hi] - sortedAscendingValues[lo]) * (idx - lo);
+  };
+  return { q1: at(0.25), median: at(0.5), q3: at(0.75) };
+}
+
+export interface TukeyBox extends Quartiles {
+  whiskerLow: number;
+  whiskerHigh: number;
+  outliers: number[];
+  sampleSize: number;
+}
+
+/**
+ * Standard Tukey convention: whiskers extend to the most extreme value
+ * within 1.5x IQR of the box, not the raw sample min/max - a single
+ * outlier would otherwise stretch the axis and flatten every other
+ * group's box into an unreadable sliver. Real values beyond the whisker
+ * are kept, not discarded - returned as individual outlier points.
+ * Extracted from claims-utilization-cost/agent.ts's original
+ * boxplotByState once a second real agent (commercial-marketplace)
+ * needed the same computation.
+ */
+export function tukeyBox(values: number[]): TukeyBox {
+  const sorted = [...values].sort((a, b) => a - b);
+  const { q1, median, q3 } = quartiles(sorted);
+  const iqr = q3 - q1;
+  const lowerFence = q1 - 1.5 * iqr;
+  const upperFence = q3 + 1.5 * iqr;
+  const inRange = sorted.filter((v) => v >= lowerFence && v <= upperFence);
+  const outliers = sorted.filter((v) => v < lowerFence || v > upperFence);
+  return {
+    whiskerLow: inRange.length > 0 ? inRange[0] : q1,
+    q1,
+    median,
+    q3,
+    whiskerHigh: inRange.length > 0 ? inRange[inRange.length - 1] : q3,
+    outliers,
+    sampleSize: sorted.length,
+  };
+}

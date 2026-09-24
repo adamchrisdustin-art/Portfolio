@@ -21,6 +21,7 @@ import { listSnapshotFiles, loadSnapshot, SOURCE_ID } from "../../data/adapters/
 import { assessSnapshotHistory, dateFromSnapshotFilename, directionsAcrossSnapshots } from "../../data/sources/snapshotHistory";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
+import { tukeyBox } from "../../intelligence/metrics/metrics";
 import { classifyConfidence, meetsPersistence } from "../../intelligence/trends/trend";
 import type { AgentContext, DomainAgent } from "../types";
 
@@ -39,18 +40,6 @@ function meanRatioFor(rows: Record<string, unknown>[]): { mean: number; validCou
   }
   const mean = values.length > 0 ? values.reduce((sum, v) => sum + v, 0) / values.length : NaN;
   return { mean, validCount: values.length, suppressedCount: rows.length - values.length };
-}
-
-/** Linear-interpolation quartiles - standard, no external stats library needed. */
-function quartiles(sortedValues: number[]): { q1: number; median: number; q3: number } {
-  const at = (p: number) => {
-    const idx = p * (sortedValues.length - 1);
-    const lo = Math.floor(idx);
-    const hi = Math.ceil(idx);
-    if (lo === hi) return sortedValues[lo];
-    return sortedValues[lo] + (sortedValues[hi] - sortedValues[lo]) * (idx - lo);
-  };
-  return { q1: at(0.25), median: at(0.5), q3: at(0.75) };
 }
 
 export interface BoxplotState {
@@ -81,24 +70,7 @@ export function boxplotByState(rows: { state: string; [key: string]: unknown }[]
   const topByCount = withEnoughData.sort((a, b) => b[1].length - a[1].length).slice(0, BOXPLOT_TOP_N_STATES);
 
   return topByCount
-    .map(([state, values]) => {
-      const sorted = [...values].sort((a, b) => a - b);
-      const { q1, median, q3 } = quartiles(sorted);
-      // Standard Tukey convention: whiskers extend to the most extreme
-      // value within 1.5x IQR of the box, not to the raw sample min/max -
-      // a single outlier (e.g. one agency with an unusually high ratio)
-      // would otherwise stretch the axis and flatten every other state's
-      // box into an unreadable sliver. Real values beyond the whisker are
-      // kept, not discarded - plotted as individual outlier points.
-      const iqr = q3 - q1;
-      const lowerFence = q1 - 1.5 * iqr;
-      const upperFence = q3 + 1.5 * iqr;
-      const inRange = sorted.filter((v) => v >= lowerFence && v <= upperFence);
-      const outliers = sorted.filter((v) => v < lowerFence || v > upperFence);
-      const whiskerLow = inRange.length > 0 ? inRange[0] : q1;
-      const whiskerHigh = inRange.length > 0 ? inRange[inRange.length - 1] : q3;
-      return { label: state, whiskerLow, q1, median, q3, whiskerHigh, outliers, sampleSize: sorted.length };
-    })
+    .map(([state, values]) => ({ label: state, ...tukeyBox(values) }))
     .sort((a, b) => a.median - b.median);
 }
 

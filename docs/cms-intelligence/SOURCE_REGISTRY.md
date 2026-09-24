@@ -10,13 +10,13 @@ so a reader doesn't have to open TypeScript to understand what's tracked.
 Per the master orchestrator's "never invent a source" rule, extended here
 to the registry itself: a source only gets specific details (real URL,
 confirmed vintage, confirmed field names) once it's actually been
-live-queried, not because it's plausible or well-known. Five sources have
+live-queried, not because it's plausible or well-known. Six sources have
 been verified this way. Every other source named in
 `04_PHASE_4_DATA_SOURCE_AND_PIPELINE.md`'s six source families is listed as
 a **candidate** — real family/population/topic, honestly marked
 unverified rather than filled in with a guessed dataset ID or URL.
 
-## Verified & implemented (5 sources)
+## Verified & implemented (6 sources)
 
 | Source ID | Name | Real endpoint | Verified | Related questions |
 |---|---|---|---|---|
@@ -25,6 +25,7 @@ unverified rather than filled in with a guessed dataset ID or URL.
 | `cms:medicare-physician-other-practitioners` | Medicare Physician & Other Practitioners - by Provider and Service | `data.cms.gov/data-api/v1/dataset/92396110-2aed-4d63-a6a2-5d6207d46a29/data` | 2026-09-23 | Q011, Q012, Q026, Q027, Q028, Q031, Q088 |
 | `federal-register:cms-documents` | Federal Register - CMS documents | `federalregister.gov/api/v1/documents.json` | 2026-09-23 | Q073, Q074, Q075, Q076 |
 | `cms:ma-part-d-enrollment` | MA/Part D Monthly Enrollment by Plan | `cms.gov/.../medicare-advantagepart-d-contract-and-enrollment-data/monthly-enrollment-plan` | 2026-09-23 | Q049, Q053 |
+| `cms:marketplace-rate-puf` | Marketplace (Exchange) Rate PUF | `cms.gov/marketplace/resources/data/public-use-files` | 2026-09-23 | Q067, Q071 |
 
 The first two are the CMS Provider Data Catalog's own Datastore API —
 public, unauthenticated, paginated, no API key required. The third
@@ -43,7 +44,7 @@ produced a 112MB snapshot in initial testing, impractical to commit to a
 public repo; see `cms-intelligence/data/adapters/
 physicianOtherPractitioners.ts` for the full rationale.
 
-All five have a real adapter, real committed snapshot data, and at
+All six have a real adapter, real committed snapshot data, and at
 least one domain agent computing a real insight from them (see
 `AGENT_ARCHITECTURE.md` and each agent's own file). The fourth (added
 2026-09-23, per Adam's stated data-source priority order) is the Federal
@@ -77,6 +78,23 @@ accident. This is also this repo's first binary-format (zip) data
 source — the `fflate` package was added specifically for this, the
 project's first parsing dependency of any kind.
 
+The sixth (added 2026-09-23, final item in the priority order — T-MSIS/
+Medicaid stays deprioritized as most fragmented) is CMS's ACA Marketplace
+Rate PUF. Two real findings shaped this adapter: (1) the file only
+covers Federally-Facilitated Marketplace states — WA, CA, and NY run
+their own State-Based Exchanges and are structurally absent from it, so
+this project's usual WA/CA/TX/NY/FL sample couldn't be reused; the 5
+sampled states here (FL, MI, OH, TX, SC) are instead the 5 largest FFM
+states by real row count in the file. (2) The real, ~280MB national CSV
+contains 67 rows at exactly `IndividualRate=9999` and 1,129 at exactly
+`0` — both excluded as a disclosed empirical judgment (clear statistical
+outliers), not because CMS's own Rate PUF data dictionary documents
+either as an official placeholder (it was read directly and does not).
+Same naming-privacy discipline as MA/Part D: IssuerId (a real HIOS
+carrier identifier) is never persisted; PlanId is kept only as an opaque
+identifier used solely as a distinct-plan **count**, never surfaced
+itself.
+
 A third dataset in the same catalog family — **Hospice - General
 Information** (`yc9t-dgbk`) — was *seen* in the same live metastore
 lookup but its datastore query endpoint has not been called yet, so it's
@@ -101,7 +119,6 @@ of sync with the code.
 | `cms:medicare-inpatient-hospitals` | Medicare Inpatient Hospitals | Utilization/claims | Q018, Q019 |
 | `cms:medicare-outpatient-hospitals` | Medicare Outpatient Hospitals | Utilization/claims | Q018–Q020 |
 | `cms:hospice-general-information` | Hospice - General Information | Post-acute (seen live, not yet queried) | Q021 |
-| `cms:marketplace-puf` | Exchange / Marketplace PUFs | Enrollment/market structure | Q066–Q068 |
 | `cms:t-msis` | T-MSIS / TAF (Medicaid) | Medicaid | Q056–Q058 |
 | `cms:shared-savings-program` | Shared Savings Program (ACO) | Value-based care | Q102–Q104 |
 | `cms:physician-fee-schedule` | Physician Fee Schedule | Payment/reimbursement | Q026–Q028 |

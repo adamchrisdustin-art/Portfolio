@@ -46,6 +46,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { unzipSync } from "fflate";
+import { parseCsv } from "./csv";
 
 export const SOURCE_ID = "cms:ma-part-d-enrollment";
 const INDEX_URL =
@@ -98,50 +99,6 @@ async function findZipUrl(pageUrl: string): Promise<string> {
   const match = ZIP_LINK_PATTERN.exec(html);
   if (!match) throw new Error(`No .zip download link found on CMS report page (${pageUrl}) - page structure may have changed`);
   return `https://www.cms.gov${match[1]}`;
-}
-
-/** Minimal RFC4180-style CSV parser (quoted fields, embedded commas/newlines, doubled-quote escaping) - this repo's first CSV source, no existing parser to reuse. */
-function parseCsv(text: string): string[][] {
-  const rows: string[][] = [];
-  let field = "";
-  let row: string[] = [];
-  let inQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (inQuotes) {
-      if (c === '"') {
-        if (text[i + 1] === '"') {
-          field += '"';
-          i++;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        field += c;
-      }
-      continue;
-    }
-    if (c === '"') {
-      inQuotes = true;
-    } else if (c === ",") {
-      row.push(field);
-      field = "";
-    } else if (c === "\n" || c === "\r") {
-      if (c === "\r" && text[i + 1] === "\n") i++;
-      row.push(field);
-      field = "";
-      if (row.some((f) => f.length > 0)) rows.push(row);
-      row = [];
-    } else {
-      field += c;
-    }
-  }
-  if (field.length > 0 || row.length > 0) {
-    row.push(field);
-    if (row.some((f) => f.length > 0)) rows.push(row);
-  }
-  return rows;
 }
 
 function parseRows(csvText: string): { rows: MaPartDPlanRow[]; suppressedRowCount: number } {

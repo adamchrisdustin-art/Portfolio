@@ -44,6 +44,9 @@ jobs:
       - name: Pull CMS MA/Part D Monthly Enrollment by Plan
         run: npx tsx cms-intelligence/data/adapters/pull-ma-part-d.ts
 
+      - name: Pull CMS Marketplace Rate PUF
+        run: npx tsx cms-intelligence/data/adapters/pull-marketplace-rate-puf.ts
+
       - name: Commit updated snapshot
         run: |
           git config user.name "healthcare-intelligence-bot"

@@ -3,10 +3,14 @@
 ## Start here (2026-09-23)
 
 **Phases 1–6 scaffolding are complete and committed**, plus Federal
-Register and MA/Part D data-source addenda on top of Phase 5, and a new
-salience/triage reasoning layer (see History below). The dashboard is
-live locally at `/healthcare-intelligence`, working end to end, 111
-tests passing, clean build. **Phase 6's evaluation framework is
+Register, MA/Part D, and Marketplace Rate PUF data-source addenda on top
+of Phase 5, and a new salience/triage reasoning layer (see History
+below). **All 3 CMS data sources on Adam's priority order are now
+wired** — T-MSIS/Medicaid remains deliberately deprioritized (most
+fragmented). The dashboard is live locally at `/healthcare-intelligence`
+and live in production at adamdustin.me (deployed 2026-09-23 — see
+DEPLOYMENT.md), working end to end, 121 tests passing, clean build.
+**Phase 6's evaluation framework is
 built and tested but has not run live** — no API key is configured
 anywhere for this project; see `MODEL_EVALUATION.md` for the framework's
 real state, verified current pricing, and the resolved Claude Max/API
@@ -15,18 +19,25 @@ decision. **Next up: Phase 7** (hardening, testing, portfolio write-up)
 the remaining data-source priority order below (MA/Part D next).
 
 **What's real right now:**
-- 5 independently live-verified data sources wired: Hospital General
+- 6 independently live-verified data sources wired: Hospital General
   Information, Home Health Care Agencies, Medicare Physician & Other
   Practitioners (5-state sample), the Federal Register API filtered to
-  CMS (rolling 120-day window), and CMS's MA/Part D Monthly Enrollment
-  by Plan file — see `SOURCE_REGISTRY.md`.
-- 7 of 11 domain agents produce real, evidence-backed insights (Market
+  CMS (rolling 120-day window), CMS's MA/Part D Monthly Enrollment by
+  Plan file, and CMS's ACA Marketplace Rate PUF — see `SOURCE_REGISTRY.md`.
+- 8 of 11 domain agents produce real, evidence-backed insights (Market
   Growth ×2, Claims/Utilization/Cost, Reimbursement & Payment, Provider
-  & Network, Emerging Trends, Policy/Regulation/CMS ×3, MA/Part D ×2). 2
-  are honest stubs with no data yet (Medicaid/CHIP/Duals, Marketplace).
-  2 are infrastructure-only (Source Monitor, Data Architecture). All 7
-  dashboard layers now have at least one real finding — "Policy &
-  Program Watch" is no longer empty.
+  & Network, Emerging Trends, Policy/Regulation/CMS ×3, MA/Part D ×2,
+  Commercial/Marketplace ×2). Only 1 is an honest stub with no data yet
+  (Medicaid/CHIP/Duals — T-MSIS is real but deliberately deprioritized,
+  most fragmented per Adam's own call). 2 are infrastructure-only
+  (Source Monitor, Data Architecture). All 7 dashboard layers now have
+  at least one real finding.
+- Shared `tukeyBox`/`quartiles` helpers extracted to
+  `intelligence/metrics/metrics.ts` once a second real agent
+  (commercial-marketplace) needed the same Tukey-boxplot computation
+  claims-utilization-cost/agent.ts already had inline - that agent was
+  refactored to use the shared version too, removing the duplication
+  rather than leaving two copies.
 - New salience/triage reasoning layer
   (`cms-intelligence/intelligence/salience/selectNoteworthy.ts`, added
   2026-09-23 after Adam asked why every agent's "what's worth surfacing"
@@ -80,17 +91,19 @@ the remaining data-source priority order below (MA/Part D next).
   before 2026-11-04** (the $100 Anthropic credit's constraint — pulling
   more public data is free and untouched by this deadline; only a real
   scheduled LLM call spends it, and none has happened yet).
-- Remaining data-source priority order (per Adam, 2026-09-23): Federal
-  Register API done, MA/Part D enrollment done (see above) →
-  **Marketplace PUFs next** → Medicaid/T-MSIS (deprioritized, most
-  fragmented).
+- Data-source priority order (per Adam, 2026-09-23) is now fully
+  implemented: Federal Register API → MA/Part D enrollment →
+  Marketplace Rate PUF, all done. Medicaid/T-MSIS remains deliberately
+  deprioritized (most fragmented) - the only named CMS source left
+  unwired.
 - No naming a specific real carrier/insurer (UnitedHealthcare/Optum
   explicitly per CLAUDE.md, and every other real carrier by this
-  project's extended practice) anywhere published to the site - applies
-  to any future data source that includes named entities (e.g.
-  Marketplace PUFs will likely name issuers too), same pattern the
-  MA/Part D adapter established: drop named fields at the adapter layer,
-  never rely on a downstream filter.
+  project's extended practice) anywhere published to the site - proven
+  out across 2 real sources now (MA/Part D, Marketplace) that both had
+  named entities in their raw files: drop/never-persist named fields at
+  the adapter layer, never rely on a downstream filter. Apply the same
+  pattern to any future source with named entities (e.g. Medicaid/
+  T-MSIS would likely need it too, if ever pursued).
 
 **If picking this up in a new session:** read this file, then
 `00_MASTER_ORCHESTRATOR.md`, `COST_AND_OPERATING_MODEL.md`, and whichever
@@ -234,3 +247,33 @@ real carrier) is structurally impossible to violate rather than relying
 on a downstream filter. 111 tests passing, clean build, verified live in
 a running instance including an explicit grep for forbidden carrier
 names in the rendered HTML (found none).
+
+Same session, later: Adam noticed the whole Phase 1-5 build was
+committed locally but never pushed - the dashboard had never actually
+been live. Root-caused it (`git status -sb` showed local `main` 1 commit
+ahead of `origin/main`), found a second, related issue (an unpushed
+commit had also added a second, better-named portfolio card alongside
+the old broken-link "CMS Market Intelligence Agents" one - pushing as-is
+would have shown two overlapping cards), asked Adam how to resolve both,
+then consolidated to one card, committed everything from the session,
+and pushed - confirmed live on adamdustin.me within 30 seconds via
+Vercel's auto-deploy, with a real HTTP check against the production
+domain, not just a local build. Also answered a real question about
+Vercel Hobby-tier limits (100 deployments/day, confirmed from Vercel's
+own current docs, not memory) - not a practical constraint for this
+project's push cadence.
+
+Final addendum, same session: Marketplace Rate PUF wired in, completing
+Adam's full CMS data-source priority order. Two real findings shaped the
+adapter and are worth remembering for any future PUF-family work: (1)
+this federal file structurally excludes State-Based Exchange states
+(WA/CA/NY) - discovered by inspecting real per-state row counts, not
+assumed; (2) the real ~280MB national CSV contains outlier sentinel-like
+values (9999, 0) that CMS's own real data dictionary (read directly, a
+PDF) does NOT document as official placeholders - excluded as a
+disclosed empirical judgment instead of an invented "CMS says so" claim.
+Extracted a shared `tukeyBox`/`quartiles` utility once a second agent
+needed the same computation, refactoring the original inline version
+rather than duplicating it a second time. 121 tests passing, clean
+build, verified live in a running instance with an explicit grep for
+forbidden carrier names (found none).

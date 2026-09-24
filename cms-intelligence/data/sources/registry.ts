@@ -164,6 +164,37 @@ const VERIFIED_ENTRIES: SourceRegistryEntry[] = [
     verificationStatus: "verified-implemented",
     relatedQuestionIds: ["Q049", "Q053"],
   },
+  {
+    sourceId: "cms:marketplace-rate-puf",
+    sourceName: "Marketplace (Exchange) Rate PUF",
+    owner: "CMS (CCIIO)",
+    urlOrApi: "https://www.cms.gov/marketplace/resources/data/public-use-files",
+    datasetDescription: "Plan-level ACA Marketplace premium rates by state, rating area, age, and tobacco status. Third and final item in Adam's 2026-09-23 data-source priority order (Medicaid/T-MSIS stays deprioritized as most fragmented). A real, directly downloadable per-plan-year zip, not a query API.",
+    population: "marketplace",
+    geography: "state/rating-area - Federally-Facilitated Marketplace (FFM) states only; WA, CA, and NY run their own State-Based Exchanges and do not appear in this federal file at all (a real, live-verified finding, not assumed)",
+    grain: "one row per plan x rating area x age band x tobacco status (this project samples one reference age, tobacco-neutral, 5 states)",
+    latestVintage: "2026",
+    publicationDate: "2026-08-10",
+    updateFrequency: "CMS publishes one Rate PUF per plan year; this project's own re-check cadence is capped at quarterly per COST_AND_OPERATING_MODEL.md.",
+    expectedNextUpdate: null,
+    identifiers: ["PlanId"],
+    joinKeys: ["StateCode", "RatingAreaId"],
+    historicalCoverage: "CMS keeps per-plan-year files back to 2014 on the same page - this project only pulls the latest plan year.",
+    restrictions: "none - public, unauthenticated, direct file download",
+    knownSuppression: "none documented by CMS for this file. This project's own pull excluded IndividualRate values of exactly $0 or $9999 as a disclosed empirical judgment (statistical outliers observed in the real 2026 5-state sample) - the real CMS Rate PUF data dictionary does NOT document either as an official placeholder/sentinel value, verified by reading that dictionary directly on 2026-09-23.",
+    knownLimitations: [
+      "Bounded to 5 states (FL, MI, OH, TX, SC - the 5 largest FFM states by real row count in the file) and a single reference age (21, tobacco-neutral) - the full national file at every age/tobacco combination is ~2.24 million rows, impractical to commit.",
+      "WA, CA, and NY (State-Based Exchanges) are structurally absent from this federal file, not merely unsampled.",
+      "List/filed rates, not post-subsidy consumer-paid premiums.",
+      "No enrollment data exists in this file family - Q066 (Marketplace enrollment) is not addressed by this source.",
+    ],
+    methodologyNotes: "Real .zip download URLs discovered by crawling CMS's real page structure at pull time (not hardcoded), since the URL includes the plan year. Downloads the full ~280MB national CSV transiently (via fflate) to filter it; only the bounded, filtered result (14,178 rows) is ever persisted to this repo. IssuerId is never persisted (opaque numeric HIOS code, but dropped anyway per this project's naming-privacy discipline); PlanId is kept only as an opaque identifier for distinct-plan counting, never surfaced. Verified independently on 2026-09-23 via a live download and content inspection, including reading the real Rate PUF data dictionary PDF, per this project's standing 'never invent a source' rule.",
+    lastVerified: "2026-09-23",
+    lastSchemaCheck: "2026-09-23",
+    changeStatus: "stable",
+    verificationStatus: "verified-implemented",
+    relatedQuestionIds: ["Q067", "Q071"],
+  },
 ];
 
 /**
@@ -262,32 +293,10 @@ const CANDIDATE_ENTRIES: SourceRegistryEntry[] = [
   // through Phase 5; it's now verified-implemented as
   // "cms:ma-part-d-enrollment" (see VERIFIED_ENTRIES above) as of
   // 2026-09-23. Removed from this list rather than left duplicated.
-  {
-    sourceId: "cms:marketplace-puf",
-    sourceName: "Exchange / Marketplace Public Use Files",
-    owner: "CMS",
-    urlOrApi: null,
-    datasetDescription: "ACA Marketplace plan/rate/benefit/service-area and enrollment PUFs.",
-    population: "marketplace",
-    geography: "state/rating-area",
-    grain: "unverified",
-    latestVintage: null,
-    publicationDate: null,
-    updateFrequency: "CMS has historically published Marketplace PUFs annually, tied to the open enrollment cycle - not independently confirmed.",
-    expectedNextUpdate: null,
-    identifiers: [],
-    joinKeys: [],
-    historicalCoverage: "unverified",
-    restrictions: "unverified",
-    knownSuppression: "unverified",
-    knownLimitations: ["Not yet live-verified."],
-    methodologyNotes: "Needs its own verification pass - CMS Marketplace PUF landing pages, not the Provider Data Catalog.",
-    lastVerified: null,
-    lastSchemaCheck: null,
-    changeStatus: "unknown",
-    verificationStatus: "candidate-unverified",
-    relatedQuestionIds: ["Q066", "Q067", "Q068"],
-  },
+  // Note: "Exchange / Marketplace Public Use Files" was a candidate here
+  // through Phase 6; it's now verified-implemented as
+  // "cms:marketplace-rate-puf" (see VERIFIED_ENTRIES above) as of
+  // 2026-09-23. Removed from this list rather than left duplicated.
   {
     sourceId: "cms:t-msis",
     sourceName: "T-MSIS / TAF (Medicaid)",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { acceleration, concentrationRatio, growthRate, mixShare, penetration, pmpm, utilizationPer1000 } from "./metrics";
+import { acceleration, concentrationRatio, growthRate, mixShare, penetration, pmpm, quartiles, tukeyBox, utilizationPer1000 } from "./metrics";
 
 describe("growthRate", () => {
   it("computes percent growth", () => {
@@ -48,5 +48,36 @@ describe("pmpm", () => {
 describe("mixShare", () => {
   it("computes a category's share of total", () => {
     expect(mixShare(25, 100)).toBeCloseTo(25);
+  });
+});
+
+describe("quartiles", () => {
+  it("computes q1/median/q3 via linear interpolation on a sorted sample", () => {
+    const q = quartiles([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(q.median).toBeCloseTo(5);
+    expect(q.q1).toBeCloseTo(3);
+    expect(q.q3).toBeCloseTo(7);
+  });
+});
+
+describe("tukeyBox", () => {
+  it("whiskers stay within the true sample range and are correctly ordered", () => {
+    const box = tukeyBox([10, 12, 13, 14, 15, 16, 17, 18, 20]);
+    expect(box.whiskerLow).toBeLessThanOrEqual(box.q1);
+    expect(box.q3).toBeLessThanOrEqual(box.whiskerHigh);
+    expect(box.sampleSize).toBe(9);
+  });
+
+  it("keeps a genuine outlier out of the whiskers and reports it separately, never discarding it", () => {
+    const box = tukeyBox([10, 11, 12, 11, 10, 12, 11, 10, 500]);
+    expect(box.outliers).toContain(500);
+    expect(box.whiskerHigh).toBeLessThan(500);
+  });
+
+  it("every outlier genuinely falls outside the whisker range", () => {
+    const box = tukeyBox([5, 6, 7, 8, 9, 10, 11, 100, -50]);
+    for (const v of box.outliers) {
+      expect(v < box.whiskerLow || v > box.whiskerHigh).toBe(true);
+    }
   });
 });

@@ -101,6 +101,16 @@ export default function AnalyticsExplorer({ overview }: { overview: AnalyticsOve
               <BarChart chart={overview.maPartDPlanTypeBar} />
             </div>
           )}
+          {overview.marketplacePremiumBoxplot && (
+            <div className="card" style={panelStyle}>
+              <BoxPlot chart={overview.marketplacePremiumBoxplot} />
+            </div>
+          )}
+          {overview.marketplacePlanAvailabilityBar && (
+            <div className="card" style={panelStyle}>
+              <BarChart chart={overview.marketplacePlanAvailabilityBar} />
+            </div>
+          )}
           {overview.facilityCountSeries && (
             <div className="card" style={panelStyle}>
               <LineChart series={overview.facilityCountSeries} />
