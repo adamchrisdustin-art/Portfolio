@@ -1,0 +1,199 @@
+/**
+ * Data Explorer analytics overview - a general-purpose BI-style view of
+ * the real underlying data, distinct from the agents' evidence-backed
+ * findings. Added 2026-09-23 (Phase 5 addendum, third round) after Adam
+ * asked for a standalone "flashy" analytics section alongside (not
+ * instead of) the per-insight charts on agent-finding cards - see
+ * docs/cms-intelligence/DASHBOARD_BLUEPRINT.md's Charts section.
+ *
+ * Every number here is computed directly from the same three real,
+ * live-pulled adapters the agents use - never fabricated, never a
+ * placeholder. Where a chart type from the reference dashboards Adam
+ * shared isn't honestly buildable yet (a real geographic US map needs
+ * boundary path data this project doesn't have and won't guess at; a
+ * patient-flow Sankey needs clinical flow data no public CMS source in
+ * this project provides), it's simply not included here rather than
+ * faked - see this file's own header notes per panel.
+ */
+import {
+  listSnapshotFiles as listHospitalSnapshots,
+  loadSnapshot as loadHospitalSnapshotAt,
+  loadLatestSnapshot as loadHospitalSnapshot,
+} from "../data/adapters/hospitalGeneralInformation";
+import { loadLatestSnapshot as loadHomeHealthSnapshot } from "../data/adapters/homeHealthCareAgencies";
+import { loadLatestSnapshot as loadPhysicianSnapshot } from "../data/adapters/physicianOtherPractitioners";
+import { dateFromSnapshotFilename } from "../data/sources/snapshotHistory";
+import { boxplotByState, type BoxplotState } from "../agents/claims-utilization-cost/agent";
+import { cr4For } from "../agents/provider-network/agent";
+import { computeStatsByProviderType, type ProviderTypeStats } from "../agents/reimbursement-payment/agent";
+import type { ChartBar, ChartBoxPlot, ChartDonut, InsightSeries } from "../intelligence/evidence/schema";
+
+const SERVICE_LABELS: Record<string, string> = {
+  offers_nursing_care_services: "Nursing care",
+  offers_physical_therapy_services: "Physical therapy",
+  offers_occupational_therapy_services: "Occupational therapy",
+  offers_speech_pathology_services: "Speech pathology",
+  offers_medical_social_services: "Medical social services",
+  offers_home_health_aide_services: "Home health aide",
+};
+
+export interface AnalyticsKpi {
+  label: string;
+  value: string;
+}
+
+export interface AnalyticsOverview {
+  kpis: AnalyticsKpi[];
+  facilityTypeDonut: ChartDonut | null;
+  ownershipDonut: ChartDonut | null;
+  hospitalRatingBar: ChartBar | null;
+  homeHealthRatingBar: ChartBar | null;
+  serviceMixBar: ChartBar | null;
+  paymentByProviderTypeBar: ChartBar | null;
+  spendingRatioBoxplot: ChartBoxPlot | null;
+  facilityCountSeries: InsightSeries | null;
+  ownershipConcentrationSeries: InsightSeries | null;
+}
+
+function donutFromCounts(title: string, unit: string, counts: Map<string, number>, topN: number): ChartDonut {
+  const ranked = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
+  const top = ranked.slice(0, topN);
+  const otherCount = ranked.slice(topN).reduce((sum, [, c]) => sum + c, 0);
+  return {
+    type: "donut",
+    title,
+    unit,
+    slices: [...top.map(([label, value]) => ({ label, value })), ...(otherCount > 0 ? [{ label: "Other", value: otherCount }] : [])],
+  };
+}
+
+function ratingBar(title: string, rows: { rating?: string }[]): ChartBar | null {
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    const rating = row.rating;
+    // CMS marks suppressed/not-yet-available ratings as "-" or "Not
+    // Available" (same suppression convention as elsewhere in this
+    // project, e.g. claims-utilization-cost/agent.ts's spending-ratio
+    // parsing) - a numeric check excludes every non-rating value in one
+    // place rather than an incomplete string blocklist.
+    if (!rating || Number.isNaN(Number(rating))) continue;
+    counts.set(rating, (counts.get(rating) ?? 0) + 1);
+  }
+  if (counts.size === 0) return null;
+  const bars = Array.from(counts.entries())
+    .sort((a, b) => Number(a[0]) - Number(b[0]))
+    .map(([label, value]) => ({ label: `${label}★`, value }));
+  return { type: "bar", title, unit: "facilities", bars };
+}
+
+export function buildAnalyticsOverview(): AnalyticsOverview {
+  const hospital = loadHospitalSnapshot();
+  const homeHealth = loadHomeHealthSnapshot();
+  const physician = loadPhysicianSnapshot();
+
+  const kpis: AnalyticsKpi[] = [];
+  let facilityTypeDonut: ChartDonut | null = null;
+  let ownershipDonut: ChartDonut | null = null;
+  let hospitalRatingBar: ChartBar | null = null;
+  let homeHealthRatingBar: ChartBar | null = null;
+  let serviceMixBar: ChartBar | null = null;
+  let paymentByProviderTypeBar: ChartBar | null = null;
+  let spendingRatioBoxplot: ChartBoxPlot | null = null;
+  let facilityCountSeries: InsightSeries | null = null;
+  let ownershipConcentrationSeries: InsightSeries | null = null;
+
+  const hospitalFiles = listHospitalSnapshots();
+  if (hospitalFiles.length >= 2) {
+    const snapshots = hospitalFiles.map((f) => ({ date: dateFromSnapshotFilename(f), snapshot: loadHospitalSnapshotAt(f) }));
+    facilityCountSeries = {
+      label: "Total hospital facility count",
+      unit: "facilities",
+      points: snapshots.map((s) => ({ date: s.date, value: s.snapshot.rowCount })),
+    };
+    ownershipConcentrationSeries = {
+      label: "Hospital ownership concentration (CR4)",
+      unit: "percent",
+      points: snapshots.map((s) => ({ date: s.date, value: Math.round(cr4For(s.snapshot.rows) * 10) / 10 })),
+    };
+  }
+
+  if (hospital && hospital.rows.length > 0) {
+    kpis.push({ label: "Hospitals analyzed", value: hospital.rows.length.toLocaleString() });
+    const states = new Set(hospital.rows.map((r) => r.state).filter(Boolean));
+    kpis.push({ label: "States/territories covered", value: states.size.toLocaleString() });
+
+    const typeCounts = new Map<string, number>();
+    const ownershipCounts = new Map<string, number>();
+    for (const row of hospital.rows) {
+      const type = (row.hospital_type as string) ?? "Unknown";
+      typeCounts.set(type, (typeCounts.get(type) ?? 0) + 1);
+      const ownership = row.hospital_ownership ?? "Unknown";
+      ownershipCounts.set(ownership, (ownershipCounts.get(ownership) ?? 0) + 1);
+    }
+    facilityTypeDonut = donutFromCounts("Hospital type", "facilities", typeCounts, 5);
+    ownershipDonut = donutFromCounts("Hospital ownership type", "facilities", ownershipCounts, 5);
+
+    hospitalRatingBar = ratingBar(
+      "Hospital overall star rating",
+      hospital.rows.map((r) => ({ rating: r.hospital_overall_rating as string | undefined }))
+    );
+
+    const cr4 = cr4For(hospital.rows);
+    kpis.push({ label: "Top-4 ownership concentration (CR4)", value: `${cr4.toFixed(0)}%` });
+  }
+
+  if (homeHealth && homeHealth.rows.length > 0) {
+    kpis.push({ label: "Home health agencies analyzed", value: homeHealth.rows.length.toLocaleString() });
+
+    homeHealthRatingBar = ratingBar(
+      "Home health quality star rating",
+      homeHealth.rows.map((r) => ({ rating: r.quality_of_patient_care_star_rating }))
+    );
+
+    const serviceCounts = new Map<string, number>();
+    for (const [field, label] of Object.entries(SERVICE_LABELS)) {
+      const count = homeHealth.rows.filter((r) => r[field] === "Yes").length;
+      serviceCounts.set(label, count);
+    }
+    serviceMixBar = {
+      type: "bar",
+      title: "Home health agencies offering each service, nationally",
+      unit: "agencies",
+      bars: Array.from(serviceCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .map(([label, value]) => ({ label, value })),
+    };
+
+    const boxes = boxplotByState(homeHealth.rows as unknown as { state: string; [key: string]: unknown }[]);
+    if (boxes.length > 0) {
+      spendingRatioBoxplot = { type: "boxplot", title: "Home health spending-ratio distribution by state", unit: "ratio", boxes };
+    }
+  }
+
+  if (physician && physician.rows.length > 0) {
+    kpis.push({ label: "Claims lines sampled", value: physician.rows.length.toLocaleString() });
+
+    const stats: ProviderTypeStats[] = computeStatsByProviderType(physician.rows).slice(0, 8);
+    if (stats.length > 0) {
+      paymentByProviderTypeBar = {
+        type: "bar",
+        title: "Medicare payment as % of submitted charge, by provider type",
+        unit: "% of charge",
+        bars: stats.map((s) => ({ label: s.providerType, value: Math.round(s.paymentToChargeRatio * 100) })),
+      };
+    }
+  }
+
+  return {
+    kpis,
+    facilityTypeDonut,
+    ownershipDonut,
+    hospitalRatingBar,
+    homeHealthRatingBar,
+    serviceMixBar,
+    paymentByProviderTypeBar,
+    spendingRatioBoxplot,
+    facilityCountSeries,
+    ownershipConcentrationSeries,
+  };
+}

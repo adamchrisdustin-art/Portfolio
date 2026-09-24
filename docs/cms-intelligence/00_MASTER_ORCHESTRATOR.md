@@ -76,7 +76,7 @@ Create a clearly isolated project boundary.
 
 ## REQUIRED PHASES
 
-### Phase 1 – Repository Discovery
+### Phase 1 — Repository Discovery
 
 Inspect and document:
 
@@ -96,7 +96,7 @@ Then propose where this project belongs.
 
 Do not make major changes before discovery is complete.
 
-### Phase 2 – Intelligence Blueprint
+### Phase 2 — Intelligence Blueprint
 
 Create:
 
@@ -110,7 +110,7 @@ Create:
 - data-gap register
 - provider abstraction strategy
 
-### Phase 3 – Agent Implementation
+### Phase 3 — Agent Implementation
 
 Implement the agent system using modular instructions.
 
@@ -158,7 +158,7 @@ Use deterministic code for:
 - provenance
 - validation
 
-### Phase 4 – Data Source & Pipeline
+### Phase 4 — Data Source & Pipeline
 
 Build a public-data-first CMS source layer.
 
@@ -186,7 +186,7 @@ At minimum investigate:
 
 The source monitor must detect new, updated, retired, delayed, or changed datasets.
 
-### Phase 5 – Dashboard & UX
+### Phase 5 — Dashboard & UX
 
 Build seven executive layers:
 
@@ -202,7 +202,7 @@ Every insight must be traceable to evidence.
 
 Every major visual must explain the question it answers.
 
-### Phase 6 – Model / Provider Evaluation
+### Phase 6 — Model / Provider Evaluation
 
 Make the intelligence layer provider-agnostic.
 
@@ -237,7 +237,7 @@ Do not select a model based only on benchmark quality. Include operational cost 
 
 The Claude Max development environment may be used initially for experimentation. Do not assume it is suitable as the production execution model. Measure actual workload requirements before deciding whether to move to API-based execution.
 
-### Phase 7 – Hardening & Portfolio Presentation
+### Phase 7 — Hardening & Portfolio Presentation
 
 Add:
 

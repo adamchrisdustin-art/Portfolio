@@ -1,0 +1,44 @@
+name: Healthcare Intelligence Data Pipeline
+
+# Quarterly, not weekly - see docs/cms-intelligence/COST_AND_OPERATING_MODEL.md's
+# 2026-09-23 decision: this is a portfolio demo, not a live monitoring
+# system, and re-checking more often than a source's real publication
+# cadence has no value here. Separate from - and independent of -
+# pipeline/'s existing weekly cms-pipeline.yml (Track C v1), which
+# stays untouched per docs/cms-intelligence/PROJECT_BOUNDARY.md.
+#
+# Pulling public CMS data costs nothing against the $100 Anthropic
+# credit (plain HTTP, no LLM call) - this workflow never sets an API key
+# and never triggers agent LLM synthesis, only data collection. That
+# keeps this safe to run on its own schedule regardless of the credit's
+# November 4 deadline for the separate backfill/synthesis work.
+on:
+  schedule:
+    - cron: "0 13 1 1,4,7,10 *" # 13:00 UTC on the 1st of Jan/Apr/Jul/Oct
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  pull-datasets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - run: npm ci
+
+      - name: Pull CMS Home Health Care Agencies
+        run: npx tsx cms-intelligence/data/adapters/pull-home-health.ts
+
+      - name: Commit updated snapshot
+        run: |
+          git config user.name "healthcare-intelligence-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/healthcare-intelligence
+          git diff --cached --quiet || git commit -m "chore: quarterly healthcare-intelligence data pull $(date -u +%Y-%m-%d)"
+          git push

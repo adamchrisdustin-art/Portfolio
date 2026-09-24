@@ -20,5 +20,6 @@
 ## What's NOT set up yet
 
 - `OPENAI_API_KEY` as a **GitHub Actions secret** (Settings → Secrets and variables → Actions, on the repo) — needed only if/when the CMS pipeline's LLM analyst read should be enabled. The pipeline works fine without it (rule-based summaries).
+- `ANTHROPIC_API_KEY` as a GitHub Actions secret — same pattern, for the healthcare intelligence project's Claude provider (`cms-intelligence/providers/anthropic.ts`). Adam has $100 in Anthropic API credit earmarked for this project's scheduled runs and a one-time Phase 6 provider evaluation (never for interactive Claude Code sessions, which already run on the Max20 subscription per `docs/cms-intelligence/COST_AND_OPERATING_MODEL.md`). Not wired into any workflow yet because there's no scheduled workflow for this project until Phase 4. Before adding it as a secret: generate the key at console.anthropic.com and set a hard monthly spend cap there first (same requirement as `OPENAI_API_KEY`) — don't expose the full $100 balance uncapped.
 - Any environment variables in **Vercel** — the site itself doesn't need any today (fully static content, no API routes).
 - A staging/preview workflow beyond Vercel's automatic per-PR preview deploys (default Vercel behavor, not specially configured).

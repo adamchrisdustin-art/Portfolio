@@ -1,4 +1,4 @@
-# Healthcare Intelligence Executive Dashboard – Claude Code Prompt Pack
+# Healthcare Intelligence Executive Dashboard — Claude Code Prompt Pack
 
 ## Purpose
 

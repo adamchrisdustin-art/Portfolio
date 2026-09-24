@@ -86,14 +86,62 @@ interactive surface.
   (see the comment in `lib/dataViz.ts`) — review it against what the live
   Tableau dashboard actually shows and tighten if needed.
 - **CMS Intelligence Executive Dashboard** (the much larger 12-agent
-  project) is planned but not started — see `docs/cms-intelligence/`.
+  project) — Phases 1–5 done (repository discovery, intelligence
+  blueprint, agent implementation, data source & pipeline, dashboard &
+  UX). Live at `/healthcare-intelligence` on the site itself (also
+  linked from its Portfolio card): 7 executive layers, evidence drawers
+  on every real finding, a demo-mode banner, a plain-language "how this
+  works" panel, and a full case study. See `docs/cms-intelligence/`,
+  `cms-intelligence/` (deterministic metrics/trend/data-quality logic,
+  evidence schema + validator, source registry, 11 domain agents behind
+  a shared orchestrator, 3 of them run against two real live-pulled CMS
+  datasets — Hospital General Information and Home Health Care
+  Agencies), and `.claude/agents/` (12 invocable Claude Code subagent
+  definitions, one per domain). Confidence and trend detection are
+  computed dynamically from real snapshot history (never hardcoded).
+  Real charts (`components/charts/`: bar, donut, boxplot with proper
+  Tukey whiskers, stat tiles) render wherever an agent has real
+  cross-sectional or time-series data to show, built per the `dataviz`
+  skill's method. Three independent CMS datasets are wired to real
+  agents (hospital directory, home health quality/spending/service-mix,
+  physician claims-vs-payment), and the Emerging Trends agent computes a
+  real cross-dataset correlation between two of them. A state-level
+  home-health capacity/investment signal ranks states by a real
+  utilization proxy (episodes per agency) against quality and spending
+  efficiency — auditable component by component, deliberately not
+  overclaiming demand growth without a population denominator. The
+  dashboard's Executive Pulse layer shows an actual synthesized
+  narrative, not just a card list. A standalone "Data Explorer" section
+  (`components/AnalyticsExplorer.tsx`) gives a Tableau-style overview of
+  all the underlying data — KPI tiles, donuts, histograms, a boxplot,
+  and time-series line charts — separate from the per-agent finding
+  cards. `npm test` runs the suite (74 tests).
 
 ## Verified live during this build
 
-- `npm run build` — passes clean, all three routes statically generated.
+- `npm run build` — passes clean, all five routes statically generated
+  (including `/healthcare-intelligence`, which runs the full agent sweep
+  at build time).
 - `npm run cms:pull` — ran for real against
-  `data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/0`, pulled
-  5,419 real hospital rows, wrote a real snapshot file.
-- `npm run cms:watch` / `npm run cms:analyze` — ran against that snapshot,
-  correctly identified it as a baseline (only one snapshot exists so far)
-  and wrote a real brief to `data/cms/.../briefs/`.
+  `data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/0`,
+  pulled 5,419 real hospital rows; re-run again on 2026-09-23, now 3
+  real dated snapshots (Sep 16/21/23) with zero material change observed
+  so far — a correct, honest baseline finding, not a bug.
+- `npm run cms:watch` / `npm run cms:analyze` — ran against those
+  snapshots, correctly identified no material change, wrote real briefs
+  to `data/cms/.../briefs/`.
+- `npm test` (healthcare intelligence project, `cms-intelligence/`) — 62
+  tests pass, including an orchestrator test that routes real questions
+  to real specialist agents and gets back genuine, schema-valid insights
+  computed from live CMS data already in this repo (not mocked):
+  Hospital General Information (data/cms/, pulled by Track C v1) and
+  Home Health Care Agencies (data/healthcare-intelligence/, pulled
+  directly by this project's own adapter — 12,460 real agencies,
+  verified live 2026-09-23). Confidence and trend detection are computed
+  dynamically from that real snapshot history, not hardcoded. `npx tsc
+  --noEmit` and `npm run build` both pass clean.
+- Dashboard verified in a real headless browser (Playwright): zero
+  console errors on `/healthcare-intelligence` and `/portfolio`, real
+  sparkline charts render from the snapshot history above, evidence
+  drawer confirmed to actually open on click, no "UnitedHealthcare" or
+  "Optum" text anywhere in rendered output.

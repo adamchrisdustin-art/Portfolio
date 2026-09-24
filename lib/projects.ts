@@ -15,6 +15,18 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: "healthcare-intelligence-executive-dashboard",
+    title: "Healthcare Intelligence Executive Dashboard",
+    status: "in-progress",
+    summary:
+      "A coordinated team of 11 specialized agents behind a shared orchestrator, turning public CMS data into evidence-backed executive insights — every claim traceable to its source, confidence level, and calculation. Deterministic code handles the math; language-model reasoning is reserved for synthesis, behind a provider-agnostic interface (Claude and OpenAI both implemented). Built public-data-first: no proprietary or patient data, ever.",
+    stack: ["TypeScript", "Next.js", "Anthropic API", "OpenAI API", "CMS.gov Data API", "Vitest"],
+    links: [
+      { label: "Open the live dashboard", href: "/healthcare-intelligence" },
+      { label: "Architecture docs", href: "https://github.com/adamchrisdustin-art/Portfolio/tree/main/docs/cms-intelligence" },
+    ],
+  },
+  {
     slug: "cms-market-intelligence-agents",
     title: "CMS Market Intelligence Agents",
     status: "in-progress",
