@@ -27,7 +27,7 @@ import { loadLatestSnapshot as loadMaPartDSnapshot } from "../data/adapters/maPa
 import { loadLatestSnapshot as loadMarketplaceSnapshot } from "../data/adapters/marketplaceRatePuf";
 import { tukeyBox } from "../intelligence/metrics/metrics";
 import { dateFromSnapshotFilename } from "../data/sources/snapshotHistory";
-import { boxplotByState, type BoxplotState } from "../agents/claims-utilization-cost/agent";
+import { boxplotByState } from "../agents/claims-utilization-cost/agent";
 import { cr4For } from "../agents/provider-network/agent";
 import { computeStatsByProviderType, type ProviderTypeStats } from "../agents/reimbursement-payment/agent";
 import type { ChartBar, ChartBoxPlot, ChartDonut, InsightSeries } from "../intelligence/evidence/schema";

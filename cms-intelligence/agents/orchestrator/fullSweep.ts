@@ -16,7 +16,9 @@
 import { layerForQuestion, type DashboardLayer, ALL_LAYERS } from "../dashboardLayers";
 import { ALL_AGENTS } from "../registry";
 import type { Insight } from "../../intelligence/evidence/schema";
+import { InsightValidationError } from "../../intelligence/evidence/validate";
 import type { AgentContext } from "../types";
+import { logAgentRun } from "../../observability/log";
 import { synthesize } from "./synthesis";
 
 export interface AgentRunStatus {
@@ -49,6 +51,7 @@ export interface FullSweepResult {
  */
 export async function runFullSweep(ctx: AgentContext = { modelProvider: null }): Promise<FullSweepResult> {
   const sweepStart = Date.now();
+  const sweepId = new Date(sweepStart).toISOString();
   const insightsByLayer = Object.fromEntries(ALL_LAYERS.map((l) => [l, [] as Insight[]])) as Record<
     DashboardLayer,
     Insight[]
@@ -60,25 +63,47 @@ export async function runFullSweep(ctx: AgentContext = { modelProvider: null }):
     const agentStart = Date.now();
     try {
       const insights = await agent.run(ctx);
+      const durationMs = Date.now() - agentStart;
       agentStatuses.push({
         agentId: agent.id,
         ok: true,
         insightCount: insights.length,
-        durationMs: Date.now() - agentStart,
+        durationMs,
         modelProviderUsed: ctx.modelProvider?.name ?? null,
       });
       for (const insight of insights) {
         insightsByLayer[layerForQuestion(insight.questionId)].push(insight);
         allInsights.push(insight);
       }
+      logAgentRun({
+        taskId: `${sweepId}:${agent.id}`,
+        agentId: agent.id,
+        provider: ctx.modelProvider?.name ?? null,
+        model: null,
+        latencyMs: durationMs,
+        dataSourcesUsed: Array.from(new Set(insights.flatMap((i) => i.sourceIds))),
+        success: true,
+        validationResult: "passed",
+      });
     } catch (err) {
+      const durationMs = Date.now() - agentStart;
       agentStatuses.push({
         agentId: agent.id,
         ok: false,
         insightCount: 0,
-        durationMs: Date.now() - agentStart,
+        durationMs,
         modelProviderUsed: ctx.modelProvider?.name ?? null,
         error: err instanceof Error ? err.message : String(err),
+      });
+      logAgentRun({
+        taskId: `${sweepId}:${agent.id}`,
+        agentId: agent.id,
+        provider: ctx.modelProvider?.name ?? null,
+        model: null,
+        latencyMs: durationMs,
+        dataSourcesUsed: [],
+        success: false,
+        validationResult: err instanceof InsightValidationError ? "failed-validation" : "failed-other",
       });
     }
   }

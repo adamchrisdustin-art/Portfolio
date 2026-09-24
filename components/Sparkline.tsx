@@ -33,7 +33,7 @@ export default function Sparkline({ series }: { series: InsightSeries }) {
       <div className="mono" style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginBottom: 4 }}>
         {series.label} ({points.length} real pull{points.length === 1 ? "" : "s"})
       </div>
-      <div style={{ overflowX: "auto", display: "flex", justifyContent: "center" }}>
+      <div tabIndex={0} style={{ overflowX: "auto", display: "flex", justifyContent: "center" }}>
         <svg width={width} height={height} style={{ flexShrink: 0 }} role="img" aria-label={`${series.label} over time: ${points.map((p) => `${p.date} ${p.value}`).join(", ")}`}>
           <polyline points={`${padding},${height - padding} ${width - padding},${height - padding}`} stroke="var(--border)" strokeWidth={1} fill="none" />
           <path d={pathD} stroke="var(--accent-strong)" strokeWidth={2} fill="none" />

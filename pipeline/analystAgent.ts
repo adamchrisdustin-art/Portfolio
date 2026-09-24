@@ -20,7 +20,7 @@
  * in CI - do not skip that step just because the code has a cap.
  */
 import fs from "node:fs";
-import { briefsDir, diffsDir, ensureDir, listSnapshots } from "./lib/paths";
+import { briefsDir, diffsDir, ensureDir } from "./lib/paths";
 
 const DATASET_NAME = "hospital-general-information";
 const MODEL = "gpt-4o-mini";

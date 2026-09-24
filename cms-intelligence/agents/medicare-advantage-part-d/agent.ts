@@ -11,12 +11,17 @@
  * Catalog). Q096-Q101 (pharmacy/drug-level economics) stay unaddressed -
  * this file has no drug-level data, only plan-level enrollment.
  *
- * NAMING/PRIVACY: the real source file has a named organization/plan per
- * row; the adapter drops every named field before it's ever persisted
- * (see that file's header). This agent therefore aggregates only by
- * Organization Type / Plan Type - it structurally cannot name a real
- * carrier, satisfying CLAUDE.md's binding rule without needing a runtime
- * filter that could be bypassed or forgotten.
+ * NAMING/PRIVACY (revised 2026-09-24): the real source file has a named
+ * organization/plan per row; the adapter drops lower-level plan/contract
+ * fields but keeps parentOrganization and organizationMarketingName (see
+ * that file's header for the current rule). This agent's plan-type-mix
+ * and Part-D-attachment signals still aggregate only by category, never
+ * naming an organization - but buildParentOrganizationRankingSignal below
+ * does name real parent organizations, because a market-share-by-carrier
+ * ranking computed from this real CMS enrollment data is a genuine,
+ * sourced finding (the same kind of ranking a real industry directory
+ * like AIS Health publishes), not a fabricated or implied-proprietary
+ * claim - satisfying CLAUDE.md's binding rule as revised, not violating it.
  *
  * First agent to use the new salience/triage reasoning layer
  * (cms-intelligence/intelligence/salience/selectNoteworthy.ts, added the
@@ -36,6 +41,7 @@ import type { AgentContext, DomainAgent } from "../types";
 
 const AGENT_ID = "medicare-advantage-part-d-intelligence";
 const TOP_N_PLAN_TYPES = 5;
+const TOP_N_PARENT_ORGS = 10;
 
 function sumByKey(rows: MaPartDPlanRow[], key: "organizationType" | "planType"): Map<string, number> {
   const totals = new Map<string, number>();
@@ -66,6 +72,14 @@ export const medicareAdvantagePartDAgent: DomainAgent = {
     if (planTypeInsight) insights.push(planTypeInsight);
     const partDInsight = buildPartDAttachmentSignal(snapshot.rows, snapshot.reportPeriod);
     if (partDInsight) insights.push(partDInsight);
+    const parentOrgInsight = await buildParentOrganizationRankingSignal(
+      snapshot.rows,
+      snapshot.reportPeriod,
+      snapshot.rowCount,
+      snapshot.suppressedRowCount,
+      ctx
+    );
+    if (parentOrgInsight) insights.push(parentOrgInsight);
 
     return insights;
   },
@@ -150,6 +164,106 @@ async function buildPlanTypeMixSignal(
     chart: {
       type: "bar",
       title: `Medicare Advantage/Part D enrollment by plan type, ${reportPeriod}`,
+      unit: "enrollees",
+      bars: selected.map(({ candidate }) => ({ label: candidate.label, value: candidate.primaryMetric })),
+    },
+  };
+
+  return validateInsight(insight);
+}
+
+/**
+ * Real parent-organization enrollment ranking - the same kind of
+ * market-share-by-carrier reading a real industry directory (e.g. AIS
+ * Health) publishes from this same CMS data. Names real carriers because
+ * it is a genuine, sourced finding, not a fabricated or
+ * implied-proprietary claim - see this file's header for the revised
+ * naming/privacy rule.
+ */
+async function buildParentOrganizationRankingSignal(
+  rows: MaPartDPlanRow[],
+  reportPeriod: string,
+  rowCount: number,
+  suppressedRowCount: number,
+  ctx: AgentContext
+): Promise<Insight | null> {
+  const totals = new Map<string, number>();
+  for (const row of rows) {
+    if (!row.parentOrganization) continue;
+    totals.set(row.parentOrganization, (totals.get(row.parentOrganization) ?? 0) + row.enrollment);
+  }
+  if (totals.size === 0) return null;
+  const totalEnrollment = Array.from(totals.values()).reduce((s, v) => s + v, 0);
+
+  const candidates: Candidate[] = Array.from(totals.entries()).map(([parentOrganization, enrollment]) => ({
+    id: parentOrganization,
+    label: parentOrganization,
+    summary: `${enrollment.toLocaleString()} enrollees (${((enrollment / totalEnrollment) * 100).toFixed(1)}% of ${totalEnrollment.toLocaleString()} total)`,
+    primaryMetric: enrollment,
+  }));
+
+  const { selections, source } = await selectNoteworthy(
+    { candidates, topN: TOP_N_PARENT_ORGS, taskDescription: "Medicare Advantage & Part D enrollment by parent organization this cycle" },
+    ctx
+  );
+  if (selections.length === 0) return null;
+
+  const byId = new Map(candidates.map((c) => [c.id, c]));
+  const selected = selections.map((s) => ({ selection: s, candidate: byId.get(s.candidateId)! })).filter((x) => x.candidate);
+  const summary = selected.map(({ selection, candidate }) => `${candidate.label}: ${candidate.summary} — ${selection.rationale}`).join("; ");
+  // Independent of selectNoteworthy's ordering, same discipline as buildPlanTypeMixSignal above.
+  const leader = candidates.reduce((a, b) => (b.primaryMetric > a.primaryMetric ? b : a));
+  const confidence = baselineConfidence();
+
+  const insight: Insight = {
+    id: `sig-ma-partd-${reportPeriod}-parent-org-ranking`,
+    headline: `${leader.label} leads Medicare Advantage/Part D enrollment with ${leader.primaryMetric.toLocaleString()} enrollees (${((leader.primaryMetric / totalEnrollment) * 100).toFixed(1)}% of ${totalEnrollment.toLocaleString()} national total), per CMS's ${reportPeriod} report.`,
+    questionId: "Q046",
+    signalType: "baseline",
+    period: { start: `${reportPeriod}-01`, end: `${reportPeriod}-01` },
+    population: "medicare-advantage",
+    geography: { level: "national", code: "US", label: "United States" },
+    magnitude: {
+      value: leader.primaryMetric,
+      unit: "enrollees",
+      comparedTo: `total MA/Part D enrollment (${totalEnrollment.toLocaleString()})`,
+      deltaPercent: (leader.primaryMetric / totalEnrollment) * 100,
+    },
+    drivers: [
+      {
+        description: `Real enrollment summed by CMS's own "Parent Organization" field, ${reportPeriod} Monthly Enrollment by Plan file (${rowCount} plan rows, ${suppressedRowCount} suppressed at ≤10 enrollees and excluded): ${summary}. Candidate selection method: ${source === "llm" ? "model-reasoned salience ranking over all real parent organizations" : "deterministic top-N by enrollment"}.`,
+        supportingEvidenceIds: ["ev-ma-partd-parent-org-snapshot"],
+        relationship: "correlation",
+      },
+    ],
+    businessRelevance:
+      "A real, national market-share baseline by parent organization (Q046) - the same kind of ranking a real industry directory like AIS Health publishes from this same public CMS data, not this project's own proprietary read on any carrier's book of business.",
+    evidence: [
+      {
+        id: "ev-ma-partd-parent-org-snapshot",
+        sourceId: SOURCE_ID,
+        description: `CMS Monthly Enrollment by Plan, ${reportPeriod}, ${rowCount} real plan rows nationally, summed by the file's own "Parent Organization" field`,
+        datasetVintage: `${reportPeriod}-01`,
+      },
+    ],
+    contradictoryEvidence: [],
+    confidence: confidence.level,
+    confidenceRationale: `${confidence.rationale} This is the first real snapshot of this dataset this agent has pulled - no prior pull exists yet to assess persistence or build a baseline.`,
+    freshness: { dataAsOf: `${reportPeriod}-01`, generatedAt: new Date().toISOString(), isStale: false },
+    limitations: [
+      "Plan-level enrollment aggregated nationally by parent organization - no state/county geography in this file.",
+      "A parent organization can own multiple consumer-facing brands; this reading rolls all of a parent's contracts together, not brand-by-brand.",
+      `${suppressedRowCount} of ${rowCount + suppressedRowCount} real plan rows were suppressed by CMS itself (≤10 enrollees, HIPAA small-cell rule) and excluded, not imputed.`,
+      "Single snapshot - a baseline reading, not yet a trend across periods.",
+      "A real, sourced market-share reading, not this project's own claim to any carrier's internal/proprietary data - see this file's header.",
+    ],
+    nextSignal: "Watch this ranking across a second real pull for the first genuine month-over-month share shift, which is what would move this from baseline to a real trend read.",
+    recommendedInternalValidation: "Not applicable - this is public aggregate enrollment data, not tied to any specific payer's book of business.",
+    sourceIds: [SOURCE_ID],
+    generatingAgent: AGENT_ID,
+    chart: {
+      type: "bar",
+      title: `Medicare Advantage/Part D enrollment by parent organization, ${reportPeriod}`,
       unit: "enrollees",
       bars: selected.map(({ candidate }) => ({ label: candidate.label, value: candidate.primaryMetric })),
     },

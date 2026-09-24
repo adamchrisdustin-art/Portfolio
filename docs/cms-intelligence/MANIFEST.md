@@ -36,11 +36,18 @@ options; pick based on what's asked next.
   default). Used in the MA/Part D and Marketplace agents so far; the
   other 6 real agents still use their original fixed top-N logic pending
   a go-ahead to retrofit them.
-- **Naming-privacy pattern, proven twice**: MA/Part D and Marketplace
-  source files both name a real carrier/plan on every row. Both adapters
-  drop those fields before ever persisting a snapshot, so no insight can
-  name a real carrier — enforced structurally, not by a downstream
-  filter. Apply the same pattern to any future named-entity source.
+- **Naming-privacy pattern, revised 2026-09-24**: MA/Part D and
+  Marketplace source files both name a real carrier/plan on every row.
+  The rule is no longer "drop every named field unconditionally" — a real
+  carrier name may reach an insight when it's a genuine, sourced finding
+  computed from real data (e.g. MA/Part D's parent-organization enrollment
+  ranking, the kind of reading a real industry directory like AIS Health
+  publishes), never fabricated or implied-proprietary. MA/Part D's adapter
+  now keeps `parentOrganization`/`organizationMarketingName` for exactly
+  this. Marketplace's IssuerId stays dropped for a different, narrower
+  reason: it's an opaque numeric ID with no verified name crosswalk wired
+  in, not a rule against naming carriers from that file in principle (see
+  `SOURCE_REGISTRY.md`).
 - **Phase 6 evaluation framework** (`cms-intelligence/evaluation/`)
   built and tested, **not run live** — no API key is configured anywhere
   for this project. See `MODEL_EVALUATION.md` for the framework, verified
@@ -59,10 +66,12 @@ options; pick based on what's asked next.
   binding rules now — see `DASHBOARD_BLUEPRINT.md`'s "Chart conventions."
 
 **Binding rules for every future phase:**
-- No naming a specific real carrier/insurer anywhere published to the
-  site (UnitedHealthcare/Optum explicitly per CLAUDE.md, extended in
-  practice to every real carrier) — see the naming-privacy pattern above
-  and the `healthcare-intelligence-no-uhc-optum-naming` memory.
+- A real carrier/insurer name may appear on the public site only as a
+  genuine, sourced finding computed from real data — never fabricated,
+  never implied to be this project's own proprietary/internal access to
+  that carrier's systems (revised 2026-09-24; see the naming-privacy
+  pattern above and the `healthcare-intelligence-no-uhc-optum-naming`
+  memory for the full history of this decision).
 - Quarterly-to-annual pull cadence, not weekly (`COST_AND_OPERATING_MODEL.md`).
 - **Hard deadline: the initial LLM-synthesis backfill must complete
   before 2026-11-04** (the $100 Anthropic credit's constraint — pulling

@@ -37,7 +37,7 @@ export default function BoxPlot({ chart }: { chart: ChartBoxPlot }) {
         {chart.title}
         {hasOutliers && " (dots = outliers beyond 1.5×IQR)"}
       </div>
-      <div style={{ overflowX: "auto", display: "flex", justifyContent: "center" }}>
+      <div tabIndex={0} style={{ overflowX: "auto", display: "flex", justifyContent: "center" }}>
       <svg
         width={width}
         height={height}

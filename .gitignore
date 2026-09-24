@@ -5,3 +5,7 @@ out/
 .env.local
 *.tsbuildinfo
 data/project-drafts/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/

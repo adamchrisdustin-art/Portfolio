@@ -37,7 +37,7 @@ export default function LineChart({ series }: { series: InsightSeries }) {
       <div className="mono" style={{ fontSize: "0.78rem", color: INK_SECONDARY, marginBottom: 6 }}>
         {series.label} ({series.points.length} real pull{series.points.length === 1 ? "" : "s"})
       </div>
-      <div style={{ overflowX: "auto", display: "flex", justifyContent: "center" }}>
+      <div tabIndex={0} style={{ overflowX: "auto", display: "flex", justifyContent: "center" }}>
       <svg width={width} height={height} style={{ flexShrink: 0 }} role="img" aria-label={`${series.label}: ${series.points.map((p) => `${p.date} ${p.value}`).join(", ")}`}>
         {yTicks.map((tick) => (
           <g key={tick}>

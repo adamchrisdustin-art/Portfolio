@@ -25,13 +25,20 @@ is the design each agent's eventual instruction file must match.
   causality without evidence, use a source outside its stated population
   without labeling the mismatch, or use stale data without labeling it —
   per `08_AGENT_PROMPT_TEMPLATE.md`'s evidence rules, binding on all 12.
-- **No real company naming in generated copy.** Any agent output that could
-  end up in published, user-facing text (dashboard narrative, case-study
-  material) must never name UnitedHealthcare or Optum specifically — use
-  generic descriptors ("a national health insurer," "an enterprise payer").
-  This is a public-copy rule, not a data rule — internal reasoning/prompts
-  may still reference the inspiration framing from `00_MASTER_ORCHESTRATOR.md`.
-  Flagged explicitly here per Adam's 2026-09-23 direction; see project memory.
+- **Real company naming, revised 2026-09-24.** A real carrier (e.g.
+  UnitedHealthcare, Optum, Humana) may be named in an insight or published
+  copy ONLY when it is a genuine, sourced finding computed directly from
+  real public data (e.g. a market-share/enrollment ranking, the same kind
+  of reading a real industry directory like AIS Health publishes) — never
+  fabricated, never implied to be this project's own proprietary/internal
+  data, and never used to editorialize about a carrier beyond what the
+  cited number shows. Wherever the underlying question doesn't need a real
+  name to answer it, category-level aggregation (generic descriptors like
+  "a national health insurer") stays the default. Original tighter rule
+  (never name a real carrier anywhere) flagged per Adam's 2026-09-23
+  direction; revised the following day per Adam's clarification that the
+  intent was always "no claim of proprietary access," not "no real name
+  ever" — see project memory.
 - **Structured output, always.** Every agent that produces a finding emits
   it as an `Insight` object matching `EVIDENCE_MODEL.md`'s schema — never
   free text alone. Narrative is a field *inside* the structured object, not

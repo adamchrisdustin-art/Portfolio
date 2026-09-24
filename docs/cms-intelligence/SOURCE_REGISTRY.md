@@ -67,16 +67,20 @@ different platform entirely from the other four (a monthly zip, not a
 query API; the adapter re-discovers the real download URL at pull time
 by crawling CMS's real page structure, since the URL itself changes
 every month). This is the first real source for the previously-stub
-Medicare Advantage & Part D Intelligence agent. **Binding privacy/naming
-design decision**: the raw file names a real organization/plan on every
-row; per CLAUDE.md's rule against naming specific real carriers (e.g.
-UnitedHealthcare/Optum) anywhere on the public site, the adapter drops
-every named field before it's ever persisted to a snapshot — only
-category fields (Organization Type, Plan Type, Offers Part D) exist
-downstream of the adapter, so no agent can name a real carrier even by
-accident. This is also this repo's first binary-format (zip) data
-source — the `fflate` package was added specifically for this, the
-project's first parsing dependency of any kind.
+Medicare Advantage & Part D Intelligence agent. **Privacy/naming design
+decision, revised 2026-09-24**: the raw file names a real organization/
+plan on every row. The adapter keeps `Parent Organization` and
+`Organization Marketing Name` (the two fields a real market-share rollup
+needs) but still drops lower-level plan/contract fields (Organization
+Name, Plan Name, Contract Number, Plan ID) it has no real use for. A real
+carrier name reaching an insight is allowed when — and only when — it's a
+genuine, sourced finding computed from this real data (e.g. "which parent
+organization leads MA enrollment," the same kind of ranking a real
+industry directory like AIS Health publishes) — see
+`medicare-advantage-part-d/agent.ts`'s `buildParentOrganizationRankingSignal`.
+This is also this repo's first binary-format (zip) data source — the
+`fflate` package was added specifically for this, the project's first
+parsing dependency of any kind.
 
 The sixth (added 2026-09-23, final item in the priority order — T-MSIS/
 Medicaid stays deprioritized as most fragmented) is CMS's ACA Marketplace
@@ -90,10 +94,17 @@ contains 67 rows at exactly `IndividualRate=9999` and 1,129 at exactly
 `0` — both excluded as a disclosed empirical judgment (clear statistical
 outliers), not because CMS's own Rate PUF data dictionary documents
 either as an official placeholder (it was read directly and does not).
-Same naming-privacy discipline as MA/Part D: IssuerId (a real HIOS
-carrier identifier) is never persisted; PlanId is kept only as an opaque
-identifier used solely as a distinct-plan **count**, never surfaced
-itself.
+Unlike MA/Part D (which has a literal organization-name string in the raw
+file), this file's issuer field is an opaque numeric HIOS ID with no
+literal name attached — turning that into a real carrier name would need
+a separately-sourced, verified CMS issuer-ID-to-company crosswalk, which
+this project doesn't have wired in. Rather than guess at a mapping and
+risk attaching the *wrong* real company to a real number (a worse failure
+than not naming anyone), IssuerId is never persisted; PlanId is kept only
+as an opaque identifier used solely as a distinct-plan **count**, never
+surfaced itself. A real crosswalk would be a legitimate future step (see
+`app/healthcare-intelligence/page.tsx`'s case study future-state note),
+not a rule against naming carriers from this file in principle.
 
 A third dataset in the same catalog family — **Hospice - General
 Information** (`yc9t-dgbk`) — was *seen* in the same live metastore

@@ -140,7 +140,7 @@ export default async function HealthcareIntelligencePage() {
         <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: 20 }}>
           The highest-confidence findings across every layer, ranked — not a wall of competing metrics.
         </p>
-        <div className="card" style={{ padding: 18, marginBottom: 24, background: "var(--surface-2)" }}>
+        <div data-testid="synthesis" className="card" style={{ padding: 18, marginBottom: 24, background: "var(--surface-2)" }}>
           <p className="eyebrow" style={{ marginBottom: 8 }}>
             Synthesis this cycle
           </p>
@@ -218,9 +218,11 @@ export default async function HealthcareIntelligencePage() {
               Currently live: CMS Hospital General Information, CMS Home Health Care Agencies, CMS Medicare Physician
               &amp; Other Practitioners (a 5-state sample, not the full national file), the Federal Register API
               filtered to CMS as the publishing agency (a rolling 120-day window, not full regulatory history), CMS&apos;s
-              Medicare Advantage/Part D Monthly Enrollment by Plan file, and CMS&apos;s ACA Marketplace Rate PUF — the
-              last two never surface a named carrier, only category fields (plan type, organization type) or opaque
-              identifiers used solely as counts (see the case study below). The first three are public,
+              Medicare Advantage/Part D Monthly Enrollment by Plan file, and CMS&apos;s ACA Marketplace Rate PUF. The
+              Marketplace file exposes only category fields and an opaque plan identifier used solely as a count,
+              never a carrier name; the MA/Part D file does name a real parent organization on every row, and this
+              project surfaces that name only for a genuine, sourced finding (an enrollment ranking), never a
+              fabricated or implied-proprietary claim (see &quot;Known limitations&quot; below). The first three are public,
               no-registration CMS Provider Data Catalog / Datastore datasets; the rest are separate public federal
               sources — chosen because each is directly fetchable and updates on a predictable cadence, which matters
               for a project run on a fixed budget and a once-a-quarter refresh schedule rather than a live production
@@ -259,6 +261,46 @@ export default async function HealthcareIntelligencePage() {
               public CMS adapter for an internal one wouldn&apos;t require changing the agents, the evidence model, or
               the dashboard — only the adapter itself.
             </p>
+          </div>
+          <div>
+            <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Known limitations</h3>
+            <p style={{ margin: 0, color: "var(--text-muted)", marginBottom: 10 }}>
+              Stated plainly rather than left for a visitor to discover — a demo that hides its own gaps is less
+              trustworthy than one that names them:
+            </p>
+            <ul style={{ margin: 0, paddingLeft: 20, color: "var(--text-muted)", display: "flex", flexDirection: "column", gap: 6 }}>
+              <li>
+                Medicaid/CHIP/Duals is a deliberate stub, not a gap being actively chased — Medicaid data (T-MSIS) is
+                the most fragmented CMS source and was deprioritized on purpose.
+              </li>
+              <li>
+                The Phase 6 model-provider evaluation framework is built and tested, but has never run against a
+                real provider — no API key is configured anywhere for this project yet.
+              </li>
+              <li>
+                The salience/triage reasoning layer (choosing which real findings matter most) runs in only 2 of the
+                8 real agents so far (Medicare Advantage/Part D, Marketplace); the rest still use a fixed top-N rule.
+              </li>
+              <li>
+                The physician dataset is a 5-state sample, not the full national file; the Federal Register feed is
+                a rolling 120-day window, not full regulatory history.
+              </li>
+              <li>
+                Confidence scores read low across the board — genuinely, not a bug — because there&apos;s only about
+                a week of real snapshot history behind them so far.
+              </li>
+              <li>
+                No proprietary insurer data is used anywhere — every number below is public CMS data. A real
+                carrier name (e.g. in the Medicare Advantage enrollment ranking below) only ever appears when it&apos;s
+                a genuine, sourced finding computed from that public data, the same kind of reading a real industry
+                directory publishes — never a fabricated claim or an implied look at any carrier&apos;s real internal
+                systems.
+              </li>
+              <li>
+                Every insight carries a &quot;contradictoryEvidence&quot; field in its schema, but no agent has
+                populated it yet — named directly here rather than left as a silently unused field.
+              </li>
+            </ul>
           </div>
         </div>
       </section>

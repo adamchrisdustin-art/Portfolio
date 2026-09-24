@@ -1,0 +1,44 @@
+name: CI
+
+# Runs the test/typecheck/lint/build/e2e gate on every push and PR to
+# main - previously the only workflows in this repo were data-pull crons
+# (cms-pipeline.yml, healthcare-intelligence-pipeline.yml), so "121 tests
+# passing" was only ever verified by hand. Needs no secrets: every code
+# path here already degrades to zero-cost/zero-API-key by design (see
+# CLAUDE.md's budget guardrails), so this workflow never sets one.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit/integration tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end smoke tests
+        run: npm run test:e2e

@@ -23,19 +23,22 @@
  * "never invent a source" discipline as every other adapter, extended to
  * a source whose exact URL isn't stable.
  *
- * PRIVACY/NAMING DESIGN DECISION (binding, see CLAUDE.md): the real CSV
- * contains a named organization/plan for every row (Organization Name,
- * Organization Marketing Name, Plan Name, Parent Organization,
+ * NAMING/PRIVACY (binding rule, see CLAUDE.md - revised 2026-09-24): the
+ * real CSV contains a named organization/plan for every row (Organization
+ * Name, Organization Marketing Name, Plan Name, Parent Organization,
  * Contract Number, Plan ID) - real carriers, including UnitedHealthcare,
- * Humana, CVS/Aetna, Kaiser, etc. CLAUDE.md forbids naming
- * UnitedHealthcare/Optum specifically in anything published to the site,
- * and this project's broader practice (see AGENT_ARCHITECTURE.md's
- * ownership-TYPE-not-hospital-system-name pattern in the provider-network
- * agent) is to never single out a real competitor by name at all. This
- * adapter therefore DROPS every named field at parse time and keeps only
- * category fields (Organization Type, Plan Type, Offers Part D,
- * Enrollment) - no downstream agent can name a real carrier from this
- * data because the name was never persisted past this file.
+ * Humana, CVS/Aetna, Kaiser, etc. A real carrier name is allowed to reach
+ * an insight ONLY when it is a genuine, sourced finding computed from
+ * this real data (e.g. "which parent organization leads MA enrollment" -
+ * the same kind of ranking a real industry directory like AIS Health
+ * publishes) - never fabricated, never implied to be this project's own
+ * proprietary/internal data, and never editorialized about a carrier
+ * beyond what the cited number shows. This adapter therefore keeps
+ * `parentOrganization` and `organizationMarketingName` (the two fields a
+ * real market-share rollup needs) but still drops `Organization Name`,
+ * `Plan Name`, `Contract Number`, and `Plan ID` - lower-level plan/contract
+ * detail this project has no real use for and that would only add
+ * unnecessary specificity to a real, aggregate, national finding.
  *
  * Suppression: CMS marks enrollment <=10 as "*" (real HIPAA-driven
  * small-cell suppression, documented in the real
@@ -64,6 +67,10 @@ export interface MaPartDPlanRow {
   planType: string;
   offersPartD: "Yes" | "No";
   enrollment: number;
+  /** Real CMS field - the parent company (e.g. a real, named carrier) behind this plan's contract. */
+  parentOrganization: string;
+  /** Real CMS field - the consumer-facing brand name a plan is marketed under, which can differ from parentOrganization. */
+  organizationMarketingName: string;
 }
 
 export interface MaPartDSnapshot {
@@ -111,7 +118,9 @@ function parseRows(csvText: string): { rows: MaPartDPlanRow[]; suppressedRowCoun
   const planTypeIdx = idx("Plan Type");
   const offersPartDIdx = idx("Offers Part D");
   const enrollmentIdx = idx("Enrollment");
-  if ([orgTypeIdx, planTypeIdx, offersPartDIdx, enrollmentIdx].some((i) => i === -1)) {
+  const parentOrgIdx = idx("Parent Organization");
+  const marketingNameIdx = idx("Organization Marketing Name");
+  if ([orgTypeIdx, planTypeIdx, offersPartDIdx, enrollmentIdx, parentOrgIdx, marketingNameIdx].some((i) => i === -1)) {
     throw new Error(`CMS MA/Part D CSV is missing an expected column - real header was: ${header.join(", ")}`);
   }
 
@@ -131,6 +140,8 @@ function parseRows(csvText: string): { rows: MaPartDPlanRow[]; suppressedRowCoun
       planType: line[planTypeIdx]?.trim() ?? "",
       offersPartD,
       enrollment,
+      parentOrganization: line[parentOrgIdx]?.trim() ?? "",
+      organizationMarketingName: line[marketingNameIdx]?.trim() ?? "",
     });
   }
   return { rows, suppressedRowCount };

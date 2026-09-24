@@ -139,6 +139,83 @@ export function checkUnexpectedGeographicLoss(previousGeographies: string[], cur
   ];
 }
 
+/**
+ * Flags a field whose dominant JS type (of non-null, non-empty values)
+ * differs between two row sets - e.g. a field publishing as a numeric
+ * string in one snapshot and a real number in the next. A type flip
+ * silently breaks any downstream code that assumes a stable shape.
+ */
+export function checkDataTypeChange(
+  field: string,
+  previousRows: Record<string, unknown>[],
+  currentRows: Record<string, unknown>[]
+): QualityIssue[] {
+  const dominantType = (rows: Record<string, unknown>[]): string | null => {
+    const counts = new Map<string, number>();
+    for (const row of rows) {
+      const value = row[field];
+      if (value === undefined || value === null || value === "") continue;
+      const type = typeof value;
+      counts.set(type, (counts.get(type) ?? 0) + 1);
+    }
+    if (counts.size === 0) return null;
+    return Array.from(counts.entries()).sort((a, b) => b[1] - a[1])[0][0];
+  };
+  const previousType = dominantType(previousRows);
+  const currentType = dominantType(currentRows);
+  if (previousType === null || currentType === null || previousType === currentType) return [];
+  return [
+    {
+      check: "data-type-change",
+      severity: "error",
+      message: `"${field}" was predominantly "${previousType}" in the previous snapshot, now predominantly "${currentType}" - confirm this is intentional before trusting downstream calculations.`,
+    },
+  ];
+}
+
+/** Flags a source's stated publication/vintage date going backward or not advancing when a new pull was expected. */
+export function checkPublicationDateChanged(previousDate: string | null, currentDate: string | null): QualityIssue[] {
+  if (!previousDate || !currentDate) return [];
+  const previous = new Date(previousDate);
+  const current = new Date(currentDate);
+  if (Number.isNaN(previous.getTime()) || Number.isNaN(current.getTime())) return [];
+  if (current.getTime() === previous.getTime()) return [];
+  if (current.getTime() < previous.getTime()) {
+    return [
+      {
+        check: "publication-date-changed",
+        severity: "error",
+        message: `Publication date moved backward: "${previousDate}" -> "${currentDate}" - the source may have republished a revision or reverted content.`,
+      },
+    ];
+  }
+  return [
+    {
+      check: "publication-date-changed",
+      severity: "warning",
+      message: `Publication date advanced: "${previousDate}" -> "${currentDate}".`,
+    },
+  ];
+}
+
+/**
+ * Flags a source that previously had rows and now returns none -
+ * categorically different from checkUnexplainedVolumeChange's percent
+ * swing, since a swing still has data to reason about and a retirement
+ * has none.
+ */
+export function checkDatasetRetired(previousRowCount: number, currentRowCount: number | null): QualityIssue[] {
+  if (previousRowCount === 0) return [];
+  if (currentRowCount !== null && currentRowCount > 0) return [];
+  return [
+    {
+      check: "dataset-retired",
+      severity: "error",
+      message: `Source previously had ${previousRowCount} row(s) and now returns ${currentRowCount === null ? "no response" : "zero rows"} - it may have been retired or moved.`,
+    },
+  ];
+}
+
 export function runAllChecks(issues: QualityIssue[][]): { hasErrors: boolean; issues: QualityIssue[] } {
   const flat = issues.flat();
   return { hasErrors: flat.some((i) => i.severity === "error"), issues: flat };

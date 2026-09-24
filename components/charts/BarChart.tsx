@@ -40,7 +40,7 @@ export default function BarChart({ chart }: { chart: ChartBar }) {
       <div className="mono" style={{ fontSize: "0.72rem", color: INK_SECONDARY, marginBottom: 6 }}>
         {chart.title}
       </div>
-      <div style={{ overflowX: "auto", display: "flex", justifyContent: "center" }}>
+      <div tabIndex={0} style={{ overflowX: "auto", display: "flex", justifyContent: "center" }}>
         <svg
           width={chartWidth}
           height={height}

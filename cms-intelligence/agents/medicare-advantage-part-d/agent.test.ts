@@ -14,18 +14,31 @@ describe("medicareAdvantagePartDAgent", () => {
     }
   });
 
-  it("never names a real carrier/organization/plan - only category fields", async () => {
+  it("the plan-type mix and Part D attachment insights never name a real carrier - category fields only", async () => {
     const insights = await medicareAdvantagePartDAgent.run({ modelProvider: null });
     // Word-boundary matching, not plain substring - "elevance" is a real carrier name but also a substring of "relevance", which every insight's businessRelevance field legitimately contains.
     const forbiddenNamePatterns = ["unitedhealthcare", "optum", "humana", "aetna", "cvs", "kaiser", "cigna", "elevance"].map(
       (name) => new RegExp(`\\b${name}\\b`, "i")
     );
-    for (const insight of insights) {
+    const categoryOnlyInsights = insights.filter((i) => i.questionId === "Q049" || i.questionId === "Q053");
+    expect(categoryOnlyInsights.length).toBeGreaterThan(0);
+    for (const insight of categoryOnlyInsights) {
       const text = JSON.stringify(insight);
       for (const pattern of forbiddenNamePatterns) {
         expect(text).not.toMatch(pattern);
       }
     }
+  });
+
+  it("the parent-organization ranking names a real carrier as a genuine, sourced finding, not a fabricated claim", async () => {
+    const insights = await medicareAdvantagePartDAgent.run({ modelProvider: null });
+    const ranking = insights.find((i) => i.questionId === "Q046");
+    expect(ranking).toBeDefined();
+    // UnitedHealth Group is the real, verified #1 by enrollment in this repo's committed snapshot - matches the
+    // kind of ranking a real industry directory (e.g. AIS Health) publishes from this same public CMS data.
+    expect(ranking?.headline).toContain("UnitedHealth Group");
+    expect(ranking?.chart?.type).toBe("bar");
+    expect(ranking?.limitations.join(" ")).toMatch(/not this project's own claim/i);
   });
 
   it("the plan-type mix insight's headline always names the true largest-by-enrollment plan type, regardless of salience selection order", async () => {

@@ -196,8 +196,10 @@ export interface InsightSeries {
   (#11), not self-reported by the emitting agent — keeps one agent from
   under-flagging its own staleness.
 - `businessRelevance` is the one field most likely to end up verbatim in
-  published dashboard copy — per the public-copy rule in
-  `AGENT_ARCHITECTURE.md`, this field must never name a real company.
+  published dashboard copy — per the revised naming rule in
+  `AGENT_ARCHITECTURE.md`, this field may name a real company only when
+  the insight it describes is itself a genuine, sourced finding (e.g. a
+  real enrollment ranking), never a fabricated or implied-proprietary claim.
 
 ## Storage convention
 

@@ -281,9 +281,14 @@ live page — stated here as rules, not narrated as history:
 - **Center every chart within its card, and wrap it in a horizontally
   scrolling container.** A chart wider than its card must scroll, never
   clip or overflow the card edge. Enforced today in every component
-  under `components/charts/` (`BarChart`, `DonutChart`, `BoxPlot`,
-  `LineChart`) via `{ overflowX: "auto", display: "flex",
+  under `components/charts/` (`BarChart`, `BoxPlot`, `LineChart`, plus
+  `Sparkline.tsx`) via `{ overflowX: "auto", display: "flex",
   justifyContent: "center" }` — copy this wrapper for any new chart.
+  **Also add `tabIndex={0}` to that same wrapper div** (found by the
+  Phase 7 e2e accessibility scan: an axe-core `scrollable-region-focusable`
+  violation, "serious" impact — a scrollable region with no way to reach
+  it via keyboard) — DonutChart doesn't need this since it wraps via
+  flex-wrap, never horizontal scroll.
 - **Compute label-column width from the actual longest label**, never a
   fixed guess — a hardcoded 64px column once clipped real labels (e.g.
   "Diagnostic Radiology") off the edge. See `BarChart.tsx`'s
