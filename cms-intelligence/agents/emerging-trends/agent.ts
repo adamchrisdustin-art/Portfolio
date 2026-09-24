@@ -5,12 +5,24 @@
  * Phase 5 addendum (2026-09-23): this agent's whole design point is
  * cross-domain synthesis - finding what two *independent* datasets say
  * together that neither says alone (Q088). Implemented here as a real,
- * concrete cross-reference: state-level hospital facility count
- * (Hospital General Information, via the Market Growth/Provider Network
- * agents' source) against state-level average Medicare physician
- * payment (the Physician & Other Practitioners sample, via the
- * Reimbursement agent's source) - two genuinely independent CMS
- * datasets, joined on the 5 states both happen to cover.
+ * concrete cross-reference: state-level hospital OWNERSHIP CONCENTRATION
+ * (Hospital General Information's CR4, via Provider & Network's own
+ * `cr4For` - reused, not reimplemented) against state-level average
+ * Medicare physician payment (the Physician & Other Practitioners
+ * sample, via the Reimbursement agent's source) - two genuinely
+ * independent CMS datasets, joined on the 5 states both happen to cover.
+ *
+ * REDESIGNED 2026-09-24 (real feedback, not a bug): this originally
+ * paired raw hospital FACILITY COUNT against physician payment. Adam
+ * correctly flagged that pairing as mechanically obvious - more
+ * facilities in a state naturally implies more physicians are needed to
+ * staff them, so a positive correlation there confirms nothing an
+ * executive didn't already know. Hospital ownership CONCENTRATION has no
+ * such definitional link to physician payment levels - a real, less
+ * obvious market-power question (does a more consolidated hospital
+ * market coincide with higher or lower physician reimbursement?) that's
+ * actually worth an executive's attention regardless of which direction
+ * the real, honestly-disclosed-as-weak result points.
  *
  * Pragmatic implementation note: this reads both adapters directly
  * rather than consuming the other agents' structured Insight objects
@@ -27,20 +39,23 @@
  * what "corroboration" means in TREND_FRAMEWORK.md, and this is
  * deliberately labeled a cross-sectional check, not a trend.
  */
+import { cr4For } from "../provider-network/agent";
 import { loadLatestSnapshot as loadHospitalSnapshot, SOURCE_ID as HOSPITAL_SOURCE_ID } from "../../data/adapters/hospitalGeneralInformation";
 import { loadLatestSnapshot as loadPhysicianSnapshot, SOURCE_ID as PHYSICIAN_SOURCE_ID } from "../../data/adapters/physicianOtherPractitioners";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
+import { pearsonCorrelation } from "../../intelligence/metrics/metrics";
 import type { AgentContext, DomainAgent } from "../types";
 
 const AGENT_ID = "emerging-trends-signal-detection";
 
-function facilityCountByState(rows: { state: string }[], states: string[]): Map<string, number> {
-  const counts = new Map(states.map((s) => [s, 0]));
-  for (const row of rows) {
-    if (counts.has(row.state)) counts.set(row.state, (counts.get(row.state) ?? 0) + 1);
+function ownershipConcentrationByState(rows: { state: string; hospital_ownership?: string }[], states: string[]): Map<string, number> {
+  const concentrations = new Map<string, number>();
+  for (const state of states) {
+    const stateRows = rows.filter((r) => r.state === state);
+    if (stateRows.length > 0) concentrations.set(state, cr4For(stateRows));
   }
-  return counts;
+  return concentrations;
 }
 
 function avgPaymentByState(rows: { Rndrng_Prvdr_State_Abrvtn: string; Avg_Mdcr_Pymt_Amt: string }[], states: string[]): Map<string, number> {
@@ -60,21 +75,6 @@ function avgPaymentByState(rows: { Rndrng_Prvdr_State_Abrvtn: string; Avg_Mdcr_P
   return averages;
 }
 
-/** Pearson correlation coefficient - simple, standard, no external dependency needed for 5 data points. */
-function correlation(xs: number[], ys: number[]): number {
-  const n = xs.length;
-  const meanX = xs.reduce((s, v) => s + v, 0) / n;
-  const meanY = ys.reduce((s, v) => s + v, 0) / n;
-  let num = 0, denomX = 0, denomY = 0;
-  for (let i = 0; i < n; i++) {
-    num += (xs[i] - meanX) * (ys[i] - meanY);
-    denomX += (xs[i] - meanX) ** 2;
-    denomY += (ys[i] - meanY) ** 2;
-  }
-  const denom = Math.sqrt(denomX * denomY);
-  return denom === 0 ? 0 : num / denom;
-}
-
 export const emergingTrendsAgent: DomainAgent = {
   id: AGENT_ID,
   questionIds: ["Q085", "Q086", "Q087", "Q088", "Q089", "Q090", "Q091", "Q092", "Q093", "Q094", "Q095"],
@@ -85,23 +85,23 @@ export const emergingTrendsAgent: DomainAgent = {
     if (!hospitalSnapshot || !physicianSnapshot) return []; // both real sources required - never synthesize from one
 
     const states = physicianSnapshot.sampledStates;
-    const facilityCounts = facilityCountByState(hospitalSnapshot.rows, states);
+    const concentrations = ownershipConcentrationByState(hospitalSnapshot.rows, states);
     const avgPayments = avgPaymentByState(physicianSnapshot.rows, states);
 
-    const comparableStates = states.filter((s) => (facilityCounts.get(s) ?? 0) > 0 && avgPayments.has(s));
+    const comparableStates = states.filter((s) => concentrations.has(s) && avgPayments.has(s));
     if (comparableStates.length < 3) return []; // not enough real, comparable states to say anything honest about correlation
 
-    const facilityValues = comparableStates.map((s) => facilityCounts.get(s)!);
+    const concentrationValues = comparableStates.map((s) => concentrations.get(s)!);
     const paymentValues = comparableStates.map((s) => avgPayments.get(s)!);
-    const r = correlation(facilityValues, paymentValues);
+    const r = pearsonCorrelation(concentrationValues, paymentValues);
 
     const perStateSummary = comparableStates
-      .map((s) => `${s}: ${facilityCounts.get(s)} facilities, $${avgPayments.get(s)!.toFixed(0)} avg payment`)
+      .map((s) => `${s}: ${concentrations.get(s)!.toFixed(1)}% CR4, $${avgPayments.get(s)!.toFixed(0)} avg payment`)
       .join("; ");
 
     const insight: Insight = {
-      id: `sig-emerging-${hospitalSnapshot.pulledAt.slice(0, 10)}-facility-count-vs-payment-correlation`,
-      headline: `Across ${comparableStates.length} states with data in both sources, hospital facility count and average Medicare physician payment show a ${Math.abs(r) < 0.3 ? "weak" : Math.abs(r) < 0.6 ? "moderate" : "strong"} ${r >= 0 ? "positive" : "negative"} correlation (r=${r.toFixed(2)}).`,
+      id: `sig-emerging-${hospitalSnapshot.pulledAt.slice(0, 10)}-ownership-concentration-vs-payment-correlation`,
+      headline: `Across ${comparableStates.length} states with data in both sources, hospital ownership concentration (CR4) and average Medicare physician payment show a ${Math.abs(r) < 0.3 ? "weak" : Math.abs(r) < 0.6 ? "moderate" : "strong"} ${r >= 0 ? "positive" : "negative"} correlation (r=${r.toFixed(2)}).`,
       questionId: "Q088",
       signalType: "baseline",
       period: { start: hospitalSnapshot.pulledAt.slice(0, 10), end: hospitalSnapshot.pulledAt.slice(0, 10) },
@@ -116,12 +116,12 @@ export const emergingTrendsAgent: DomainAgent = {
         },
       ],
       businessRelevance:
-        "The kind of cross-dataset check that's only possible because two independent agents' sources happen to cover the same states - exactly the 'agents working together' pattern this system is meant to demonstrate, not just two agents each reporting in isolation.",
+        "Unlike a facility-count comparison (mechanically expected to track physician staffing), hospital ownership concentration has no definitional link to physician payment levels - this is a real market-power question (does a more consolidated hospital market coincide with higher or lower physician reimbursement?) worth an executive's attention regardless of which direction the result points. The kind of cross-dataset check that's only possible because two independent agents' sources happen to cover the same states - exactly the 'agents working together' pattern this system is meant to demonstrate, not just two agents each reporting in isolation.",
       evidence: [
         {
           id: "ev-hospital-snapshot",
           sourceId: HOSPITAL_SOURCE_ID,
-          description: `CMS Hospital General Information, facility counts for ${comparableStates.join(", ")}`,
+          description: `CMS Hospital General Information, real ownership-concentration (CR4) for ${comparableStates.join(", ")}`,
           datasetVintage: hospitalSnapshot.pulledAt.slice(0, 10),
         },
         {
@@ -140,9 +140,9 @@ export const emergingTrendsAgent: DomainAgent = {
         isStale: false,
       },
       limitations: [
-        "Correlation, not causation - facility count and physician payment could both simply track state population/market size rather than influencing each other directly.",
-        `Only ${comparableStates.length} states have data in both sources - a 5-point (or fewer) correlation is illustrative, not statistically robust.`,
-        "Hospital facility count and individual-physician payment are different entity types (institutional vs. professional) - this is a market-level comparison, not a claim that the same providers appear in both datasets.",
+        "Correlation, not causation - either variable could track a real underlying driver (e.g. state cost-of-living or regulatory environment) rather than one influencing the other directly.",
+        `Only ${comparableStates.length} states have data in both sources - a 5-point (or fewer) correlation is illustrative, not statistically robust; a weak result here is an honest finding, not a failed one.`,
+        "Hospital ownership concentration (institutional) and individual-physician payment (professional) are different entity types - this is a market-level comparison, not a claim that the same providers appear in both datasets.",
       ],
       nextSignal: "Watch whether this correlation direction holds once more states or more periods are added to either source.",
       recommendedInternalValidation: "Not applicable - both sides are public aggregate data.",

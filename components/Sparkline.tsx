@@ -1,4 +1,5 @@
 import type { InsightSeries } from "@/cms-intelligence/intelligence/evidence/schema";
+import { CHART_CENTERED_CHILD_STYLE, CHART_SCROLL_WRAPPER_STYLE, CHART_TITLE_STYLE } from "./charts/chartTheme";
 
 /**
  * The dashboard's first real chart - inline SVG, no charting dependency
@@ -30,11 +31,11 @@ export default function Sparkline({ series }: { series: InsightSeries }) {
 
   return (
     <div>
-      <div className="mono" style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginBottom: 4 }}>
+      <div className="mono" style={CHART_TITLE_STYLE}>
         {series.label} ({points.length} real pull{points.length === 1 ? "" : "s"})
       </div>
-      <div tabIndex={0} style={{ overflowX: "auto", display: "flex", justifyContent: "center" }}>
-        <svg width={width} height={height} style={{ flexShrink: 0 }} role="img" aria-label={`${series.label} over time: ${points.map((p) => `${p.date} ${p.value}`).join(", ")}`}>
+      <div tabIndex={0} style={CHART_SCROLL_WRAPPER_STYLE}>
+        <svg width={width} height={height} style={CHART_CENTERED_CHILD_STYLE} role="img" aria-label={`${series.label} over time: ${points.map((p) => `${p.date} ${p.value}`).join(", ")}`}>
           <polyline points={`${padding},${height - padding} ${width - padding},${height - padding}`} stroke="var(--border)" strokeWidth={1} fill="none" />
           <path d={pathD} stroke="var(--accent-strong)" strokeWidth={2} fill="none" />
           {coords.map((c, i) => (

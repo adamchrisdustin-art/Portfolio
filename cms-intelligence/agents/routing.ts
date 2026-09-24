@@ -9,6 +9,20 @@
  * Q108-Q112 (Executive Strategy) and the two infrastructure agents
  * (source-change-monitor, data-architecture-semantic-model) intentionally
  * have no entries - they aren't routed to as specialists.
+ *
+ * Q113-Q124 (Market/Catalyst Intelligence) added 2026-09-24 - a new
+ * category beyond the original 112-question catalog, owned outright by
+ * the 12th agent (no joint ownership).
+ *
+ * Q125-Q128 (hospital star rating vs. quality outcomes) added 2026-09-24,
+ * owned by Provider & Network - a thematic extension of that agent's
+ * existing Q036-Q045 range rather than a new numeric range next to it,
+ * since both read the same Hospital General Information dataset.
+ *
+ * Q129 (NIH research-theme frequency) added 2026-09-24, owned by
+ * Market/Catalyst Intelligence - a one-question extension of that
+ * agent's own Q113-Q124 range, given as its own entry below only because
+ * Q125-Q128 sits numerically in between (owned by a different agent).
  */
 export interface QuestionRange {
   from: number;
@@ -28,6 +42,9 @@ export const QUESTION_ROUTING: QuestionRange[] = [
   { from: 85, to: 95, agentId: "emerging-trends-signal-detection" },
   { from: 96, to: 101, agentId: "medicare-advantage-part-d-intelligence" }, // pharmacy/Part D, jointly owned - see AGENT_ARCHITECTURE.md
   { from: 102, to: 107, agentId: "provider-network-intelligence" }, // value-based care, jointly owned - see AGENT_ARCHITECTURE.md
+  { from: 113, to: 124, agentId: "market-catalyst-intelligence" },
+  { from: 125, to: 128, agentId: "provider-network-intelligence" },
+  { from: 129, to: 129, agentId: "market-catalyst-intelligence" },
 ];
 
 export function questionNumberFrom(questionId: string): number {

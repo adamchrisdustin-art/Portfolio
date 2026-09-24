@@ -1,5 +1,13 @@
 import type { ChartBar } from "@/cms-intelligence/intelligence/evidence/schema";
-import { GRIDLINE, INK_PRIMARY, INK_SECONDARY, MAGNITUDE_HUE } from "./chartTheme";
+import {
+  CHART_CENTERED_CHILD_STYLE,
+  CHART_SCROLL_WRAPPER_STYLE,
+  CHART_TITLE_STYLE,
+  GRIDLINE,
+  INK_PRIMARY,
+  INK_SECONDARY,
+  MAGNITUDE_HUE,
+} from "./chartTheme";
 
 /**
  * Horizontal bar chart - magnitude comparison, single hue (sequential
@@ -27,7 +35,15 @@ export default function BarChart({ chart }: { chart: ChartBar }) {
   // a server-rendered component, and errs generous rather than tight.
   const estimateTextWidth = (s: string) => s.length * (fontSize * 0.62);
   const longestLabel = Math.max(...chart.bars.map((b) => estimateTextWidth(b.label)));
-  const labelWidth = Math.min(Math.max(64, Math.ceil(longestLabel) + 16), 180);
+  // No upper cap - a prior 180px cap clipped real long labels (e.g. real
+  // legal entity names like "BlueCross BlueShield Association, Federal
+  // Employee", 50 real characters / ~341px) at the SVG's own left edge,
+  // since text-anchor="end" renders the overflow at a negative x-
+  // coordinate outside the SVG's viewBox rather than merely requiring a
+  // scroll - a real bug caught from Adam's screenshot, not a hypothetical
+  // one. The chart is already horizontally scrollable, so a wider label
+  // column is the correct fix, not a truncated label.
+  const labelWidth = Math.max(64, Math.ceil(longestLabel) + 16);
   const longestValue = Math.max(...chart.bars.map((b) => estimateTextWidth(b.value.toLocaleString())));
   const valueSpace = Math.ceil(longestValue) + 14;
   const plotWidth = 220;
@@ -37,14 +53,14 @@ export default function BarChart({ chart }: { chart: ChartBar }) {
 
   return (
     <div>
-      <div className="mono" style={{ fontSize: "0.72rem", color: INK_SECONDARY, marginBottom: 6 }}>
+      <div className="mono" style={CHART_TITLE_STYLE}>
         {chart.title}
       </div>
-      <div tabIndex={0} style={{ overflowX: "auto", display: "flex", justifyContent: "center" }}>
+      <div tabIndex={0} style={CHART_SCROLL_WRAPPER_STYLE}>
         <svg
           width={chartWidth}
           height={height}
-          style={{ flexShrink: 0 }}
+          style={CHART_CENTERED_CHILD_STYLE}
           role="img"
           aria-label={`${chart.title}: ${chart.bars.map((b) => `${b.label} ${b.value}`).join(", ")}`}
         >

@@ -36,8 +36,10 @@ cannot be reasonably answered even as a proxy are moved to
 `DATA_GAP_REGISTER.md` instead of listed here with a source that doesn't
 really support them.
 
-Question IDs are `Q001`–`Q112` and are the join key `question_id` used by
-`EVIDENCE_MODEL.md` and referenced by `AGENT_ARCHITECTURE.md`.
+Question IDs are `Q001`–`Q112` (the original 112-question catalog) plus
+`Q113`–`Q124` (Market/Catalyst Intelligence, added 2026-09-24 — see §13),
+and are the join key `question_id` used by `EVIDENCE_MODEL.md` and
+referenced by `AGENT_ARCHITECTURE.md`.
 
 ---
 
@@ -241,8 +243,75 @@ Added beyond the starter question set to explicitly cover "value-based care," th
 | Q111 | What external signal could invalidate an existing assumption? | Forward-looking risk-scanning, distinct from Q110's backward-looking check | Any new Policy/Emerging-Trends signal touching a recorded assumption | Confirmed the invalidation occurred | Same dependency on a recorded-assumptions store as Q110 |
 | Q112 | What leading indicator should be added to the dashboard? | The catalog's own continuous-improvement question — mirrors Q095 for the metric/indicator layer specifically | A recurring finding not currently backed by a dashboard-tracked leading indicator | A new indicator added to `METRIC_DICTIONARY.md`/`TREND_FRAMEWORK.md` as a result | This question's "answer" is a dictionary/framework maintenance action, not a standalone insight |
 
+## 13. Market/Catalyst Intelligence (Q113–Q124, Q129)
+
+Added 2026-09-24, beyond the original 112-question starter set — a new
+category built around real corporate-disclosure, drug-approval,
+federal-grant, and clinical-trial-results activity, owned outright by the
+12th agent (`market-catalyst-intelligence`, no joint ownership). Unlike
+every other category above, this one is not CMS-program data at all —
+its sources are SEC EDGAR, openFDA, NIH RePORTER, and ClinicalTrials.gov.
+Q129 (NIH research-theme frequency) added the same day, per Adam's
+feedback request - a one-question extension of this same category, see
+Q129's own row above.
+
+**Dimensions:** Population — N/A (corporate/regulatory/research-grant
+activity, not a beneficiary population). Geography — national. Time
+horizon — rolling 730-day (2-year) window, widened 2026-09-24 from an
+original 150 days per Adam's request for deeper real historical coverage
+(wider than this dashboard's CMS-program sources, since these sources
+publish less predictably and their own live APIs support real historical
+date-range queries CMS's own datastore API does not - see
+SOURCE_REGISTRY.md). Required data — 8-K filings for a fixed 6-company
+health-insurer watchlist, novel-drug approval records, NIH award notices,
+and industry-sponsored Phase 3 results postings. Likely source — SEC
+EDGAR submissions API, openFDA drugsfda, NIH RePORTER projects/search,
+ClinicalTrials.gov v2 studies API.
+
+| # | Question | Why leadership needs it / decision supported | Leading indicator | Lagging indicator | Notable limitation |
+|---|---|---|---|---|---|
+| Q113 | What is the largest real NIH award notice, and how many were issued this window? | Direct catalyst signal for where NIH-funded research capacity is concentrating | A real high-dollar award notice | Sustained award activity in a related organization/category | Sampled top-100-by-dollar out of the real total population for the window |
+| Q114 | What is the total real NIH award-dollar volume sampled this window? | A distinct aggregate-scale KPI from Q113's single-largest-award figure | Real sampled award-dollar total | Confirmed multi-period volume trend | Understates true total obligations — covers only the sampled top-100 awards |
+| Q115 | How do sampled NIH award dollars split by funding agency? | A market-level concentration read on which HHS operating division's dollars dominate the sample | Real per-agency dollar share | Confirmed multi-period share shift | The real `agency_code` field is the sponsoring agency (e.g. NIH/FDA/CDC-adjacent), not NIH institute/center-level detail — see this category's agent header for the live-verified correction |
+| Q116 | Which real organizations are receiving the most sampled NIH award dollars? | A real, sourced funding-concentration ranking naming real universities/health systems | Real per-organization dollar total | Confirmed multi-period ranking shift | Sampled top-100-by-dollar only — an organization with many small awards is undercounted |
+| Q117 | How many real new molecular entity (Type 1) drug approvals occurred this window, and what's the most recent? | A regulatory-approval catalyst marking a new product's real market entry | A real Type 1 approval | Confirmed post-launch utilization signal (not tracked by this agent) | openFDA's search matches at the application level — this source re-filters to the real matching submission(s) only |
+| Q118 | What share of new molecular entity approvals this window received PRIORITY vs. STANDARD review? | Real FDA-stated significance signal, distinct from an efficacy claim | Real per-approval review-priority field | Confirmed multi-period share shift | Never uses "breakthrough therapy" — that field does not exist in this dataset |
+| Q119 | How are new molecular entity approvals distributed by month this window? | A real approval-cadence read, same shape as this dashboard's CMS-rules-per-month chart | Real monthly approval count | Confirmed multi-period cadence pattern | Small real monthly counts — month-to-month variation is not yet statistically meaningful |
+| Q120 | Which tracked health insurers filed an Item 5.02 8-K this window, and which filed none? | A real, disclosed leadership-change signal (departure OR appointment) at a tracked competitor | A real Item 5.02 filing | Confirmed leadership continuity or further change | Item 5.02 covers both departure and appointment — never characterized as "fired" or "resigned" |
+| Q121 | What is the real 8-K item-code mix across the whole tracked watchlist? | An industry-wide "what kind of activity is happening" read, distinct from the per-company breakdowns | Real item-code occurrence share | Confirmed multi-period mix shift | A single filing can carry multiple item codes — occurrences, not filing counts |
+| Q122 | Which tracked health insurers filed an Item 1.01 8-K this window? | A real, disclosed material-agreement signal at a tracked competitor | A real Item 1.01 filing | Confirmed the agreement's real operational impact (not tracked by this agent) | Item 1.01 covers far more than partnerships (credit facilities, leases, etc.) — never characterized as "a partnership" |
+| Q123 | How many industry-sponsored Phase 3 trials had results newly posted this window, and what's the most recent? | A concrete, dated clinical/formulary-planning catalyst | A real results posting | Confirmed downstream regulatory/market action (not tracked by this agent) | A results posting encodes no success/failure judgment — never says "positive result" |
+| Q124 | What is the enrollment-size distribution across those newly reported trials? | A real proxy for a trial's evidentiary weight and real-world relevance | Real per-trial enrollment count | Confirmed the enrollment scale mattered to a downstream decision (not tracked by this agent) | Only built when at least 20 real trials are in the sample — otherwise honestly skipped, not fabricated |
+| Q129 | What research themes and topics is sampled NIH funding actually concentrating in? | Shows *what* the funded research is about, not just who/how much — added 2026-09-24 per Adam's request | A real keyword term crossing the frequency-band threshold | Confirmed the same theme leads across a second real pull | NIH's real `terms` field generates many near-synonymous phrasings for one concept — not merged, see this agent's own insight limitations |
+
+---
+
+## 14. Hospital star rating vs. quality outcomes (Q125–Q128)
+
+Added 2026-09-24 per Adam's PDF-annotated feedback requesting a
+star-rating-vs-quality-outcomes read - a thematic extension of Provider &
+Network's existing Q036-045 scope onto the same real, already-live
+Hospital General Information dataset, not a new data source. Owned by
+`provider-network-intelligence` (no joint ownership).
+
+**Dimensions:** Population — Medicare-enrolled hospitals reporting a real
+CMS overall star rating. Geography — national (Q125) / state (Q126-128).
+Time horizon — CMS's own quarterly refresh cadence for this dataset (not
+this dashboard's own pull frequency). Required data — real
+`hospital_overall_rating` plus real mortality/safety/readmission
+measure-group better/worse/no-different counts. Likely source — CMS
+Hospital General Information (already live, see AGENT_ARCHITECTURE.md §5
+and Q001/Q038's existing use of this same dataset).
+
+| # | Question | Why leadership needs it / decision supported | Leading indicator | Lagging indicator | Notable limitation |
+|---|---|---|---|---|---|
+| Q125 | Does a hospital's overall star rating actually track its real mortality/safety/readmission outcome performance? | Tests whether star rating alone is a sufficient quality proxy, or whether the underlying measure detail needs direct review | A real per-hospital net quality-outcome score | Confirmed the correlation's strength holds across a second real snapshot | Correlation, not causation - the star rating is partly derived from these same measure groups, so some correlation is expected by construction |
+| Q126 | How does the real hospital overall star rating distribution vary by state? | A state-level quality-by-geography read for network-quality prioritization | Real per-state star-rating quartiles | Confirmed multi-period distributional shift | Limited to states with >=20 hospitals reporting a real, non-suppressed rating |
+| Q127 | How does the real net quality-outcome score distribution vary by state? | The outcomes-specific counterpart to Q126 - checks whether a state's star-rating standing and its underlying outcome performance tell the same story | Real per-state net-quality-outcome-score quartiles | Confirmed multi-period distributional shift | Covers only the mortality/safety/readmission measure groups this dataset reports a better/worse/no-different count for |
+| Q128 | Which states show a real, persistent improvement in hospital quality outcomes over time, and which have the best current outcomes? | Directly answers leadership's "which states are getting better" question, honestly, without forcing a trend claim before one is real | A real state median net-quality-outcome score moving in the same direction across 2 consecutive real pulls | Confirmed sustained multi-quarter improvement | This CMS dataset refreshes quarterly - a "no persistent improvement yet" finding this early in this dashboard's own pull history reflects that real refresh cadence, not a system limitation |
+
 ---
 
 ## Coverage check against the master orchestrator's required topics
 
-Market growth (§1) · enrollment (§1, §5, §6, §7) · claims (§2) · utilization (§2) · cost (§2, §3) · reimbursement (§3) · provider/network (§4) · site of care (§2 Q018–Q021, §9 Q094) · Medicare Advantage (§5) · Part D (§5, §10) · Medicaid (§6) · dual eligibles (§6 Q060) · Marketplace (§7) · pharmacy (§10) · value-based care (§11) · policy (§8) · CMS programs (§8) · emerging trends (§9). All 18 named topics are represented by at least one dedicated question.
+Market growth (§1) · enrollment (§1, §5, §6, §7) · claims (§2) · utilization (§2) · cost (§2, §3) · reimbursement (§3) · provider/network (§4, §14) · site of care (§2 Q018–Q021, §9 Q094) · Medicare Advantage (§5) · Part D (§5, §10) · Medicaid (§6) · dual eligibles (§6 Q060) · Marketplace (§7) · pharmacy (§10) · value-based care (§11) · policy (§8) · CMS programs (§8) · emerging trends (§9). All 18 named topics are represented by at least one dedicated question.

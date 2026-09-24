@@ -83,6 +83,37 @@ export function quartiles(sortedAscendingValues: number[]): Quartiles {
   return { q1: at(0.25), median: at(0.5), q3: at(0.75) };
 }
 
+/**
+ * Pearson correlation coefficient between two equal-length real series -
+ * added 2026-09-24 for the star-rating-vs-quality-outcome scatter read
+ * (provider-network/agent.ts). Returns 0 (not NaN) when either series has
+ * zero variance, since "no linear relationship is measurable" is the
+ * honest read in that case, not a computation error. A correlation value
+ * alone is never sufficient grounds for a "confirmed-causal" driver
+ * relationship - see EVIDENCE_MODEL.md and this metric's callers, which
+ * must use "correlation".
+ */
+export function pearsonCorrelation(xs: number[], ys: number[]): number {
+  if (xs.length !== ys.length || xs.length === 0) {
+    throw new Error("pearsonCorrelation: xs and ys must be the same non-zero length");
+  }
+  const n = xs.length;
+  const meanX = xs.reduce((s, v) => s + v, 0) / n;
+  const meanY = ys.reduce((s, v) => s + v, 0) / n;
+  let numerator = 0;
+  let denomX = 0;
+  let denomY = 0;
+  for (let i = 0; i < n; i++) {
+    const dx = xs[i] - meanX;
+    const dy = ys[i] - meanY;
+    numerator += dx * dy;
+    denomX += dx * dx;
+    denomY += dy * dy;
+  }
+  if (denomX === 0 || denomY === 0) return 0;
+  return numerator / Math.sqrt(denomX * denomY);
+}
+
 export interface TukeyBox extends Quartiles {
   whiskerLow: number;
   whiskerHigh: number;

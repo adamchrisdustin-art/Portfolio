@@ -37,8 +37,23 @@ describe("routeQuestion", () => {
     expect(routeQuestion("Q112")).toBeNull();
   });
 
+  it("routes Market/Catalyst Intelligence questions (Q113-124) at each range boundary", () => {
+    expect(routeQuestion("Q113")).toBe("market-catalyst-intelligence");
+    expect(routeQuestion("Q124")).toBe("market-catalyst-intelligence");
+  });
+
+  it("routes hospital star-rating/quality-outcome questions (Q125-128) to Provider & Network at each range boundary", () => {
+    expect(routeQuestion("Q125")).toBe("provider-network-intelligence");
+    expect(routeQuestion("Q128")).toBe("provider-network-intelligence");
+  });
+
+  it("routes Q129 (NIH research-theme frequency) to Market/Catalyst Intelligence despite Q125-128 sitting in between", () => {
+    expect(routeQuestion("Q129")).toBe("market-catalyst-intelligence");
+  });
+
   it("returns null for a question number outside every defined range", () => {
     expect(routeQuestion("Q999")).toBeNull();
+    expect(routeQuestion("Q130")).toBeNull();
   });
 });
 

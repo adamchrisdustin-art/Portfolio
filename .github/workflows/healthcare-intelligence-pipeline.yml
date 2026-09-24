@@ -47,6 +47,18 @@ jobs:
       - name: Pull CMS Marketplace Rate PUF
         run: npx tsx cms-intelligence/data/adapters/pull-marketplace-rate-puf.ts
 
+      - name: Pull SEC EDGAR 8-K filings (health-insurer watchlist)
+        run: npx tsx cms-intelligence/data/adapters/pull-sec-edgar-filings.ts
+
+      - name: Pull openFDA novel drug approvals
+        run: npx tsx cms-intelligence/data/adapters/pull-fda-drug-approvals.ts
+
+      - name: Pull NIH RePORTER award notices
+        run: npx tsx cms-intelligence/data/adapters/pull-nih-reporter-awards.ts
+
+      - name: Pull ClinicalTrials.gov Phase 3 results postings
+        run: npx tsx cms-intelligence/data/adapters/pull-clinicaltrials-results.ts
+
       - name: Commit updated snapshot
         run: |
           git config user.name "healthcare-intelligence-bot"

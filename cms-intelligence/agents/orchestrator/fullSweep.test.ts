@@ -3,9 +3,9 @@ import { validateInsight } from "../../intelligence/evidence/validate";
 import { runFullSweep } from "./fullSweep";
 
 describe("runFullSweep", () => {
-  it("runs all 11 agents and reports a status for each, never throwing", async () => {
+  it("runs all 12 agents and reports a status for each, never throwing", async () => {
     const result = await runFullSweep();
-    expect(result.agentStatuses).toHaveLength(11);
+    expect(result.agentStatuses).toHaveLength(12);
     expect(result.agentStatuses.every((s) => s.ok)).toBe(true);
   });
 

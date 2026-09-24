@@ -279,20 +279,26 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
       };
     }
 
-    const plansByArea = new Map<string, Set<string>>();
+    const issuersByState = new Map<string, Set<string>>();
     for (const r of plausible) {
-      const key = `${r.state} / ${r.ratingArea}`;
-      if (!plansByArea.has(key)) plansByArea.set(key, new Set());
-      plansByArea.get(key)!.add(r.planId);
+      if (!issuersByState.has(r.state)) issuersByState.set(r.state, new Set());
+      issuersByState.get(r.state)!.add(r.issuerId);
     }
     marketplacePlanAvailabilityBar = {
       type: "bar",
-      title: "Distinct Marketplace plans sampled per rating area",
-      unit: "plans",
-      bars: Array.from(plansByArea.entries())
-        .map(([label, plans]) => ({ label, value: plans.size }))
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 8),
+      // State, not rating area, and distinct ISSUERS, not distinct plans -
+      // redesigned 2026-09-24 to match commercial-marketplace/agent.ts's
+      // Q071 insight redesign (see that file for the real degenerate-tie
+      // bug this fixes: rating-area-level plan counts are near-uniform
+      // within a state, since issuers file consistently across every
+      // rating area they enter - state-level issuer count is the real,
+      // non-tied signal). Sorted ascending (fewest issuers first) - the
+      // low end is the real competitive-intensity signal.
+      title: "Marketplace states with the fewest distinct issuers sampled",
+      unit: "issuers",
+      bars: Array.from(issuersByState.entries())
+        .map(([label, issuers]) => ({ label, value: issuers.size }))
+        .sort((a, b) => a.value - b.value),
     };
   }
 

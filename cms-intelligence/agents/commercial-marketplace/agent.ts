@@ -25,9 +25,22 @@
  *
  * Second use of the salience/triage reasoning layer
  * (intelligence/salience/selectNoteworthy.ts) - the plan-availability
- * insight computes real distinct-plan-counts for every rating area, then
- * lets the same deterministic-fallback/model-reasoned selection choose
- * which are noteworthy.
+ * insight computes real distinct-issuer-counts for every sampled state,
+ * then lets the same deterministic-fallback/model-reasoned selection
+ * choose which are noteworthy.
+ *
+ * REDESIGNED 2026-09-24 (real bug, caught from Adam's screenshot): the
+ * plan-availability insight originally ranked distinct-PlanId counts per
+ * RATING AREA, which produced a degenerate, tie-dominated ranking (9
+ * South Carolina rating areas tied at exactly 27) because issuers file
+ * consistently across every rating area they enter within a state -
+ * rating area isn't where this data's real variation lives. Redesigned
+ * to count distinct real IssuerId values (added to the adapter the same
+ * day - previously dropped entirely) aggregated to the STATE level,
+ * which shows genuine, non-tied variation (7 to 18 issuers across the 5
+ * sampled states) and better matches Q071's own catalog wording ("number
+ * of ISSUERS/plans"). IssuerId is still never surfaced as a name - only
+ * ever used as a COUNT, same discipline as PlanId.
  */
 import { loadLatestSnapshot, SOURCE_ID, type MarketplaceRateRow } from "../../data/adapters/marketplaceRatePuf";
 import type { Insight } from "../../intelligence/evidence/schema";
@@ -41,7 +54,6 @@ const AGENT_ID = "commercial-marketplace-intelligence";
 const EXCLUDED_RATE_FLOOR = 0; // see file header - a disclosed empirical judgment, not an official CMS convention
 const EXCLUDED_RATE_CEILING = 9999; // ditto
 const MIN_ROWS_FOR_BOXPLOT = 20;
-const TOP_N_RATING_AREAS = 6;
 
 function baselineConfidence() {
   return classifyConfidence({ persistenceMet: false, hasFullBaseline: false, hasExternalCorroboration: false });
@@ -150,31 +162,48 @@ async function buildPlanAvailabilitySignal(
   const rows = plausibleRows(allRows);
   if (rows.length === 0) return null;
 
-  const plansByArea = new Map<string, Set<string>>();
+  // State-level distinct-issuer count, not rating-area-level distinct-plan
+  // count - redesigned 2026-09-24 after a real data review (caught from
+  // Adam's screenshot showing 9 South Carolina rating areas tied at
+  // exactly 27 distinct plans): issuers file consistently across every
+  // rating area they enter within a state, so a rating-area-level plan
+  // count is structurally near-uniform within a state and produces a
+  // degenerate, tie-dominated ranking rather than a real competitive-
+  // intensity signal. Distinct issuer count aggregated to the STATE level
+  // is the metric that actually varies (verified: 7 to 18 real distinct
+  // issuers across the 5 sampled states, no ties) - and it's a closer
+  // match to Q071's own catalog wording ("number of ISSUERS/plans") than
+  // the prior plan-only count was.
+  const issuersByState = new Map<string, Set<string>>();
   for (const r of rows) {
-    const key = `${r.state} / ${r.ratingArea}`;
-    if (!plansByArea.has(key)) plansByArea.set(key, new Set());
-    plansByArea.get(key)!.add(r.planId);
+    if (!issuersByState.has(r.state)) issuersByState.set(r.state, new Set());
+    issuersByState.get(r.state)!.add(r.issuerId);
   }
 
-  const candidates: Candidate[] = Array.from(plansByArea.entries()).map(([area, plans]) => ({
-    id: area,
-    label: area,
-    summary: `${plans.size} distinct plan(s) sampled`,
-    primaryMetric: plans.size,
+  const candidates: Candidate[] = Array.from(issuersByState.entries()).map(([state, issuers]) => ({
+    id: state,
+    label: state,
+    summary: `${issuers.size} distinct issuer(s) sampled`,
+    primaryMetric: issuers.size,
   }));
   if (candidates.length === 0) return null;
 
   const { selections, source } = await selectNoteworthy(
-    { candidates, topN: TOP_N_RATING_AREAS, taskDescription: "Marketplace plan-availability (competitive intensity) by rating area this cycle" },
+    {
+      candidates,
+      topN: candidates.length, // only 5 real sampled states - show all, not a truncated top-N
+      taskDescription: "Marketplace issuer competitive intensity by state this cycle",
+      // Fewer issuers is the competitive-intensity signal worth an executive's attention here.
+      direction: "lowest",
+    },
     ctx
   );
   if (selections.length === 0) return null;
 
   const byId = new Map(candidates.map((c) => [c.id, c]));
   const selected = selections.map((s) => ({ selection: s, candidate: byId.get(s.candidateId)! })).filter((x) => x.candidate);
-  const mostPlans = candidates.reduce((a, b) => (b.primaryMetric > a.primaryMetric ? b : a));
-  const fewestPlans = candidates.reduce((a, b) => (b.primaryMetric < a.primaryMetric ? b : a));
+  const mostIssuers = candidates.reduce((a, b) => (b.primaryMetric > a.primaryMetric ? b : a));
+  const fewestIssuers = candidates.reduce((a, b) => (b.primaryMetric < a.primaryMetric ? b : a));
   const stamp = snapshot.pulledAt.slice(0, 10);
   const confidence = baselineConfidence();
 
@@ -182,47 +211,48 @@ async function buildPlanAvailabilitySignal(
 
   const insight: Insight = {
     id: `sig-marketplace-${snapshot.planYear}-plan-availability`,
-    headline: `Plan availability ranges from ${fewestPlans.primaryMetric} to ${mostPlans.primaryMetric} distinct sampled plans per rating area across the ${candidates.length} real rating areas in this sample, plan year ${snapshot.planYear}.`,
+    headline: `Distinct issuer count ranges from ${fewestIssuers.primaryMetric} in ${fewestIssuers.label} to ${mostIssuers.primaryMetric} in ${mostIssuers.label} across the ${candidates.length} real sampled states, plan year ${snapshot.planYear}.`,
     questionId: "Q071",
     signalType: "baseline",
     period: { start: `${snapshot.planYear}-01-01`, end: stamp },
     population: "marketplace",
-    geography: { level: "rating-area", code: snapshot.sampledStates.join("/"), label: `Rating areas within ${snapshot.sampledStates.join(", ")}` },
-    magnitude: { value: mostPlans.primaryMetric, unit: "plans", comparedTo: `${fewestPlans.label} (${fewestPlans.primaryMetric})` },
+    geography: { level: "state", code: snapshot.sampledStates.join("/"), label: snapshot.sampledStates.join(", ") },
+    magnitude: { value: mostIssuers.primaryMetric, unit: "issuers", comparedTo: `${fewestIssuers.label} (${fewestIssuers.primaryMetric})` },
     drivers: [
       {
-        description: `Real distinct-plan counts per rating area (counting only plausible-rate rows, see this agent's file header): ${summary}. Candidate selection method: ${source === "llm" ? "model-reasoned salience ranking over all real rating areas" : "deterministic top-N by plan count"}.`,
+        description: `Real distinct-issuer counts per state (counting only plausible-rate rows, see this agent's file header): ${summary}. Candidate selection method: ${source === "llm" ? "model-reasoned salience ranking over all 5 real sampled states" : "deterministic ranking (all real candidates included)"}.`,
         supportingEvidenceIds: ["ev-marketplace-availability"],
         relationship: "correlation",
       },
     ],
     businessRelevance:
-      "Plan count per rating area is a direct, real competitive-intensity proxy (Q071) - a rating area with few distinct plans is a market with limited consumer choice and (typically) limited issuer competition, worth flagging for further investigation.",
+      "Distinct issuer count per state is a direct, real competitive-intensity proxy (Q071) - a state with few distinct issuers is a market with limited consumer choice and limited issuer competition, worth flagging for further investigation. State, not rating area, is the geography that actually carries this signal - see limitations.",
     evidence: [
       {
         id: "ev-marketplace-availability",
         sourceId: SOURCE_ID,
-        description: `CMS Marketplace Rate PUF, plan year ${snapshot.planYear}, distinct PlanId counts by state/rating-area across ${rows.length} plausible real rows`,
+        description: `CMS Marketplace Rate PUF, plan year ${snapshot.planYear}, distinct real IssuerId counts by state across ${rows.length} plausible real rows`,
         datasetVintage: stamp,
       },
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real Marketplace Rate PUF snapshot this agent has pulled - no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} This is the first real Marketplace Rate PUF snapshot with issuer data this agent has pulled - no prior pull exists yet to assess persistence or build a baseline.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
-      `Bounded to ${snapshot.sampledStates.join(", ")} - see this agent's data adapter for why WA/CA/NY are structurally absent from this federal file.`,
-      "Plan count is a real proxy for consumer choice, not a confirmed issuer-competition or antitrust measure - two plans from the same issuer still count as two distinct plans here.",
-      "Never attributes a plan count to a named carrier - only an opaque PlanId is counted, never surfaced or resolved to an issuer name (see this agent's data adapter).",
+      `Bounded to ${snapshot.sampledStates.join(", ")} - see this agent's data adapter for why WA/CA/NY are structurally absent from this federal file, and why only 5 real states exist to compare (a small real sample, not padded to look larger).`,
+      "State, not rating area, is the geography reported here: a real data review found distinct-issuer and distinct-plan counts are near-uniform across rating areas within the same state (issuers file consistently across every rating area they enter) - a rating-area-level version of this same metric produced a degenerate, tie-dominated ranking with no real signal.",
+      "Issuer count is a real proxy for consumer choice, not a confirmed antitrust or market-power measure.",
+      "Never attributes an issuer count to a named carrier - only an opaque real IssuerId is counted, never surfaced or resolved to a company name (see this agent's data adapter).",
     ],
-    nextSignal: "Watch each rating area's plan count across a second real pull for the first genuine entry/exit signal, which would be a real market-structure change, not just this baseline snapshot.",
+    nextSignal: "Watch each state's issuer count across a second real pull for the first genuine entry/exit signal, which would be a real market-structure change, not just this baseline snapshot.",
     recommendedInternalValidation: "Not applicable - this is public aggregate plan-filing data, not tied to any specific payer's book of business.",
     sourceIds: [SOURCE_ID],
     generatingAgent: AGENT_ID,
     chart: {
       type: "bar",
-      title: "Distinct Marketplace plans sampled per rating area",
-      unit: "plans",
+      title: "Distinct Marketplace issuers sampled per state",
+      unit: "issuers",
       bars: selected.map(({ candidate }) => ({ label: candidate.label, value: candidate.primaryMetric })),
     },
   };

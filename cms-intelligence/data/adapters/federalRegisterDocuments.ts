@@ -32,6 +32,14 @@
  * here - if that ever changes, this file truncates rather than silently
  * paginating forever, same bounded-and-documented posture as
  * physicianOtherPractitioners.ts's 5-state sample.
+ *
+ * Widened 2026-09-24 from 120 to 730 days (real 2-year window) per
+ * Adam's request for deeper real historical coverage. Verified live
+ * 2026-09-24: a real 730-day window returns 487 real matching CMS
+ * documents, and this API's real, documented per_page max of 1000
+ * (raised below from 250) returns all 487 in a single real request -
+ * confirmed via a live check, not full pagination, still a single
+ * bounded request per pull.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -39,8 +47,8 @@ import path from "node:path";
 export const SOURCE_ID = "federal-register:cms-documents";
 const AGENCY_SLUG = "centers-for-medicare-medicaid-services";
 const BASE_URL = "https://www.federalregister.gov/api/v1/documents.json";
-const WINDOW_DAYS = 120;
-const PER_PAGE = 250;
+const WINDOW_DAYS = 730;
+const PER_PAGE = 1000;
 const DATASET_NAME = "federal-register-documents";
 
 const SNAPSHOTS_DIR = path.resolve(process.cwd(), "data", "healthcare-intelligence", DATASET_NAME, "snapshots");

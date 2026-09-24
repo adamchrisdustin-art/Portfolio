@@ -16,7 +16,7 @@ been verified this way. Every other source named in
 a **candidate** — real family/population/topic, honestly marked
 unverified rather than filled in with a guessed dataset ID or URL.
 
-## Verified & implemented (6 sources)
+## Verified & implemented (10 sources)
 
 | Source ID | Name | Real endpoint | Verified | Related questions |
 |---|---|---|---|---|
@@ -26,6 +26,82 @@ unverified rather than filled in with a guessed dataset ID or URL.
 | `federal-register:cms-documents` | Federal Register - CMS documents | `federalregister.gov/api/v1/documents.json` | 2026-09-23 | Q073, Q074, Q075, Q076 |
 | `cms:ma-part-d-enrollment` | MA/Part D Monthly Enrollment by Plan | `cms.gov/.../medicare-advantagepart-d-contract-and-enrollment-data/monthly-enrollment-plan` | 2026-09-23 | Q049, Q053 |
 | `cms:marketplace-rate-puf` | Marketplace (Exchange) Rate PUF | `cms.gov/marketplace/resources/data/public-use-files` | 2026-09-23 | Q067, Q071 |
+| `sec-edgar:healthcare-8k-filings` | SEC EDGAR 8-K filings, health-insurer watchlist | `data.sec.gov/submissions/CIK{10-digit}.json` | 2026-09-24 | Q120, Q121, Q122 |
+| `openfda:drugsfda-novel-approvals` | openFDA drugsfda - novel (Type 1) drug approvals | `api.fda.gov/drug/drugsfda.json` | 2026-09-24 | Q117, Q118, Q119 |
+| `nih-reporter:project-awards` | NIH RePORTER - project award notices | `api.reporter.nih.gov/v2/projects/search` | 2026-09-24 | Q113, Q114, Q115, Q116, Q129 |
+| `clinicaltrials-gov:phase3-results` | ClinicalTrials.gov - Phase 3 results postings | `clinicaltrials.gov/api/v2/studies` | 2026-09-24 | Q123, Q124 |
+
+### The 4 newest sources (added 2026-09-24, for the 12th agent - Market/Catalyst Intelligence)
+
+All 4 are a fundamentally different source family from the six above -
+corporate-disclosure, drug-approval, federal-grant, and clinical-trial
+data, not CMS program data - added for the new Market/Catalyst
+Intelligence agent (see `AGENT_ARCHITECTURE.md` §13). All 4 originally
+used a 150-day rolling window, widened 2026-09-24 to a real 730-day
+(2-year) window per Adam's request for deeper historical coverage -
+openFDA's request limit was raised (100→1000) and ClinicalTrials.gov
+gained real pagination to safely cover the larger real population this
+surfaces (see each adapter's own header for the live-verified counts
+behind these changes). Pulled quarterly like every other adapter.
+
+**SEC EDGAR 8-K filings** (`data/adapters/secEdgarFilings.ts`) - the
+`data.sec.gov/submissions/CIK{...}.json` endpoint for a fixed, hardcoded
+6-company watchlist (UnitedHealth Group, CVS Health, Humana, Centene, The
+Cigna Group, Elevance Health), each CIK independently verified live
+2026-09-24 to return the correct company name. Real response shape is
+parallel arrays under `filings.recent` (not an array of objects) -
+`form`, `filingDate`, `items` (a comma-separated string, not an array),
+etc. Requires a real, descriptive `User-Agent` header per SEC's own
+documented fair-access policy (not optional). **Verified real finding
+(not assumed):** Item 5.02 (7 real filings across 3 of the 6 companies
+this window) covers both departure AND appointment of officers/directors
+- this project never characterizes one as a firing or resignation. Item
+1.01 (1 real filing, Humana) covers far more than partnerships. Bounded
+to this 6-company watchlist only, never the full health-insurance sector.
+
+**openFDA novel drug approvals** (`data/adapters/fdaDrugApprovals.ts`) -
+`api.fda.gov/drug/drugsfda.json`, filtered to `submission_class_code`
+containing "TYPE 1" (new molecular entity) and `submission_status: AP`
+within the window. **Real gotcha confirmed live:** the search matches at
+the application level, so a single application can bundle in unrelated
+submissions outside the requested window (verified with a real example:
+application BLA761467/KEYTRUDA QLEX matched on its real 2025-09-19 ORIG
+approval but also carried 10 unrelated SUPPL submissions, some dated in
+2026) - this adapter re-filters per-submission rather than trusting
+application-level inclusion. No "breakthrough therapy" field exists in
+this dataset; only `submission_class_code` and `review_priority` are used
+verbatim. `datasetVintage` uses the API's own real `meta.last_updated`
+field.
+
+**NIH RePORTER award notices** (`data/adapters/nihReporterAwards.ts`) -
+`POST api.reporter.nih.gov/v2/projects/search`. **Real gotcha confirmed
+live:** the response always comes back in the API's own snake_case/nested
+shape (`project_num`, `organization.org_name`, `agency_code`,
+`award_notice_date`) regardless of the PascalCase `include_fields` named
+in the request - this adapter parses the real shape, not the requested
+one. **Real correction vs. this project's original plan:** the real
+`agency_code` field is the sponsoring HHS operating division/agency
+(verified live values: "NIH", "FDA", "ALLCDC"), NOT NIH institute/
+center-level detail (NHLBI/NCI/NIA) as originally assumed - the agent's
+Q115 insight is honestly labeled "by funding agency" for this reason.
+Sampling bound: keeps only the top 100 awards by dollar amount out of a
+real ~49,000+ total awards in the window (a real, disclosed bound, same
+pattern as `physicianOtherPractitioners.ts`'s 5-state sample) - not the
+full award population.
+
+**ClinicalTrials.gov Phase 3 results** (`data/adapters/clinicalTrialsResults.ts`)
+- `clinicaltrials.gov/api/v2/studies`, `AREA[Phase]PHASE3` +
+`AREA[ResultsFirstPostDate]RANGE[...]`. **Real shape confirmed live:** the
+requested flat field names (NCTId, BriefTitle, etc.) are the correct,
+case-sensitive v2 field names, but the response nests each one under its
+real module (`protocolSection.identificationModule.nctId`,
+`.sponsorCollaboratorsModule.leadSponsor.{name,class}`, etc.), not as a
+flat top-level key - this adapter parses that real nested shape. Filters
+to `leadSponsor.class === "INDUSTRY"` only, at the adapter level (the
+most executive-relevant subset). A results posting on this dataset
+encodes no success/failure judgment - this project never says "positive
+result," only that results were posted, by whom, with what real
+enrollment number.
 
 The first two are the CMS Provider Data Catalog's own Datastore API —
 public, unauthenticated, paginated, no API key required. The third
@@ -51,8 +127,10 @@ least one domain agent computing a real insight from them (see
 Register API filtered to CMS as the publishing agency — the first real
 source for the previously-stub Policy, Regulation & CMS Program
 Intelligence agent, and the reason the "Policy & Program Watch" dashboard
-layer is no longer empty. Each pull is bounded to a trailing 120-day
-publication window (not full regulatory history) — see
+layer is no longer empty. Each pull is bounded to a trailing 730-day
+(2-year) publication window (widened 2026-09-24 from 120 days per Adam's
+request for deeper historical coverage - a real, live-verified single
+request via a raised per_page cap, not full regulatory history) — see
 `cms-intelligence/data/adapters/federalRegisterDocuments.ts` for the
 exact query and rationale. The agent's deterministic code covers rule-
 cycle tracking (finalized vs. proposed vs. upcoming-effective — Q074,
@@ -100,11 +178,15 @@ literal name attached — turning that into a real carrier name would need
 a separately-sourced, verified CMS issuer-ID-to-company crosswalk, which
 this project doesn't have wired in. Rather than guess at a mapping and
 risk attaching the *wrong* real company to a real number (a worse failure
-than not naming anyone), IssuerId is never persisted; PlanId is kept only
-as an opaque identifier used solely as a distinct-plan **count**, never
-surfaced itself. A real crosswalk would be a legitimate future step (see
-`app/healthcare-intelligence/page.tsx`'s case study future-state note),
-not a rule against naming carriers from this file in principle.
+than not naming anyone), IssuerId is used only as a real COUNT of
+distinct issuers (added 2026-09-24 - see the redesign note in
+`commercial-marketplace/agent.ts`'s header, fixing a real degenerate-tie
+bug in the prior rating-area-level plan-count metric), never surfaced or
+resolved to a name; PlanId is similarly kept only as an opaque identifier
+used solely as a distinct-plan **count**. A real name crosswalk would be
+a legitimate future step (see `app/healthcare-intelligence/page.tsx`'s
+case study future-state note), not a rule against naming carriers from
+this file in principle.
 
 A third dataset in the same catalog family — **Hospice - General
 Information** (`yc9t-dgbk`) — was *seen* in the same live metastore

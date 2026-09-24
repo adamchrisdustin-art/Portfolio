@@ -198,3 +198,49 @@ it discloses it on every single driver claim.
 `"confirmed-causal"` — that value should be reserved for genuinely rare
 cases (e.g., a CMS rule whose stated, published purpose is exactly the
 observed effect) and treated as the exception, not the norm.
+
+## 8. Federal grants rescinded (researched and found infeasible, not built)
+
+**Missing source:** no free, public dataset flags a grant as
+*rescinded*. This was researched directly (2026-09-24, as part of scoping
+the Market/Catalyst Intelligence agent's 4th planned data source) rather
+than assumed — the finding is a deliberate, informed "do not build," not
+an unexamined gap.
+
+**Why it matters:** a real "grants rescinded" signal would be a
+genuinely useful market-catalyst read (funding pulled from an
+organization/program is a real disruption signal) — the kind of thing
+this project would otherwise want to add alongside the other three real
+NIH/FDA/SEC/ClinicalTrials.gov sources built the same day.
+
+**Why it's infeasible, specifically:** USAspending (the obvious candidate
+public source) records negative grant-obligation amounts routinely for
+reasons that have nothing to do with a rescission — Medicaid entitlement
+true-ups and Ryan White Title II revisions being the two most common,
+both verified as real, routine, non-rescission causes during this
+research. There is no field, flag, or documented convention in any free
+public dataset that distinguishes an actual rescission from these
+routine negative-obligation corrections. Building a "rescinded grants"
+insight from this data would mean either (a) treating every negative
+obligation as a rescission, which would be a fabricated, wrong claim most
+of the time, or (b) guessing at a filtering heuristic with no real
+documented basis — both violate this project's "no fabrication" rule more
+directly than simply not building the feature.
+
+**Possible internal source:** a federal agency's own grants-management
+system would have this distinction natively (a real administrative
+rescission action vs. a routine obligation adjustment) — not available to
+this portfolio project.
+
+**Possible public proxy:** none identified that reliably distinguishes
+the two cases — this is the reason for the "infeasible," not "possible
+proxy: use X cautiously."
+
+**Synthetic/demo approach:** not applicable — fabricating a plausible-
+looking "rescinded grants" figure would be exactly the kind of confident-
+looking wrong answer this register exists to prevent.
+
+**Data-risk caveat:** if this gap is ever revisited, the bar is a real,
+documented source field or convention that actually distinguishes a
+rescission from a routine negative-obligation correction — not a
+heuristic threshold on obligation-amount sign or magnitude alone.

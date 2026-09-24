@@ -1,5 +1,13 @@
 import type { InsightSeries } from "@/cms-intelligence/intelligence/evidence/schema";
-import { GRIDLINE, INK_PRIMARY, INK_SECONDARY, MAGNITUDE_HUE } from "./chartTheme";
+import {
+  CHART_CENTERED_CHILD_STYLE,
+  CHART_SCROLL_WRAPPER_STYLE,
+  CHART_TITLE_STYLE,
+  GRIDLINE,
+  INK_PRIMARY,
+  INK_SECONDARY,
+  MAGNITUDE_HUE,
+} from "./chartTheme";
 
 /**
  * Full-size time-series line chart - the promoted, prominent version of
@@ -34,11 +42,11 @@ export default function LineChart({ series }: { series: InsightSeries }) {
 
   return (
     <div>
-      <div className="mono" style={{ fontSize: "0.78rem", color: INK_SECONDARY, marginBottom: 6 }}>
+      <div className="mono" style={CHART_TITLE_STYLE}>
         {series.label} ({series.points.length} real pull{series.points.length === 1 ? "" : "s"})
       </div>
-      <div tabIndex={0} style={{ overflowX: "auto", display: "flex", justifyContent: "center" }}>
-      <svg width={width} height={height} style={{ flexShrink: 0 }} role="img" aria-label={`${series.label}: ${series.points.map((p) => `${p.date} ${p.value}`).join(", ")}`}>
+      <div tabIndex={0} style={CHART_SCROLL_WRAPPER_STYLE}>
+      <svg width={width} height={height} style={CHART_CENTERED_CHILD_STYLE} role="img" aria-label={`${series.label}: ${series.points.map((p) => `${p.date} ${p.value}`).join(", ")}`}>
         {yTicks.map((tick) => (
           <g key={tick}>
             <line x1={padding.left} x2={width - padding.right} y1={yFor(tick)} y2={yFor(tick)} stroke={GRIDLINE} strokeWidth={1} />

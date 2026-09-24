@@ -51,26 +51,6 @@ export default async function HealthcareIntelligencePage() {
           matters, and explains it in plain language — with every claim traceable back to its source. Built as a
           demonstration of agentic software architecture applied to a real executive-intelligence problem.
         </p>
-        <div
-          className="card"
-          style={{
-            padding: 18,
-            background: "var(--accent-bg)",
-            borderColor: "var(--accent)",
-            display: "flex",
-            gap: 12,
-            alignItems: "start",
-          }}
-        >
-          <span className="eyebrow" style={{ whiteSpace: "nowrap" }}>
-            Demo mode
-          </span>
-          <p style={{ margin: 0, fontSize: "0.92rem" }}>
-            Everything below is computed from real, public CMS data — not from any specific insurer&apos;s real
-            membership, claims, or financials. Where the dashboard illustrates how internal enterprise data would
-            plug in, it says so explicitly and uses clearly labeled synthetic data, never anything presented as real.
-          </p>
-        </div>
       </section>
 
       <section className="container" style={{ padding: "32px 24px", borderTop: "1px solid var(--border)" }}>

@@ -37,14 +37,24 @@
  *
  * NAMING/PRIVACY: this file's issuer field (IssuerId) is an opaque
  * numeric HIOS identifier, never a literal company-name string like the
- * MA/Part D file had - but to avoid any drift toward exposing or
- * letting a downstream agent associate output with a specific real
- * carrier even indirectly, this adapter never persists IssuerId at all.
- * PlanId is kept (also an opaque code, e.g. "15833FL0120007" - not a
- * company name) because it's needed for a real, honest "how many plan
- * options exist in this rating area" competitive-intensity read
- * (Q071) - every downstream use of it is a COUNT of distinct plan IDs,
- * never the ID itself surfaced in an insight.
+ * MA/Part D file had. Revised 2026-09-24 (see this project's revised
+ * carrier-naming rule, AGENT_ARCHITECTURE.md): IssuerId IS now kept,
+ * because Q071's own catalog definition ("county-level competitive-
+ * intensity signal - number of ISSUERS/plans") calls for counting
+ * distinct issuers, and a real data review this same day found that
+ * distinct-PlanId counts per RATING AREA are structurally near-uniform
+ * within a state (issuers file consistently across every rating area
+ * they enter), producing a degenerate, tie-dominated ranking - a real
+ * bug caught from Adam's screenshot showing 9 South Carolina rating
+ * areas tied at exactly 27. Distinct issuer count, aggregated to the
+ * STATE level (not rating area), is the metric that actually carries
+ * real cross-geography signal (verified: 7 to 18 real distinct issuers
+ * across the 5 sampled states). IssuerId itself is still never surfaced
+ * as a name anywhere downstream - only used as a COUNT, same discipline
+ * as PlanId below, which is kept for the same real "how many plan
+ * options exist" competitive-intensity read (Q071) - every downstream
+ * use of either is a COUNT of distinct IDs, never the ID itself
+ * surfaced in an insight.
  *
  * Parsing note: unlike maPartDEnrollment.ts's CSV (which has quoted
  * organization-name fields with embedded commas), this file's real,
@@ -75,6 +85,8 @@ export interface MarketplaceRateRow {
   ratingArea: string;
   /** Opaque CMS plan identifier, e.g. "15833FL0120007" - not a company name. Only ever used downstream as a COUNT of distinct plans, never surfaced itself. */
   planId: string;
+  /** Opaque real HIOS issuer identifier, e.g. "15833" - not a company name. Only ever used downstream as a COUNT of distinct issuers, never surfaced itself. */
+  issuerId: string;
   individualRate: number;
 }
 
@@ -120,10 +132,11 @@ function parseAndFilter(csvText: string): MarketplaceRateRow[] {
   const stateIdx = idx("StateCode");
   const ratingAreaIdx = idx("RatingAreaId");
   const planIdIdx = idx("PlanId");
+  const issuerIdIdx = idx("IssuerId");
   const tobaccoIdx = idx("Tobacco");
   const ageIdx = idx("Age");
   const rateIdx = idx("IndividualRate");
-  if ([stateIdx, ratingAreaIdx, planIdIdx, tobaccoIdx, ageIdx, rateIdx].some((i) => i === -1)) {
+  if ([stateIdx, ratingAreaIdx, planIdIdx, issuerIdIdx, tobaccoIdx, ageIdx, rateIdx].some((i) => i === -1)) {
     throw new Error(`CMS Rate PUF CSV is missing an expected column - real header was: ${header.join(", ")}`);
   }
 
@@ -144,7 +157,7 @@ function parseAndFilter(csvText: string): MarketplaceRateRow[] {
 
     const individualRate = Number(fields[rateIdx]);
     if (Number.isNaN(individualRate)) continue;
-    rows.push({ state, ratingArea: fields[ratingAreaIdx], planId: fields[planIdIdx], individualRate });
+    rows.push({ state, ratingArea: fields[ratingAreaIdx], planId: fields[planIdIdx], issuerId: fields[issuerIdIdx], individualRate });
   }
   return rows;
 }

@@ -259,10 +259,19 @@ function buildUpcomingEffectiveSignal(documents: FederalRegisterDocument[], pull
     sourceIds: [SOURCE_ID],
     generatingAgent: AGENT_ID,
     chart: {
-      type: "bar",
-      title: "Days until effective, upcoming finalized CMS rules",
-      unit: "days",
-      bars: upcoming.slice(0, TOP_N).map((r) => ({ label: r.documentNumber, value: daysBetween(r.effectiveOn as string, stamp) })),
+      // A linked bullet list, not a bar chart - redesigned 2026-09-24
+      // after Adam pointed out that a bar chart keyed by opaque document
+      // numbers didn't convey the actually useful content (what the
+      // rules are, and where to read them). Each item is the rule's real
+      // title, its real effective date, and a real link to the Federal
+      // Register's own page for it - never a fabricated summary.
+      type: "list",
+      title: "Upcoming finalized CMS rules, by effective date",
+      items: upcoming.slice(0, TOP_N).map((r) => ({
+        label: r.title,
+        detail: `Effective ${r.effectiveOn} (${daysBetween(r.effectiveOn as string, stamp)} days out)`,
+        url: r.htmlUrl,
+      })),
     },
   };
 

@@ -48,6 +48,16 @@ export interface SelectNoteworthyOptions {
   topN: number;
   /** What's being ranked, e.g. "home health capacity signals by state" - goes into the model prompt, not into any Insight field directly. */
   taskDescription: string;
+  /**
+   * Which extreme of primaryMetric is noteworthy - "highest" (default,
+   * preserves every call site's original behavior) or "lowest". Added
+   * after a real mismatch: commercial-marketplace's plan-availability
+   * insight correctly headlines "ranges from 27 to 122" but its chart
+   * only ever showed the highest-count (least interesting) areas,
+   * because the old hardcoded highest-first ranking had no way to
+   * express that fewer plans is the actual competitive-intensity signal.
+   */
+  direction?: "highest" | "lowest";
 }
 
 export interface SelectNoteworthyResult {
@@ -55,13 +65,15 @@ export interface SelectNoteworthyResult {
   source: "llm" | "deterministic";
 }
 
-function deterministicSelection(candidates: Candidate[], topN: number): SelectNoteworthyResult {
-  const ranked = [...candidates].sort((a, b) => b.primaryMetric - a.primaryMetric).slice(0, topN);
+function deterministicSelection(candidates: Candidate[], topN: number, direction: "highest" | "lowest"): SelectNoteworthyResult {
+  const ranked = [...candidates]
+    .sort((a, b) => (direction === "lowest" ? a.primaryMetric - b.primaryMetric : b.primaryMetric - a.primaryMetric))
+    .slice(0, topN);
   return {
     source: "deterministic",
     selections: ranked.map((c) => ({
       candidateId: c.id,
-      rationale: "Ranked by its primary metric - the highest available in this cycle's real data.",
+      rationale: `Ranked by its primary metric - the ${direction} available in this cycle's real data.`,
     })),
   };
 }
@@ -95,15 +107,16 @@ function parseModelSelections(raw: string, candidates: Candidate[], topN: number
 }
 
 export async function selectNoteworthy(options: SelectNoteworthyOptions, ctx: AgentContext): Promise<SelectNoteworthyResult> {
-  const { candidates, topN, taskDescription } = options;
+  const { candidates, topN, taskDescription, direction = "highest" } = options;
 
   // Nothing to reason about, or no room for judgment to matter - deterministic fallback is not just cheaper here, it's equally correct.
   if (!ctx.modelProvider || candidates.length <= topN) {
-    return deterministicSelection(candidates, topN);
+    return deterministicSelection(candidates, topN, direction);
   }
 
   const candidateList = candidates.map((c) => `- id="${c.id}" | ${c.label}: ${c.summary}`).join("\n");
-  const prompt = `Task: select the ${topN} most noteworthy of the following ${candidates.length} real candidates for "${taskDescription}", for an executive reader.\n\nCandidates:\n${candidateList}\n\nRespond with ONLY a raw JSON array (no markdown fence, no prose) of up to ${topN} objects: [{"candidateId": "<must exactly match an id above>", "rationale": "<one sentence, using only facts already given above>"}]. Never invent a candidate id, number, or fact not present above.`;
+  const directionNote = direction === "lowest" ? " A LOWER primary-metric value is the noteworthy signal here, not a higher one." : "";
+  const prompt = `Task: select the ${topN} most noteworthy of the following ${candidates.length} real candidates for "${taskDescription}", for an executive reader.${directionNote}\n\nCandidates:\n${candidateList}\n\nRespond with ONLY a raw JSON array (no markdown fence, no prose) of up to ${topN} objects: [{"candidateId": "<must exactly match an id above>", "rationale": "<one sentence, using only facts already given above>"}]. Never invent a candidate id, number, or fact not present above.`;
 
   let raw: string | null = null;
   try {
@@ -117,10 +130,10 @@ export async function selectNoteworthy(options: SelectNoteworthyOptions, ctx: Ag
     raw = null;
   }
 
-  if (!raw) return deterministicSelection(candidates, topN);
+  if (!raw) return deterministicSelection(candidates, topN, direction);
 
   const parsed = parseModelSelections(raw, candidates, topN);
-  if (!parsed) return deterministicSelection(candidates, topN);
+  if (!parsed) return deterministicSelection(candidates, topN, direction);
 
   return { source: "llm", selections: parsed };
 }

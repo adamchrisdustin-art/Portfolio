@@ -2,30 +2,69 @@
 
 ## Start here (2026-09-24)
 
-**Phases 1–6 are built and live.** The dashboard runs at
+**Phases 1–6 are built and live, plus a 12th agent (Market/Catalyst
+Intelligence) added the same day.** The dashboard runs at
 `/healthcare-intelligence`, live in production at adamdustin.me
-(auto-deploys from `main` via Vercel — see `DEPLOYMENT.md`), 121 tests
-passing, clean build. No phase is "next" by default — Phase 7
-(hardening/portfolio write-up), a live Phase 6 provider run, and
-retrofitting the salience layer into the remaining agents are all live
-options; pick based on what's asked next.
+(auto-deploys from `main` via Vercel — see `DEPLOYMENT.md`). No phase is
+"next" by default — Phase 7 (hardening/portfolio write-up), a live Phase
+6 provider run, and retrofitting the salience layer into the remaining
+original agents are all live options; pick based on what's asked next.
 
 **What's real:**
-- **6 data sources wired** (all 3 items on Adam's CMS priority order are
-  done): Hospital General Information, Home Health Care Agencies,
-  Medicare Physician & Other Practitioners (5-state sample), the Federal
-  Register API (CMS filter, rolling 120-day window), CMS's MA/Part D
-  Monthly Enrollment by Plan file, and CMS's Marketplace Rate PUF. Full
-  detail, verification method, and known limitations for each: `SOURCE_REGISTRY.md`.
+- **10 data sources wired**: the original 6 CMS-focused sources (all 3
+  items on Adam's CMS priority order are done) — Hospital General
+  Information, Home Health Care Agencies, Medicare Physician & Other
+  Practitioners (5-state sample), the Federal Register API (CMS filter,
+  rolling 120-day window), CMS's MA/Part D Monthly Enrollment by Plan
+  file, and CMS's Marketplace Rate PUF — plus 4 new non-CMS sources added
+  2026-09-24 for the Market/Catalyst Intelligence agent: SEC EDGAR 8-K
+  filings (6-company health-insurer watchlist), openFDA novel drug
+  approvals, NIH RePORTER award notices, and ClinicalTrials.gov Phase 3
+  results postings (all 4 on a 150-day rolling window). Full detail,
+  verification method, and known limitations for each: `SOURCE_REGISTRY.md`.
   Medicaid/T-MSIS is the only named CMS source left unwired — deliberately
   deprioritized as most fragmented.
-- **8 of 11 domain agents produce real, evidence-backed insights**
+- **9 of 12 domain agents produce real, evidence-backed insights**
   (Market Growth ×2, Claims/Utilization/Cost, Reimbursement & Payment,
-  Provider & Network, Emerging Trends, Policy/Regulation/CMS ×3, MA/Part
-  D ×2, Commercial/Marketplace ×2). Medicaid/CHIP/Duals is the one
-  remaining honest stub. 2 agents are infrastructure-only (Source
-  Monitor, Data Architecture). All 7 dashboard layers have at least one
-  real finding.
+  Provider & Network ×up to 5 (Q038 ownership-concentration plus
+  Q125-Q128's star-rating/quality-outcome signals), Emerging Trends,
+  Policy/Regulation/CMS ×3, MA/Part D ×2, Commercial/Marketplace ×2, and
+  the new Market/Catalyst Intelligence agent ×up to 12). Medicaid/CHIP/
+  Duals is the one remaining honest stub among the original 11. 2 agents
+  are infrastructure-only (Source Monitor, Data Architecture). All 7
+  dashboard layers have at least one real finding (Market/Catalyst's
+  Q113-Q124 and Provider & Network's Q125-Q128 both fold into existing
+  layers — Emerging Signals and Provider & Network respectively — rather
+  than adding new ones).
+- **12th agent: Market/Catalyst Intelligence** (`agents/market-catalyst/`,
+  Q113-Q124) — a new question category beyond the original 112-question
+  catalog, tracking real corporate-disclosure (SEC 8-K), drug-approval
+  (openFDA), federal-grant (NIH RePORTER), and clinical-trial-results
+  (ClinicalTrials.gov) activity. The third real use of the revised
+  carrier-naming rule (see `AGENT_ARCHITECTURE.md` §13). One real,
+  disclosed correction made during implementation: NIH RePORTER's real
+  `agency_code` field turned out to be the sponsoring HHS operating
+  division, not NIH institute-level detail, as originally planned — the
+  agent's Q115 insight is honestly relabeled for this. "Grants rescinded"
+  was researched and found infeasible with any free/verifiable public
+  source and was deliberately not built — see `DATA_GAP_REGISTER.md` §8.
+- **Star rating vs. quality outcomes (Q125-Q128, added 2026-09-24)**,
+  owned by Provider & Network on the already-live Hospital General
+  Information dataset — per Adam's PDF-annotated feedback. A real scatter
+  plot (Q125, new `ChartScatter` chart type) correlating CMS's overall
+  star rating against a real net quality-outcome score derived from the
+  same dataset's mortality/safety/readmission measure-group counts
+  (Pearson r = 0.56 as of the first real pull — moderate-to-strong
+  positive, disclosed as correlation, never causation); Tukey boxplots of
+  star rating (Q126) and net quality-outcome score (Q127) by state; and a
+  states-improving-over-time check (Q128) built on the same
+  snapshotHistory/meetsPersistence mechanism every other agent uses — as
+  of 2026-09-24 this honestly reports no state has yet shown a persistent
+  improvement (this CMS dataset refreshes quarterly; only ~1 week of real
+  history exists so far), alongside a real current-snapshot ranking of
+  which states have the best outcomes right now. New shared
+  `pearsonCorrelation()` in `intelligence/metrics/metrics.ts` and
+  `ScatterChart.tsx` component.
 - **Salience/triage reasoning layer**
   (`cms-intelligence/intelligence/salience/selectNoteworthy.ts`): splits
   real fact computation (stays deterministic) from selecting/explaining
@@ -44,10 +83,11 @@ options; pick based on what's asked next.
   ranking, the kind of reading a real industry directory like AIS Health
   publishes), never fabricated or implied-proprietary. MA/Part D's adapter
   now keeps `parentOrganization`/`organizationMarketingName` for exactly
-  this. Marketplace's IssuerId stays dropped for a different, narrower
-  reason: it's an opaque numeric ID with no verified name crosswalk wired
-  in, not a rule against naming carriers from that file in principle (see
-  `SOURCE_REGISTRY.md`).
+  this. Marketplace's IssuerId - previously dropped entirely - is now
+  kept as of 2026-09-24 too, but only ever used as a real COUNT of
+  distinct issuers per state (Q071's competitive-intensity read), never
+  surfaced or resolved to a company name - it's still an opaque numeric
+  ID with no verified name crosswalk wired in (see `SOURCE_REGISTRY.md`).
 - **Phase 6 evaluation framework** (`cms-intelligence/evaluation/`)
   built and tested, **not run live** — no API key is configured anywhere
   for this project. See `MODEL_EVALUATION.md` for the framework, verified
@@ -146,3 +186,126 @@ locally but never pushed, so the dashboard had never actually been
 live — fixed, and consolidated two overlapping portfolio cards into one
 in the same pass. 121 tests passing, clean build, verified live on
 adamdustin.me after every push.
+
+**12th agent: Market/Catalyst Intelligence** (2026-09-24, same extended
+session): added a new question category (Q113-Q124, beyond the original
+112) and 4 brand-new non-CMS real data sources — SEC EDGAR 8-K filings
+(6-company health-insurer watchlist), openFDA novel drug approvals, NIH
+RePORTER award notices, and ClinicalTrials.gov Phase 3 results postings,
+each on a 150-day rolling window and each independently verified live
+before being wired in. Real corrections made during implementation (not
+papered over): NIH RePORTER's real `agency_code` field turned out to be
+the sponsoring HHS operating division (NIH/FDA/ALLCDC), not NIH
+institute-level detail (NHLBI/NCI/NIA) as originally planned — the
+by-agency insight was honestly relabeled rather than left mislabeled;
+openFDA's search-matches-at-application-level behavior required
+per-submission re-filtering after the initial fetch; NIH RePORTER's
+real response shape ignores the requested PascalCase field names and
+always returns its own snake_case/nested shape; ClinicalTrials.gov v2's
+response nests every requested field under its real module rather than
+returning flat keys. "Grants rescinded" was researched as a possible 5th
+source and found infeasible with any free/verifiable public source
+(negative USAspending grant obligations are routine entitlement
+true-ups, not rescissions) — deliberately not built, logged in
+`DATA_GAP_REGISTER.md` §8 instead. 163 tests passing (28 test files),
+clean `tsc`/`lint`/build.
+
+**Star rating vs. quality outcomes** (2026-09-24, same extended session,
+per Adam's PDF-annotated dashboard feedback): added Q125-Q128 to Provider
+& Network on the already-live Hospital General Information dataset — no
+new data source needed. New `ChartScatter` chart type and
+`ScatterChart.tsx` component (single hue, low-opacity points so real
+overlapping star-rating clusters read as density rather than illegible
+stacking), plus a new shared `pearsonCorrelation()` metric. Real,
+verified finding: star rating and a real net quality-outcome score
+(derived from the same dataset's mortality/safety/readmission
+better/worse counts) correlate at r = 0.56 (moderate-to-strong positive)
+across 2,961 real hospitals — explicitly documented as correlation, not
+causation, since the star rating is partly derived from these same
+measure groups. The states-improving-over-time question (Q128) honestly
+reports no state has yet shown a persistent real improvement, since this
+CMS dataset refreshes quarterly and only ~1 week of real snapshot history
+exists so far — not a system limitation, and not papered over with a
+fabricated trend. 171 tests passing (28 test files), clean
+`tsc`/`lint`/build/e2e.
+
+**Dashboard feedback response** (2026-09-24, same extended session, per
+Adam's review of the localhost build): a batch of real bug fixes, one
+genuinely new agent capability, and a live-verified feasibility finding.
+- **Real label-clipping bug fixed**: `BarChart.tsx`'s label-column width
+  had a leftover 180px hard cap that clipped real long labels (e.g. the
+  50-character "BlueCross BlueShield Association, Federal Employee") at
+  the SVG's own left edge - contradicted this file's own "compute from
+  the actual longest label, never a fixed guess" rule. Cap removed.
+- **Marketplace plan-availability insight (Q071) redesigned**: the prior
+  rating-area-level distinct-plan-count ranking was a real degenerate
+  tie (9 South Carolina rating areas tied at exactly 27 - issuers file
+  consistently across every rating area they enter within a state, so
+  rating area carries no real signal). Redesigned to state-level
+  distinct-issuer count (real IssuerId field, added to the adapter - see
+  naming-privacy note above), which shows genuine variation (7 to 18
+  issuers across the 5 sampled states) and better matches Q071's own
+  catalog wording ("number of issuers/plans").
+- **Upcoming-finalized-CMS-rules insight (Q076) redesigned**: was a bar
+  chart keyed by opaque document numbers; a bar chart doesn't convey
+  "what are these rules and where do I read them." New `ChartList` chart
+  type (`ListChart.tsx`) - a real linked bullet list, each item the
+  rule's real title, real effective date, and a real Federal Register
+  URL.
+- **"Obvious correlation" insight redesigned** (emerging-trends agent,
+  Q088): facility-count-vs-physician-payment was mechanically expected
+  (more facilities → more physicians needed), so a positive correlation
+  there confirmed nothing new. Redesigned to hospital ownership
+  concentration (CR4, reused from Provider & Network's own `cr4For`) vs.
+  physician payment - a real market-power question with no definitional
+  link, honestly reporting a weak r = 0.25 rather than a stronger but
+  meaningless result.
+- **NIH research themes (Q129, new)**, per Adam's request: added NIH
+  RePORTER's real `terms` field to the adapter and re-pulled live. Real
+  finding at the initial 150-day pull: raw term frequency is dominated by
+  generic grant-administration language ("Research" in 85/100 sampled
+  awards) - a documented, disclosed statistical band (3 to 20% of sample)
+  excludes that noise; within the band, a real, genuine concentration
+  emerged that pull (Alzheimer's Disease and Related Dementias
+  terminology across ~19-20% of sampled awards). This is a real,
+  dynamically computed top-100-by-dollar sample, not a fixed result - a
+  later re-pull with the 2026-09-24 window-widening below drew a
+  different top-100 sample from a much larger real population and
+  surfaced a different leading in-band term ("Scientist", still real and
+  correctly computed, just less narratively clean) - expected behavior
+  given the sample changed, not a bug. Near-synonymous NIH phrasings are
+  never merged in either case - disclosed as a real limitation, not
+  hidden.
+- **Facility entries/exits (Q042/Q043, new)**, per Adam's request for
+  closure/opening tracking: two pre-existing catalog questions Provider &
+  Network already owned but had never built, implemented via the same
+  real `diffRows()` mechanism the Data Source & CMS Change Monitor agent
+  uses. Honestly reports zero real entries/exits across the 3 real pulls
+  collected so far (same real quarterly-cadence reasoning as Q128).
+- **2-year historical window, feasibility-verified, not assumed**: per
+  Adam's request for "quarters over the last two years" instead of the
+  original ~150-day windows. Live-verified finding: CMS's own Provider
+  Data Catalog datastore API exposes only the CURRENT dataset vintage -
+  no historical-vintage parameter exists (checked directly against the
+  real metastore), so the CMS-sourced series (hospital counts, MA/Part D
+  enrollment, Marketplace rates) cannot be retroactively backfilled -
+  only accumulate forward from each future real pull, as already
+  designed. The 4 market-catalyst sources plus Federal Register, by
+  contrast, expose real historical date-range queries - all 5 were
+  widened from ~120-150 days to a real, live-verified 730-day (2-year)
+  window: openFDA's single-request cap raised (100→1000, verified 607
+  real matching applications / 105 real matching submissions over 2
+  years, safely under the new cap); ClinicalTrials.gov gained real
+  pagination (its documented `nextPageToken`, verified 1,706 real
+  matching studies over 2 years, well past one page); NIH RePORTER and
+  SEC EDGAR needed only the window constant changed (their existing
+  designs already covered the wider real population safely). Federal
+  Register's per_page cap was also raised (250→1000, verified 487 real
+  matching documents in one request).
+- **LinkedIn/social link preview** (`app/opengraph-image.tsx`, new; Next's
+  file-convention metadata API), per Adam's request for a rich preview
+  when adding this site to a LinkedIn Featured section - a real
+  dynamically-rendered branded PNG, plus `openGraph`/`twitter` metadata
+  fields in `app/layout.tsx` (`metadataBase` set so the image URL
+  resolves absolutely, required for external crawlers like LinkedIn's).
+- 175 tests passing (28 test files), clean `tsc`/`lint`/build/e2e.

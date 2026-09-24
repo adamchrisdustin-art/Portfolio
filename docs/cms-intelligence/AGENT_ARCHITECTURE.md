@@ -2,7 +2,9 @@
 
 Phase 2 deliverable per `02_PHASE_2_INTELLIGENCE_BLUEPRINT.md` §2. Defines
 responsibilities, inputs, outputs, dependencies, and escalation rules for
-each of the 12 agents named in `00_MASTER_ORCHESTRATOR.md`.
+each of the 12 agents named in `00_MASTER_ORCHESTRATOR.md`, plus a 13th
+agent (Market/Catalyst Intelligence, §13 below) added 2026-09-24 beyond
+that original design.
 
 Directory home for all of this: `cms-intelligence/agents/<agent-slug>/` per
 `PROJECT_BOUNDARY.md`. Implementation (Phase 3) is not started here — this
@@ -38,7 +40,18 @@ is the design each agent's eventual instruction file must match.
   (never name a real carrier anywhere) flagged per Adam's 2026-09-23
   direction; revised the following day per Adam's clarification that the
   intent was always "no claim of proprietary access," not "no real name
-  ever" — see project memory.
+  ever" — see project memory. **Market/Catalyst Intelligence (agent #13,
+  below) is this rule's third real use**, after MA/Part D's
+  parent-organization enrollment ranking and Marketplace's issuer-ID
+  discussion: its SEC EDGAR insights name real tracked health insurers
+  (e.g. "Centene Corporation filed an 8-K Item 5.02..."), its NIH RePORTER
+  insights name real recipient universities/health systems, and its
+  openFDA/ClinicalTrials.gov insights name real sponsors — every one a
+  genuine, sourced finding computed from a real public filing, approval
+  record, award, or trial posting, never editorialized beyond what that
+  record itself shows (see agent #13's own file header for the specific
+  honesty rules — e.g. never "fired," never "partnership," never
+  "breakthrough," never "positive result" — that bind this the hardest).
 - **Structured output, always.** Every agent that produces a finding emits
   it as an `Insight` object matching `EVIDENCE_MODEL.md`'s schema — never
   free text alone. Narrative is a field *inside* the structured object, not
@@ -252,10 +265,33 @@ signal already being tracked there.
 **Mission:** track provider/facility growth, contraction, concentration,
 ownership change, and entry/exit — the supply side of the market story.
 
-**Executive questions owned:** Q036–Q045 (Provider & Network).
+**Executive questions owned:** Q036–Q045 (Provider & Network), and
+Q125–Q128 (added 2026-09-24, hospital star rating vs. quality outcomes -
+a thematic extension of this agent's existing scope onto the same
+Hospital General Information dataset, not a new numeric range next to
+Q036-045 in EXECUTIVE_QUESTION_CATALOG.md).
 
 **In scope:** provider/facility-count trends, ownership-change tracking,
-concentration-ratio calculation, ASC-specific expansion tracking.
+concentration-ratio calculation, ASC-specific expansion tracking. Also,
+since 2026-09-24: whether CMS's composite hospital overall star rating
+actually tracks real mortality/safety/readmission outcome-measure
+performance (Q125, Pearson correlation - see this project's real,
+computed r = 0.56 as of the first pull), the real distribution of star
+ratings by state (Q126) and of a real "net quality-outcome score" by
+state (Q127, both Tukey boxplots), and whether any state shows a real,
+persistent improvement in that outcome score over time (Q128 - as of
+2026-09-24 this honestly reports no state has, since this dataset
+refreshes quarterly and only ~1 week of real snapshot history exists so
+far; see cms-intelligence/agents/provider-network/agent.ts). Also built
+2026-09-24, per Adam's request for facility-closure/opening tracking:
+Q042 (real facility entries) and Q043 (real facility exits) - two
+pre-existing catalog questions this agent already owned but had never
+built, implemented via the same real `diffRows()` mechanism the Data
+Source & CMS Change Monitor agent uses, applied across every consecutive
+pair of real Hospital General Information snapshots. As of 2026-09-24
+these honestly report zero real entries/exits observed so far (same
+real quarterly-cadence/short-history reasoning as Q128) - not fabricated
+to look more active than the real data supports.
 
 **Out of scope:** value-based-care-specific provider behavior (delegates
 to a shared signal with the Policy agent for Q107's VBC/concentration
@@ -264,8 +300,8 @@ intersection question, rather than owning VBC outright).
 **Inputs:** CMS Provider Enrollment public files, Provider ownership
 dataset, Hospital General Information, ASC datasets.
 
-**Outputs:** `Insight` objects tagged to Q036–Q045; also the "capacity
-input" the Market Growth agent consumes.
+**Outputs:** `Insight` objects tagged to Q036–Q045 and Q125–Q128; also
+the "capacity input" the Market Growth agent consumes.
 
 **Dependencies:** Data Source & CMS Change Monitor, Data Architecture
 agent.
@@ -556,3 +592,96 @@ human/Claude Code during Phase 3 implementation, not re-derived at runtime.
 population/geography/definition mismatch (per agent #6's escalation rule
 above, generalized to all agents) — resolves the ambiguity and updates the
 shared model rather than letting each agent resolve it independently.
+
+---
+
+## 13. Market/Catalyst Intelligence
+
+**Added 2026-09-24 — the 12th agent, a new category beyond the master
+orchestrator's original 12-agent/112-question design.** Built after Adam
+asked for a real market-catalyst/corporate-activity layer distinct from
+every other agent's CMS-program-data focus.
+
+**Mission:** track real corporate-disclosure, drug-approval, federal
+research-grant, and clinical-trial-results activity that could matter to
+a payer executive's competitive and clinical-planning picture — a
+"what just happened in the market" read, not a CMS program metric.
+
+**Executive questions owned:** Q113–Q124 and Q129 (Market/Catalyst
+Intelligence, see `EXECUTIVE_QUESTION_CATALOG.md` §13) — owned outright,
+no joint ownership. Q129 (NIH research-theme frequency) added 2026-09-24
+per Adam's request.
+
+**In scope:** a fixed 6-company health-insurer watchlist's SEC 8-K filing
+activity; real novel-drug (new molecular entity) FDA approvals; real NIH
+award-notice activity; real industry-sponsored Phase 3 clinical-trial
+results postings.
+
+**Out of scope:** any claim about *why* a filing, approval, award, or
+posted result happened, or what it means for a company's actual
+financial/clinical outcome — this agent reports that a real, dated event
+occurred and cites it, never a causal or evaluative judgment beyond the
+record itself (see the four honesty rules below, each independently
+binding).
+
+**Inputs:** SEC EDGAR submissions API (`data/adapters/secEdgarFilings.ts`,
+a fixed 6-company CIK watchlist: UnitedHealth Group, CVS Health, Humana,
+Centene, The Cigna Group, Elevance Health); openFDA drugsfda
+(`data/adapters/fdaDrugApprovals.ts`); NIH RePORTER projects/search
+(`data/adapters/nihReporterAwards.ts`, also captures the real `terms`
+field for Q129 as of 2026-09-24); ClinicalTrials.gov v2 studies API
+(`data/adapters/clinicalTrialsResults.ts`). All four widened 2026-09-24
+from a 150-day to a real 730-day (2-year) rolling window per Adam's
+request for deeper historical coverage — openFDA's single-request cap
+was raised (100→1000) and ClinicalTrials.gov gained real pagination (its
+documented `nextPageToken`, up to 10 pages) to safely cover the larger
+real population this widening surfaces; NIH RePORTER's and SEC EDGAR's
+existing designs already covered it safely without changes beyond the
+window constant (see each adapter's own header for the real verified
+counts behind these decisions). Pulled quarterly like every other
+adapter, never on a page load (`COST_AND_OPERATING_MODEL.md`).
+
+**Outputs:** up to 13 `Insight` objects tagged Q113–Q124 and Q129,
+`population: "n/a"` and national geography throughout (none of this data
+is population/geography-scoped the way CMS claims data is).
+
+**Dependencies:** none upstream — this agent's four sources are
+independent of every other agent's data.
+
+**LLM vs. code split:** every real number (award dollars, filing counts,
+approval counts, enrollment statistics) is code-computed from a real
+pulled snapshot; the salience/triage layer
+(`intelligence/salience/selectNoteworthy.ts`) is used for the ranked
+NIH-award and per-company SEC selections, same pattern as MA/Part D and
+Marketplace — it may only choose among and briefly explain real
+candidates, never invent one.
+
+**Four honesty rules unique to this agent (binding, verified live
+2026-09-24, not assumed):**
+1. SEC Form 8-K **Item 5.02** covers BOTH departure AND appointment of
+   officers/directors — never "fired" or "resigned," only "filed an 8-K
+   Item 5.02 (departure or election of directors/principal officers)."
+2. SEC Form 8-K **Item 1.01** is "entry into a material definitive
+   agreement" — covers far more than partnerships (credit facilities,
+   leases, etc.) — never "announced a partnership."
+3. openFDA's `drugsfda` dataset has **no "breakthrough therapy" field** —
+   never use that word; only the real `submission_class_code` and
+   `review_priority` fields, verbatim.
+4. A ClinicalTrials.gov results posting **encodes no success/failure
+   judgment** — never "positive result," only that results were posted,
+   by whom, with what real enrollment number.
+
+**Real correction made during implementation:** NIH RePORTER's real
+`agency_code` field (verified live 2026-09-24) returns the sponsoring HHS
+operating division/agency (e.g. "NIH", "FDA", "ALLCDC"), NOT NIH
+institute/center-level detail (e.g. NHLBI vs. NCI vs. NIA) as this
+project's plan originally assumed — Q115's insight is honestly labeled
+"by funding agency," not "by NIH institute," because that is what the
+real field actually contains. See `data/adapters/nihReporterAwards.ts`'s
+header for the full detail.
+
+**Escalation:** escalates to the Orchestrator when a single filing/
+approval/award/trial-results event appears large enough (e.g. affects
+multiple tracked companies at once, or a very large NIH award) to be
+itself an executive-level signal, same threshold shape as agent #9's
+four-or-more-domains rule.

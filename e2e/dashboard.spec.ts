@@ -67,9 +67,22 @@ for (const route of ROUTES) {
   });
 }
 
-test("demo-mode banner is present on the dashboard", async ({ page }) => {
+test("a chart wider than its card starts scrolled to its left edge, not centered (labels visible, never clipped)", async ({ page }) => {
   await page.goto("/healthcare-intelligence");
-  await expect(page.getByText("Demo mode")).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  // Real bug this guards against: `justifyContent: "center"` on an overflowing scroll
+  // container left scrollLeft centered by default, permanently hiding chart labels on
+  // the left edge (e.g. "Diagnostic Radiology" -> "agnostic Radiology" in a screenshot).
+  const overflowingWrappers = await page.evaluate(() => {
+    const wrappers = Array.from(document.querySelectorAll<HTMLElement>('[tabindex="0"]')).filter(
+      (el) => el.scrollWidth > el.clientWidth + 1
+    );
+    return wrappers.map((el) => el.scrollLeft);
+  });
+  expect(overflowingWrappers.length).toBeGreaterThan(0); // sanity check: this page does have overflowing charts to verify
+  for (const scrollLeft of overflowingWrappers) {
+    expect(scrollLeft).toBe(0);
+  }
 });
 
 test("the evidence drawer opens and shows a confidence rationale", async ({ page }) => {

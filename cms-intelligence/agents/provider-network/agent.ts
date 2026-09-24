@@ -13,21 +13,114 @@
  * 3 real snapshots exist spanning 7 days with zero observed ownership
  * mix change, so this correctly stays "baseline"/"low" until real
  * change and/or more elapsed time exist - not a code limitation.
+ *
+ * Q125-Q128 added 2026-09-24 per Adam's PDF-annotated feedback request
+ * for a star-rating-vs-quality-outcome read: a scatter plot (Q125,
+ * correlating the real CMS overall star rating against a real net
+ * quality-outcome score derived from the mortality/safety/readmission
+ * measure-group counts already in this same dataset), a star-rating
+ * boxplot by state (Q126), a quality-outcome-score boxplot by state
+ * (Q127), and a states-improving-over-time check (Q128). Q128 is built
+ * on the real snapshotHistory/meetsPersistence mechanism every other
+ * agent uses - as of 2026-09-24 this dataset's quarterly-refresh cadence
+ * means no state has genuinely moved across the 3 real pulls collected
+ * so far, so Q128 honestly reports "no persistent improvement yet"
+ * alongside a real current-snapshot ranking, rather than fabricating a
+ * trend claim the data doesn't support.
+ *
+ * Q042/Q043 added 2026-09-24 per Adam's request for facility
+ * closures-vs-openings tracking: these are pre-existing catalog
+ * questions (EXECUTIVE_QUESTION_CATALOG.md's Provider & Network section)
+ * this agent already owned but had never built. Implemented via the same
+ * real `diffRows` mechanism the Data Source & CMS Change Monitor agent
+ * uses (cms-intelligence/data/sources/diff.ts) - never a bespoke
+ * reimplementation - applied across every consecutive pair of real
+ * Hospital General Information snapshots, keyed on the real
+ * `facility_id`. As of 2026-09-24, 3 real snapshots spanning 7 days show
+ * ZERO real facility entries or exits - an honest finding given this
+ * dataset's quarterly-refresh cadence and this project's real, still-
+ * short pull history, not a system limitation.
  */
 import {
   listSnapshotFiles,
   loadSnapshot,
   SOURCE_ID,
+  type HospitalRow,
+  type HospitalSnapshot,
 } from "../../data/adapters/hospitalGeneralInformation";
-import { assessSnapshotHistory, dateFromSnapshotFilename, directionsAcrossSnapshots } from "../../data/sources/snapshotHistory";
+import { assessSnapshotHistory, dateFromSnapshotFilename, directionsAcrossSnapshots, type SnapshotHistoryAssessment } from "../../data/sources/snapshotHistory";
+import { diffRows } from "../../data/sources/diff";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
-import { concentrationRatio } from "../../intelligence/metrics/metrics";
+import { concentrationRatio, pearsonCorrelation, tukeyBox } from "../../intelligence/metrics/metrics";
 import { classifyConfidence, meetsPersistence } from "../../intelligence/trends/trend";
 import type { AgentContext, DomainAgent } from "../types";
 
 const AGENT_ID = "provider-network-intelligence";
 const TOP_N_OWNERSHIP_TYPES = 4;
+const MIN_HOSPITALS_FOR_STATE_BOX = 20; // same floor as market-growth's home-health per-state read
+const BOXPLOT_TOP_N_STATES = 8;
+const TOP_N_STATES_QUALITY = 5;
+const SCATTER_POINT_CAP = 400;
+const MIN_HOSPITALS_FOR_CORRELATION = 30;
+
+/** Real CMS Hospital Compare measure groups this dataset reports "better/worse/no different than national" counts for. */
+const QUALITY_MEASURE_GROUPS = ["mort", "safety", "readm"] as const;
+
+interface HospitalQualityRow {
+  facilityId: string;
+  facilityName: string;
+  state: string;
+  starRating: number;
+  /** (measures rated "better than national" - measures rated "worse") / total measures assessed, across mortality/safety/readmission groups, as a percent. */
+  netQualityPct: number;
+}
+
+function groupCounts(row: HospitalRow, prefix: string): { better: number; worse: number; noDifferent: number } | null {
+  const better = Number(row[`count_of_${prefix}_measures_better`]);
+  const worse = Number(row[`count_of_${prefix}_measures_worse`]);
+  const noDifferent = Number(row[`count_of_${prefix}_measures_no_different`]);
+  if (Number.isNaN(better) || Number.isNaN(worse) || Number.isNaN(noDifferent)) return null;
+  return { better, worse, noDifferent };
+}
+
+/**
+ * Real per-hospital rows with both a usable star rating and complete
+ * quality-measure-group counts. Hospitals with a suppressed/"Not
+ * Available" rating or measure count are excluded outright, never
+ * treated as zero - CMS suppresses small cells for privacy, and a
+ * missing value is not the same real finding as a zero.
+ */
+function extractQualityRows(rows: HospitalRow[]): HospitalQualityRow[] {
+  const out: HospitalQualityRow[] = [];
+  for (const row of rows) {
+    if (!row.state) continue;
+    const starRating = Number(row.hospital_overall_rating);
+    if (Number.isNaN(starRating)) continue;
+
+    const groups = QUALITY_MEASURE_GROUPS.map((prefix) => groupCounts(row, prefix));
+    if (groups.some((g) => g === null)) continue;
+
+    let better = 0;
+    let worse = 0;
+    let total = 0;
+    for (const g of groups as { better: number; worse: number; noDifferent: number }[]) {
+      better += g.better;
+      worse += g.worse;
+      total += g.better + g.worse + g.noDifferent;
+    }
+    if (total === 0) continue;
+
+    out.push({
+      facilityId: row.facility_id,
+      facilityName: row.facility_name,
+      state: row.state,
+      starRating,
+      netQualityPct: ((better - worse) / total) * 100,
+    });
+  }
+  return out;
+}
 
 /** Exported for reuse by the Data Explorer analytics section - see cms-intelligence/analytics/overview.ts. */
 export function cr4For(rows: { hospital_ownership?: string }[]): number {
@@ -42,7 +135,7 @@ export function cr4For(rows: { hospital_ownership?: string }[]): number {
 
 export const providerNetworkAgent: DomainAgent = {
   id: AGENT_ID,
-  questionIds: ["Q036", "Q037", "Q038"],
+  questionIds: ["Q036", "Q037", "Q038", "Q042", "Q043", "Q125", "Q126", "Q127", "Q128"],
 
   async run(_ctx: AgentContext): Promise<Insight[]> {
     const files = listSnapshotFiles();
@@ -139,6 +232,466 @@ export const providerNetworkAgent: DomainAgent = {
       },
     };
 
-    return [validateInsight(insight)];
+    const insights = [validateInsight(insight)];
+
+    const qualityRows = extractQualityRows(latest.rows);
+    const correlationInsight = buildQualityCorrelationSignal(qualityRows, history);
+    if (correlationInsight) insights.push(correlationInsight);
+    const starByStateInsight = buildStarRatingByStateSignal(qualityRows, history);
+    if (starByStateInsight) insights.push(starByStateInsight);
+    const outcomeByStateInsight = buildQualityOutcomeByStateSignal(qualityRows, history);
+    if (outcomeByStateInsight) insights.push(outcomeByStateInsight);
+    const qualityTrendInsight = buildQualityByGeographyTrendSignal(snapshots.map((s) => s.snapshot.rows), history);
+    if (qualityTrendInsight) insights.push(qualityTrendInsight);
+
+    const facilityChanges = accumulateFacilityChanges(snapshots);
+    const entriesInsight = buildFacilityEntriesSignal(facilityChanges, history);
+    if (entriesInsight) insights.push(entriesInsight);
+    const exitsInsight = buildFacilityExitsSignal(facilityChanges, history);
+    if (exitsInsight) insights.push(exitsInsight);
+
+    return insights;
   },
 };
+
+// ---------------------------------------------------------------------------
+// Star rating vs. quality outcomes (Q125-Q128, added 2026-09-24)
+// ---------------------------------------------------------------------------
+
+function buildQualityCorrelationSignal(qualityRows: HospitalQualityRow[], history: SnapshotHistoryAssessment): Insight | null {
+  if (qualityRows.length < MIN_HOSPITALS_FOR_CORRELATION) return null;
+
+  const xs = qualityRows.map((r) => r.starRating);
+  const ys = qualityRows.map((r) => r.netQualityPct);
+  const r = pearsonCorrelation(xs, ys);
+  const absR = Math.abs(r);
+  const strength = absR >= 0.5 ? "moderate-to-strong" : absR >= 0.3 ? "moderate" : absR >= 0.1 ? "weak" : "negligible";
+  const direction = r > 0 ? "positive" : r < 0 ? "negative" : "no";
+
+  // Deterministic evenly-spaced sample for the chart itself (sorted by
+  // facility_id for reproducibility) - the correlation coefficient above
+  // is computed across the full real qualityRows population, not this
+  // rendering-sized sample.
+  const sortedById = [...qualityRows].sort((a, b) => (a.facilityId < b.facilityId ? -1 : a.facilityId > b.facilityId ? 1 : 0));
+  const step = Math.max(1, Math.ceil(sortedById.length / SCATTER_POINT_CAP));
+  const sampledForChart = sortedById.filter((_, i) => i % step === 0);
+
+  const insight: Insight = {
+    id: `sig-provider-network-${history.latestDate}-quality-correlation`,
+    headline: `Across ${qualityRows.length} real hospitals with both a CMS overall star rating and complete mortality/safety/readmission measure counts, star rating and net quality-outcome performance show a ${strength} ${direction} correlation (Pearson r = ${r.toFixed(2)}).`,
+    questionId: "Q125",
+    signalType: "baseline",
+    period: { start: history.earliestDate, end: history.latestDate },
+    population: "medicare-ffs",
+    geography: { level: "national", code: "US", label: "United States" },
+    magnitude: { value: r, unit: "pearson-r", comparedTo: `${qualityRows.length} real hospitals` },
+    drivers: [
+      {
+        description: `Real per-hospital net quality-outcome score - (measures rated "better than national" minus measures rated "worse than national") / total measures assessed, across the real mortality, safety, and readmission measure groups, as a percent - correlated against the real CMS Hospital Overall Star Rating (1-5) across ${qualityRows.length} hospitals with both fields present. Pearson r = ${r.toFixed(3)}.`,
+        supportingEvidenceIds: ["ev-quality-correlation"],
+        relationship: "correlation",
+      },
+    ],
+    businessRelevance:
+      "Tests whether CMS's headline star rating actually tracks the underlying real outcome measures it's meant to summarize - relevant to whether star rating alone is a sufficient quality proxy for network or quality-incentive decisions, or whether the underlying measure detail should be reviewed directly.",
+    evidence: [
+      {
+        id: "ev-quality-correlation",
+        sourceId: SOURCE_ID,
+        description: `CMS Hospital General Information, real hospital_overall_rating and count_of_{mort,safety,readm}_measures_{better,worse,no_different} fields across ${qualityRows.length} hospitals, ${history.latestDate}`,
+        datasetVintage: history.latestDate,
+      },
+    ],
+    contradictoryEvidence: [],
+    confidence: "low",
+    confidenceRationale:
+      "A cross-sectional correlation from a single real snapshot, not yet observed to persist across multiple pulls. Correlation alone is never sufficient grounds for a causal claim regardless of persistence - this insight's driver is explicitly marked \"correlation\", never \"confirmed-causal\".",
+    freshness: { dataAsOf: history.latestDate, generatedAt: new Date().toISOString(), isStale: false },
+    limitations: [
+      "Correlation, not causation - the star rating methodology itself partly derives from these same measure groups, so some correlation is expected by construction, not solely reflecting an independently corroborating quality signal.",
+      "The star rating also incorporates real patient-experience and timely-and-effective-care measure groups (plus CMS's own weighting/imputation methodology) that this net quality-outcome score does not include, so a moderate rather than perfect correlation is the honestly expected result even if the two were measuring the same underlying construct.",
+      `Limited to the ${qualityRows.length} hospitals with both a numeric star rating and complete mortality/safety/readmission measure counts - hospitals with a suppressed/"Not Available" rating or measure count are excluded outright, never treated as zero.`,
+      `Chart shows a deterministic, evenly-spaced sample of ${sampledForChart.length} of these ${qualityRows.length} real hospitals for rendering size - the correlation coefficient above is computed across the full ${qualityRows.length}-hospital real sample, not the chart's sample.`,
+    ],
+    nextSignal: "Watch this correlation across a second real pull once CMS's quarterly measure refresh next lands, to see whether the relationship's strength itself is stable.",
+    recommendedInternalValidation: "Not applicable - this is public aggregate quality-measure data, not tied to any specific payer's network.",
+    sourceIds: [SOURCE_ID],
+    generatingAgent: AGENT_ID,
+    chart: {
+      type: "scatter",
+      title: "Hospital overall star rating vs. net quality-outcome score",
+      xLabel: "CMS overall star rating",
+      yLabel: "Net quality-outcome score",
+      xUnit: "stars",
+      yUnit: "%",
+      points: sampledForChart.map((row) => ({
+        label: `${row.facilityName} (${row.state})`,
+        x: row.starRating,
+        y: Math.round(row.netQualityPct * 10) / 10,
+      })),
+    },
+  };
+
+  return validateInsight(insight);
+}
+
+function buildStarRatingByStateSignal(qualityRows: HospitalQualityRow[], history: SnapshotHistoryAssessment): Insight | null {
+  const byState = new Map<string, number[]>();
+  for (const r of qualityRows) {
+    if (!byState.has(r.state)) byState.set(r.state, []);
+    byState.get(r.state)!.push(r.starRating);
+  }
+  const withEnough = Array.from(byState.entries()).filter(([, values]) => values.length >= MIN_HOSPITALS_FOR_STATE_BOX);
+  const top = withEnough.sort((a, b) => b[1].length - a[1].length).slice(0, BOXPLOT_TOP_N_STATES);
+  if (top.length === 0) return null;
+
+  const boxes = top.map(([state, values]) => ({ label: state, ...tukeyBox(values) })).sort((a, b) => b.median - a.median);
+  const highest = boxes[0];
+  const lowest = boxes[boxes.length - 1];
+  const totalHospitals = boxes.reduce((s, b) => s + b.sampleSize, 0);
+
+  const insight: Insight = {
+    id: `sig-provider-network-${history.latestDate}-star-rating-by-state`,
+    headline: `Among the ${boxes.length} states with the most hospitals reporting a real overall star rating, ${highest.label} has the highest median (${highest.median.toFixed(1)}★) and ${lowest.label} the lowest (${lowest.median.toFixed(1)}★).`,
+    questionId: "Q126",
+    signalType: "baseline",
+    period: { start: history.earliestDate, end: history.latestDate },
+    population: "medicare-ffs",
+    geography: { level: "state", code: boxes.map((b) => b.label).join("/"), label: boxes.map((b) => b.label).join(", ") },
+    magnitude: {
+      value: highest.median,
+      unit: "stars",
+      comparedTo: `${lowest.label} median (${lowest.median.toFixed(1)})`,
+      delta: highest.median - lowest.median,
+    },
+    drivers: [
+      {
+        description: `Real per-hospital CMS overall star ratings (1-5), grouped by state, top ${boxes.length} states by hospital sample size (>=${MIN_HOSPITALS_FOR_STATE_BOX} hospitals each): ${boxes.map((b) => `${b.label} median ${b.median.toFixed(1)} (n=${b.sampleSize})`).join("; ")}.`,
+        supportingEvidenceIds: ["ev-star-by-state"],
+        relationship: "correlation",
+      },
+    ],
+    businessRelevance:
+      "A real, state-level distributional read on hospital quality star ratings - a starting point for network-quality-by-geography questions, not a claim about why any state's distribution sits where it does.",
+    evidence: [
+      {
+        id: "ev-star-by-state",
+        sourceId: SOURCE_ID,
+        description: `CMS Hospital General Information, real hospital_overall_rating field across ${totalHospitals} hospitals in the top ${boxes.length} states by sample size, ${history.latestDate}`,
+        datasetVintage: history.latestDate,
+      },
+    ],
+    contradictoryEvidence: [],
+    confidence: "low",
+    confidenceRationale:
+      "A single real cross-sectional snapshot - not yet observed to persist across multiple pulls, and this dataset refreshes quarterly so genuine week-to-week movement isn't expected yet at this cadence.",
+    freshness: { dataAsOf: history.latestDate, generatedAt: new Date().toISOString(), isStale: false },
+    limitations: [
+      `Limited to the ${boxes.length} states with at least ${MIN_HOSPITALS_FOR_STATE_BOX} hospitals reporting a real, non-suppressed star rating - smaller states/territories are excluded to avoid a noisy few-hospital read, not because their data is less real.`,
+      "Star rating is CMS's own composite methodology (incorporating mortality, safety, readmission, patient experience, and timely-and-effective-care measure groups plus its own weighting/imputation) - this box shows the rating's real distribution, not a re-derivation of it.",
+    ],
+    nextSignal: "Watch this state ranking across CMS's next quarterly refresh for the first genuine multi-period shift.",
+    recommendedInternalValidation: "Not applicable - this is public aggregate quality-measure data.",
+    sourceIds: [SOURCE_ID],
+    generatingAgent: AGENT_ID,
+    chart: {
+      type: "boxplot",
+      title: `Hospital overall star rating distribution, top ${boxes.length} states by hospital count`,
+      unit: "stars",
+      boxes,
+    },
+  };
+
+  return validateInsight(insight);
+}
+
+function buildQualityOutcomeByStateSignal(qualityRows: HospitalQualityRow[], history: SnapshotHistoryAssessment): Insight | null {
+  const byState = new Map<string, number[]>();
+  for (const r of qualityRows) {
+    if (!byState.has(r.state)) byState.set(r.state, []);
+    byState.get(r.state)!.push(r.netQualityPct);
+  }
+  const withEnough = Array.from(byState.entries()).filter(([, values]) => values.length >= MIN_HOSPITALS_FOR_STATE_BOX);
+  const top = withEnough.sort((a, b) => b[1].length - a[1].length).slice(0, BOXPLOT_TOP_N_STATES);
+  if (top.length === 0) return null;
+
+  const boxes = top.map(([state, values]) => ({ label: state, ...tukeyBox(values) })).sort((a, b) => b.median - a.median);
+  const highest = boxes[0];
+  const lowest = boxes[boxes.length - 1];
+  const totalHospitals = boxes.reduce((s, b) => s + b.sampleSize, 0);
+
+  const insight: Insight = {
+    id: `sig-provider-network-${history.latestDate}-quality-outcome-by-state`,
+    headline: `Among the ${boxes.length} states with the most assessable hospitals, ${highest.label} has the best median net quality-outcome score (${highest.median.toFixed(1)}%) and ${lowest.label} the worst (${lowest.median.toFixed(1)}%).`,
+    questionId: "Q127",
+    signalType: "baseline",
+    period: { start: history.earliestDate, end: history.latestDate },
+    population: "medicare-ffs",
+    geography: { level: "state", code: boxes.map((b) => b.label).join("/"), label: boxes.map((b) => b.label).join(", ") },
+    magnitude: {
+      value: highest.median,
+      unit: "percent",
+      comparedTo: `${lowest.label} median (${lowest.median.toFixed(1)}%)`,
+      delta: highest.median - lowest.median,
+    },
+    drivers: [
+      {
+        description: `Real per-hospital net quality-outcome score (share of mortality/safety/readmission measures rated "better than national" minus "worse", as a percent), grouped by state, top ${boxes.length} states by hospital sample size (>=${MIN_HOSPITALS_FOR_STATE_BOX} hospitals each): ${boxes.map((b) => `${b.label} median ${b.median.toFixed(1)}% (n=${b.sampleSize})`).join("; ")}.`,
+        supportingEvidenceIds: ["ev-outcome-by-state"],
+        relationship: "correlation",
+      },
+    ],
+    businessRelevance:
+      "A real, state-level read on hospital quality *outcomes* specifically (not the composite star rating) - useful alongside Q126 to see whether a state's star-rating standing and its underlying outcome-measure performance tell the same story.",
+    evidence: [
+      {
+        id: "ev-outcome-by-state",
+        sourceId: SOURCE_ID,
+        description: `CMS Hospital General Information, real count_of_{mort,safety,readm}_measures_{better,worse,no_different} fields across ${totalHospitals} hospitals in the top ${boxes.length} states by sample size, ${history.latestDate}`,
+        datasetVintage: history.latestDate,
+      },
+    ],
+    contradictoryEvidence: [],
+    confidence: "low",
+    confidenceRationale:
+      "A single real cross-sectional snapshot - not yet observed to persist across multiple pulls, and this dataset refreshes quarterly so genuine week-to-week movement isn't expected yet at this cadence.",
+    freshness: { dataAsOf: history.latestDate, generatedAt: new Date().toISOString(), isStale: false },
+    limitations: [
+      `Limited to the ${boxes.length} states with at least ${MIN_HOSPITALS_FOR_STATE_BOX} hospitals with a complete, non-suppressed real measure-group count - smaller states/territories are excluded to avoid a noisy few-hospital read.`,
+      "Net quality-outcome score only covers the mortality, safety, and readmission measure groups this dataset reports a better/worse/no-different count for - it does not include patient-experience or timely-and-effective-care measures.",
+    ],
+    nextSignal: "Watch this state ranking across CMS's next quarterly refresh for the first genuine multi-period shift.",
+    recommendedInternalValidation: "Not applicable - this is public aggregate quality-measure data.",
+    sourceIds: [SOURCE_ID],
+    generatingAgent: AGENT_ID,
+    chart: {
+      type: "boxplot",
+      title: `Net quality-outcome score distribution, top ${boxes.length} states by hospital count`,
+      unit: "%",
+      boxes,
+    },
+  };
+
+  return validateInsight(insight);
+}
+
+function buildQualityByGeographyTrendSignal(rowsPerSnapshot: HospitalRow[][], history: SnapshotHistoryAssessment): Insight | null {
+  const perSnapshotStateMedians = rowsPerSnapshot.map((rows) => {
+    const qualityRows = extractQualityRows(rows);
+    const byState = new Map<string, number[]>();
+    for (const r of qualityRows) {
+      if (!byState.has(r.state)) byState.set(r.state, []);
+      byState.get(r.state)!.push(r.netQualityPct);
+    }
+    const medians = new Map<string, number>();
+    for (const [state, values] of byState) {
+      if (values.length < MIN_HOSPITALS_FOR_STATE_BOX) continue;
+      const sorted = [...values].sort((a, b) => a - b);
+      medians.set(state, sorted[Math.floor(sorted.length / 2)]);
+    }
+    return medians;
+  });
+
+  const latestMedians = perSnapshotStateMedians[perSnapshotStateMedians.length - 1];
+  if (latestMedians.size === 0) return null;
+
+  // Only states with enough real hospitals in EVERY real pull collected
+  // so far are eligible for a fair across-time direction comparison.
+  const statesInEvery = Array.from(latestMedians.keys()).filter((state) => perSnapshotStateMedians.every((m) => m.has(state)));
+  if (statesInEvery.length === 0) return null;
+
+  const improvingStates: string[] = [];
+  for (const state of statesInEvery) {
+    const series = perSnapshotStateMedians.map((m) => m.get(state)!);
+    const directions = directionsAcrossSnapshots(series);
+    if (meetsPersistence(directions) && directions[directions.length - 1] === "up") improvingStates.push(state);
+  }
+
+  const rankedCurrent = Array.from(latestMedians.entries())
+    .filter(([state]) => statesInEvery.includes(state))
+    .sort((a, b) => b[1] - a[1]);
+  const top = rankedCurrent.slice(0, TOP_N_STATES_QUALITY);
+  const confidence = classifyConfidence({
+    persistenceMet: improvingStates.length > 0,
+    hasFullBaseline: history.hasFullBaseline,
+    hasExternalCorroboration: false,
+  });
+
+  const headline =
+    improvingStates.length > 0
+      ? `${improvingStates.join(", ")} show a real, persistent improvement in net quality-outcome score across the last ${history.snapshotCount} real pulls; currently, ${top[0][0]} has the best net quality-outcome score (${top[0][1].toFixed(1)}%) among states with enough hospitals to assess.`
+      : `No state has yet shown a persistent real improvement in net quality-outcome score across the ${history.snapshotCount} real pull(s) collected so far (this CMS dataset refreshes quarterly, and only ${history.daysOfHistory} real day(s) of history exist); currently, ${top[0][0]} has the best net quality-outcome score (${top[0][1].toFixed(1)}%) among states with enough hospitals to assess.`;
+
+  const insight: Insight = {
+    id: `sig-provider-network-${history.latestDate}-quality-by-geography-trend`,
+    headline,
+    questionId: "Q128",
+    signalType: improvingStates.length > 0 ? "trend" : "baseline",
+    period: { start: history.earliestDate, end: history.latestDate },
+    population: "medicare-ffs",
+    geography: { level: "state", code: top.map(([s]) => s).join("/"), label: top.map(([s]) => s).join(", ") },
+    magnitude: { value: top[0][1], unit: "percent", comparedTo: `${rankedCurrent.length} states assessed` },
+    drivers: [
+      {
+        description:
+          improvingStates.length > 0
+            ? `States meeting the 2-consecutive-pull persistence rule for an improving real net quality-outcome median: ${improvingStates.join(", ")}. Current top states by net quality-outcome score: ${top.map(([s, v]) => `${s} (${v.toFixed(1)}%)`).join(", ")}.`
+            : `Current top states by real net quality-outcome score (single-snapshot cross-sectional ranking, not yet a confirmed trend): ${top.map(([s, v]) => `${s} (${v.toFixed(1)}%)`).join(", ")}. Real per-state median net quality-outcome score across ${history.snapshotCount} real pull(s): ${statesInEvery
+                .slice(0, 5)
+                .map((s) => `${s}: ${perSnapshotStateMedians.map((m) => m.get(s)!.toFixed(1)).join(" → ")}`)
+                .join("; ")}.`,
+        supportingEvidenceIds: ["ev-quality-trend"],
+        relationship: "correlation",
+      },
+    ],
+    businessRelevance:
+      "Directly answers whether any state shows real, sustained improvement in hospital quality outcomes over time, alongside a current-state ranking of where quality is best right now - both genuinely useful reads for network-investment and quality-incentive prioritization, reported honestly rather than forcing a 'trend' claim before one is real.",
+    evidence: [
+      {
+        id: "ev-quality-trend",
+        sourceId: SOURCE_ID,
+        description: `CMS Hospital General Information, real per-state median net quality-outcome score across ${history.snapshotCount} real pull(s), ${history.earliestDate} to ${history.latestDate}`,
+        datasetVintage: history.latestDate,
+      },
+    ],
+    contradictoryEvidence: [],
+    confidence: confidence.level,
+    confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} real snapshot(s) spanning ${history.daysOfHistory} day(s) (TREND_FRAMEWORK.md's full baseline window is 730 days); this CMS dataset itself refreshes quarterly, so genuine movement isn't expected at a sub-quarterly cadence regardless of pull frequency.`,
+    freshness: { dataAsOf: history.latestDate, generatedAt: new Date().toISOString(), isStale: false },
+    limitations: [
+      `Limited to the ${statesInEvery.length} states with at least ${MIN_HOSPITALS_FOR_STATE_BOX} hospitals with a real, non-suppressed net quality-outcome score in every real pull collected so far.`,
+      "This dataset is CMS's own quarterly-refresh hospital quality data - real week-to-week pulls are not expected to show movement until the next quarterly refresh actually lands; a 'no persistent improvement yet' finding reflects that real refresh cadence, not a system limitation.",
+      "Tracks each state's median net quality-outcome score across all qualifying hospitals in that state, not any individual hospital's own trajectory.",
+    ],
+    nextSignal: "Watch every eligible state's median net quality-outcome score across CMS's next quarterly refresh for the first genuine, assessable direction of change.",
+    recommendedInternalValidation: "Not applicable - this is public aggregate quality-measure data.",
+    sourceIds: [SOURCE_ID],
+    generatingAgent: AGENT_ID,
+    chart: {
+      type: "bar",
+      title: `States with the best current net quality-outcome score (top ${top.length})`,
+      unit: "%",
+      bars: top.map(([s, v]) => ({ label: s, value: Math.round(v * 10) / 10 })),
+    },
+  };
+
+  return validateInsight(insight);
+}
+
+// ---------------------------------------------------------------------------
+// Facility entries/exits (Q042/Q043, added 2026-09-24)
+// ---------------------------------------------------------------------------
+
+interface FacilityChangeEvent {
+  facilityId: string;
+  facilityName: string;
+  state: string;
+  observedBetween: { from: string; to: string }; // the real pair of snapshot dates where this was first observed
+}
+
+interface AccumulatedFacilityChanges {
+  entries: FacilityChangeEvent[];
+  exits: FacilityChangeEvent[];
+}
+
+/**
+ * Real diffRows() (cms-intelligence/data/sources/diff.ts - the same
+ * mechanism the Data Source & CMS Change Monitor agent uses) applied
+ * across every consecutive pair of real snapshots, accumulated into one
+ * list each of real entries and real exits observed so far. A facility
+ * present in every real snapshot collected contributes nothing here -
+ * that's the honest, expected case given this dataset's real
+ * quarterly-refresh cadence and this project's still-short pull history.
+ */
+function accumulateFacilityChanges(snapshots: { date: string; snapshot: HospitalSnapshot }[]): AccumulatedFacilityChanges {
+  const entries: FacilityChangeEvent[] = [];
+  const exits: FacilityChangeEvent[] = [];
+
+  for (let i = 1; i < snapshots.length; i++) {
+    const prev = snapshots[i - 1];
+    const curr = snapshots[i];
+    const diff = diffRows(prev.snapshot.rows, curr.snapshot.rows, "facility_id", []);
+    for (const row of diff.added) {
+      entries.push({ facilityId: row.facility_id, facilityName: row.facility_name, state: row.state, observedBetween: { from: prev.date, to: curr.date } });
+    }
+    for (const row of diff.removed) {
+      exits.push({ facilityId: row.facility_id, facilityName: row.facility_name, state: row.state, observedBetween: { from: prev.date, to: curr.date } });
+    }
+  }
+
+  return { entries, exits };
+}
+
+function buildFacilityChangeSignal(
+  events: FacilityChangeEvent[],
+  eventNoun: "entry" | "exit",
+  questionId: string,
+  history: SnapshotHistoryAssessment
+): Insight | null {
+  if (history.snapshotCount < 2) return null; // needs at least 2 real snapshots to diff at all
+
+  const eventNounPlural = eventNoun === "entry" ? "entries" : "exits";
+  const stamp = history.latestDate;
+  const confidence = classifyConfidence({ persistenceMet: false, hasFullBaseline: history.hasFullBaseline, hasExternalCorroboration: false });
+
+  const headline =
+    events.length === 0
+      ? `Zero real facility ${eventNounPlural} observed across the ${history.snapshotCount} real Hospital General Information pulls collected so far (${history.earliestDate} to ${history.latestDate}).`
+      : `${events.length} real facility ${eventNounPlural} observed across the ${history.snapshotCount} real Hospital General Information pulls collected so far - most recently ${events[events.length - 1].facilityName} (${events[events.length - 1].state}), between ${events[events.length - 1].observedBetween.from} and ${events[events.length - 1].observedBetween.to}.`;
+
+  const insight: Insight = {
+    id: `sig-provider-network-${stamp}-facility-${eventNounPlural}`,
+    headline,
+    questionId,
+    signalType: "baseline",
+    period: { start: history.earliestDate, end: history.latestDate },
+    population: "medicare-ffs",
+    geography: { level: "national", code: "US", label: "United States" },
+    magnitude: { value: events.length, unit: "facilities", comparedTo: `${history.snapshotCount} real pulls, ${history.daysOfHistory} day(s) of history` },
+    drivers: [
+      {
+        description:
+          events.length === 0
+            ? `Real diffRows() comparison (facility_id) across every consecutive pair of the ${history.snapshotCount} real pulls collected so far found no added or removed facility_id.`
+            : `Real facility ${eventNounPlural}, most recent first: ${[...events].reverse().map((e) => `${e.facilityName} (${e.state}), first observed between ${e.observedBetween.from} and ${e.observedBetween.to}`).join("; ")}.`,
+        supportingEvidenceIds: ["ev-hgi-facility-changes"],
+        relationship: "correlation",
+      },
+    ],
+    businessRelevance:
+      eventNoun === "entry"
+        ? "A real facility entry (Q042) is a market-expansion signal worth an executive's attention - new capacity entering a market can affect network-adequacy and competitive positioning."
+        : "A real facility exit (Q043) is an access-risk signal worth an executive's attention - lost capacity can affect network adequacy and shift utilization to remaining facilities.",
+    evidence: [
+      {
+        id: "ev-hgi-facility-changes",
+        sourceId: SOURCE_ID,
+        description: `CMS Hospital General Information, real facility_id diff across ${history.snapshotCount} real pulls, ${history.earliestDate} to ${history.latestDate}`,
+        datasetVintage: history.latestDate,
+      },
+    ],
+    contradictoryEvidence: [],
+    confidence: confidence.level,
+    confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} real snapshot(s) spanning ${history.daysOfHistory} day(s) (TREND_FRAMEWORK.md's full baseline window is 730 days); this CMS dataset itself refreshes quarterly, so a real entry/exit is not expected at a sub-quarterly cadence regardless of pull frequency.`,
+    freshness: { dataAsOf: history.latestDate, generatedAt: new Date().toISOString(), isStale: false },
+    limitations: [
+      `Bounded to what this project has actually observed across ${history.snapshotCount} real pull(s) spanning ${history.daysOfHistory} real day(s) - CMS itself does not publish a historical archive of past Hospital General Information vintages via its live datastore API (verified 2026-09-24), so entries/exits from before this project's own first real pull cannot be recovered retroactively; this list can only grow from here as real future pulls accumulate.`,
+      "A facility disappearing from this dataset means it stopped appearing in CMS's own published file - it does not by itself confirm the facility physically closed (e.g. a real ownership/ID change could also cause this), and a facility appearing does not by itself confirm a genuinely new physical location rather than a reporting change.",
+      "Never a claim about why a facility entered or exited - only that its real facility_id appeared or disappeared between two real pulls.",
+    ],
+    nextSignal: "Watch for the first real facility_id addition or removal across a future pull - that would be this signal's first genuine, non-zero observation.",
+    recommendedInternalValidation: "Confirm any specific facility change here against internal network-adequacy or provider-directory data before acting on it.",
+    sourceIds: [SOURCE_ID],
+    generatingAgent: AGENT_ID,
+  };
+
+  return validateInsight(insight);
+}
+
+function buildFacilityEntriesSignal(changes: AccumulatedFacilityChanges, history: SnapshotHistoryAssessment): Insight | null {
+  return buildFacilityChangeSignal(changes.entries, "entry", "Q042", history);
+}
+
+function buildFacilityExitsSignal(changes: AccumulatedFacilityChanges, history: SnapshotHistoryAssessment): Insight | null {
+  return buildFacilityChangeSignal(changes.exits, "exit", "Q043", history);
+}

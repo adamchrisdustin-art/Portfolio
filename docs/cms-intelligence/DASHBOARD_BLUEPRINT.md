@@ -278,27 +278,51 @@ detected.
 Learned the hard way across several rounds of direct feedback on the
 live page — stated here as rules, not narrated as history:
 
-- **Center every chart within its card, and wrap it in a horizontally
-  scrolling container.** A chart wider than its card must scroll, never
-  clip or overflow the card edge. Enforced today in every component
-  under `components/charts/` (`BarChart`, `BoxPlot`, `LineChart`, plus
-  `Sparkline.tsx`) via `{ overflowX: "auto", display: "flex",
-  justifyContent: "center" }` — copy this wrapper for any new chart.
+- **Wrap every chart in a horizontally scrolling container; center it
+  only via the child, never via `justifyContent: "center"` on the
+  scroll container itself.** A chart wider than its card must scroll,
+  never clip or overflow the card edge — but centering an *overflowing*
+  flex child (`display: "flex", justifyContent: "center"`) has a real,
+  confirmed bug: the browser's initial `scrollLeft` lands centered
+  rather than at 0, permanently hiding the chart's left edge (its
+  labels) since scroll can't go negative in LTR mode. Caught twice from
+  real screenshots — "Diagnostic Radiology" and "UnitedHealth Group,
+  Inc." both clipped on their left edge even though `BarChart.tsx`'s
+  label-width computation was already correct; the wrapper's centering
+  approach was the actual bug. Fixed shape, shared as
+  `CHART_SCROLL_WRAPPER_STYLE`/`CHART_CENTERED_CHILD_STYLE` in
+  `chartTheme.ts` — wrapper div gets only `{ overflowX: "auto" }` (plus
+  `tabIndex={0}`, see below), and the SVG child gets `{ display:
+  "block", margin: "0 auto" }`, which centers a chart that fits and
+  starts a chart that overflows at its left edge (labels visible first).
+  Use these two shared styles for any new chart — never re-add
+  `justifyContent: "center"` to a scroll container.
   **Also add `tabIndex={0}` to that same wrapper div** (found by the
   Phase 7 e2e accessibility scan: an axe-core `scrollable-region-focusable`
   violation, "serious" impact — a scrollable region with no way to reach
-  it via keyboard) — DonutChart doesn't need this since it wraps via
-  flex-wrap, never horizontal scroll.
+  it via keyboard) — DonutChart doesn't need either of these since it
+  wraps via flex-wrap, never horizontal scroll.
 - **Compute label-column width from the actual longest label**, never a
   fixed guess — a hardcoded 64px column once clipped real labels (e.g.
   "Diagnostic Radiology") off the edge. See `BarChart.tsx`'s
   `estimateTextWidth`/`labelWidth` for the pattern.
+- **Every chart has a visible title**, styled via the shared
+  `CHART_TITLE_STYLE` constant in `chartTheme.ts` (one shared size/
+  spacing change point, not per-component magic numbers) — `DonutChart`
+  was found missing one entirely (title only ever reached the
+  `aria-label`, never rendered on screen) and got the same treatment.
 - **Boxplot whiskers use the standard Tukey convention** (1.5× IQR from
   the box), never raw sample min/max — a raw-range whisker lets one real
   outlier flatten every other group's box into an unreadable sliver.
   Real values beyond the whisker are outliers, plotted individually, not
   discarded. Implemented once in `intelligence/metrics/metrics.ts`'s
-  `tukeyBox()` — reuse it, don't reimplement.
+  `tukeyBox()` — reuse it, don't reimplement. **The y-axis domain itself
+  is computed from the whisker range, not from outlier values** — a real
+  bug (one 5.27 outlier squashed every box's real IQR detail into an
+  unreadable sliver near the axis floor): an outlier beyond the visible
+  domain is clamped to the plot edge and drawn as a triangle rather than
+  a circle (so it reads as "pinned, not literal"), with its real value
+  still disclosed via a per-point `<title>` tooltip — see `BoxPlot.tsx`.
 - **One hue for magnitude comparisons** (bar/boxplot — this site's amber
   accent); **the categorical palette for part-to-whole/identity charts**
   (donut), always with a legend when there are 2+ slices. See
@@ -307,16 +331,37 @@ live page — stated here as rules, not narrated as history:
   **No fabricated geography** — a map needs real, verified boundary-path
   data; guessing at one misrepresents geography, so omit the chart and
   say why instead.
+- **Scatter plots** (added 2026-09-24 for the star-rating-vs-quality-
+  outcome read, `ChartScatter` in `schema.ts`, `ScatterChart.tsx`) plot
+  one real point per record - never estimated/interpolated, and a
+  chart-level point cap (for a population too large to render as
+  individual SVG nodes) must be a disclosed deterministic sample in the
+  insight's own `limitations`, never silent truncation. The correlation
+  statistic itself (if any) must always be computed over the full real
+  population, not the capped chart sample - see
+  `provider-network/agent.ts`'s `buildQualityCorrelationSignal`. Single
+  hue, low fill opacity so real overlapping points at a shared x-value
+  (e.g. an integer star rating) read as a denser region rather than
+  stacking illegibly - a legitimate rendering technique (alpha blending),
+  not a data fabrication.
 - **Never fabricate data to fill a chart type.** An insight or dataset
   with no natural chart segmentation simply has no `chart` field — same
   discipline as the `series` field for trend charts.
+- **A linked bullet list** (`ChartList` in schema.ts, `ListChart.tsx`,
+  added 2026-09-24) is the right chart for an insight whose real payload
+  is "here are the actual named things to read," not a magnitude to
+  compare - e.g. upcoming finalized CMS rules. Real bug this fixes: a bar
+  chart keyed by an opaque document number doesn't convey the useful
+  content (what the rule is, where to read it). Each item links to its
+  own real source URL when one exists; never a fabricated summary or
+  link.
 - A single current value is a stat tile (`StatTile.tsx`), not a one-bar
   bar chart.
 
 These conventions produced `components/Sparkline.tsx` (multi-snapshot
 trend lines), `components/charts/{BarChart,DonutChart,BoxPlot,
-StatTile}.tsx` (single-snapshot cross-sections — a chart needs no
-history to be real, it only needs real data), and
+ScatterChart,ListChart,StatTile}.tsx` (single-snapshot cross-sections — a
+chart needs no history to be real, it only needs real data), and
 `components/AnalyticsExplorer.tsx` ("Data Explorer" — a standalone
 BI-style section separate from agent-finding cards, backed by
 `cms-intelligence/analytics/overview.ts`, reading the real adapters

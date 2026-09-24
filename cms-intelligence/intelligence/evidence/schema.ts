@@ -105,7 +105,50 @@ export interface ChartBoxPlot {
   boxes: ChartBoxDatum[];
 }
 
-export type InsightChart = ChartBar | ChartDonut | ChartBoxPlot;
+/**
+ * Scatter plot - one real point per record (e.g. one per hospital),
+ * added 2026-09-24 for the star-rating-vs-quality-outcome read (see
+ * provider-network/agent.ts). Never estimated/interpolated points - a
+ * dense cluster is a real finding, conveyed via point opacity at render
+ * time, not by reducing the real sample.
+ */
+export interface ChartScatterDatum {
+  label: string;
+  x: number;
+  y: number;
+}
+export interface ChartScatter {
+  type: "scatter";
+  title: string;
+  xLabel: string;
+  yLabel: string;
+  xUnit: string;
+  yUnit: string;
+  points: ChartScatterDatum[]; // real per-record points; may be a disclosed deterministic sample of a larger real population - see the insight's own limitations, not silently truncated
+}
+
+/**
+ * A linked bullet list of real named items - added 2026-09-24 after Adam
+ * pointed out that a bar chart keyed by an opaque document number (e.g.
+ * the upcoming-finalized-CMS-rules signal) doesn't convey the actually
+ * useful content, which is "what are these rules and where can I read
+ * them" - a real named list with a real source link per item, not a
+ * magnitude comparison. Only for insights whose real payload is a set of
+ * named things to read, not a numeric quantity to compare (bar chart
+ * still owns that job).
+ */
+export interface ChartListItem {
+  label: string; // the real item's own title/name, never a code/ID standing in for it
+  detail?: string; // e.g. a real date - secondary text, not the primary label
+  url?: string; // real source URL when available - never fabricated
+}
+export interface ChartList {
+  type: "list";
+  title: string;
+  items: ChartListItem[];
+}
+
+export type InsightChart = ChartBar | ChartDonut | ChartBoxPlot | ChartScatter | ChartList;
 
 export interface Driver {
   description: string;

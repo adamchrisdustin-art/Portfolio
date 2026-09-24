@@ -11,7 +11,20 @@ describe("policyRegulationCmsAgent", () => {
       expect(() => validateInsight(insight)).not.toThrow();
       expect(insight.sourceIds).toContain("federal-register:cms-documents");
       expect(insight.signalType).toBe("policy");
-      expect(insight.chart?.type).toBe("bar");
+    }
+  });
+
+  it("presents upcoming finalized rules as a linked list of real rule titles, not a bar chart keyed by opaque document numbers", async () => {
+    const insights = await policyRegulationCmsAgent.run({ modelProvider: null });
+    const upcoming = insights.find((i) => i.questionId === "Q076");
+    expect(upcoming).toBeDefined();
+    expect(upcoming?.chart?.type).toBe("list");
+    if (upcoming?.chart?.type === "list") {
+      expect(upcoming.chart.items.length).toBeGreaterThan(0);
+      for (const item of upcoming.chart.items) {
+        expect(item.label.length).toBeGreaterThan(0);
+        expect(item.url).toMatch(/^https:\/\//);
+      }
     }
   });
 

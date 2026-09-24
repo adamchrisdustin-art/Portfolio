@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { acceleration, concentrationRatio, growthRate, mixShare, penetration, pmpm, quartiles, tukeyBox, utilizationPer1000 } from "./metrics";
+import { acceleration, concentrationRatio, growthRate, mixShare, pearsonCorrelation, penetration, pmpm, quartiles, tukeyBox, utilizationPer1000 } from "./metrics";
 
 describe("growthRate", () => {
   it("computes percent growth", () => {
@@ -57,6 +57,25 @@ describe("quartiles", () => {
     expect(q.median).toBeCloseTo(5);
     expect(q.q1).toBeCloseTo(3);
     expect(q.q3).toBeCloseTo(7);
+  });
+});
+
+describe("pearsonCorrelation", () => {
+  it("is 1 for a perfect positive linear relationship", () => {
+    expect(pearsonCorrelation([1, 2, 3, 4], [10, 20, 30, 40])).toBeCloseTo(1);
+  });
+
+  it("is -1 for a perfect negative linear relationship", () => {
+    expect(pearsonCorrelation([1, 2, 3, 4], [40, 30, 20, 10])).toBeCloseTo(-1);
+  });
+
+  it("is 0, not NaN, when one series has zero variance", () => {
+    expect(pearsonCorrelation([1, 2, 3], [5, 5, 5])).toBe(0);
+  });
+
+  it("rejects mismatched or empty input lengths", () => {
+    expect(() => pearsonCorrelation([1, 2], [1])).toThrow();
+    expect(() => pearsonCorrelation([], [])).toThrow();
   });
 });
 

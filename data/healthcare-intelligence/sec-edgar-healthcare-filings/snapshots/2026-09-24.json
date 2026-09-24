@@ -1,0 +1,2110 @@
+{
+  "dataset": "sec-edgar-healthcare-filings",
+  "pulledAt": "2026-09-24T19:36:45.859Z",
+  "windowStart": "2024-09-24",
+  "filings": [
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-09-08",
+      "reportDate": "2026-09-08",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000731766-26-000205",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000205/unh-20260908.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-07-16",
+      "reportDate": "2026-07-16",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-26-000191",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000191/unh-20260716.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-06-05",
+      "reportDate": "2026-06-01",
+      "items": [
+        "5.07"
+      ],
+      "accessionNumber": "0000731766-26-000138",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000138/unh-20260601.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-05-11",
+      "reportDate": "2026-05-11",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000731766-26-000129",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000129/unh-20260511.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-04-21",
+      "reportDate": "2026-04-21",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-26-000121",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000121/unh-20260421.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-03-09",
+      "reportDate": "2026-03-09",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000731766-26-000067",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000067/unh-20260309.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-03-02",
+      "reportDate": "2026-02-24",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0000731766-26-000064",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000064/unh-20260224.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-02-25",
+      "reportDate": "2026-02-23",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0000731766-26-000046",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000046/unh-20260223.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-01-27",
+      "reportDate": "2026-01-27",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-26-000025",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000025/unh-20260127.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-01-12",
+      "reportDate": "2026-01-12",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000731766-26-000020",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000020/unh-20260112.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-11-21",
+      "reportDate": "2025-11-18",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0000731766-25-000314",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000314/unh-20251118.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-11-13",
+      "reportDate": "2025-11-06",
+      "items": [
+        "5.03"
+      ],
+      "accessionNumber": "0000731766-25-000310",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000310/unh-20251106.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-11-07",
+      "reportDate": "2025-11-07",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000731766-25-000308",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000308/unh-20251107.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-10-28",
+      "reportDate": "2025-10-28",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-25-000301",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000301/unh-20251028.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-09-08",
+      "reportDate": "2025-09-08",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000731766-25-000245",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000245/unh-20250908.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-08-20",
+      "reportDate": "2025-08-20",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000731766-25-000239",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000239/unh-20250820.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-07-31",
+      "reportDate": "2025-07-25",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0000731766-25-000232",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000232/unh-20250725.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-07-29",
+      "reportDate": "2025-07-29",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-25-000228",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000228/unh-20250729.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-07-24",
+      "reportDate": "2025-07-23",
+      "items": [
+        "8.01"
+      ],
+      "accessionNumber": "0000731766-25-000224",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000224/unh-20250723.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-06-20",
+      "reportDate": "2025-06-17",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-25-143717",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000119312525143717/d947980d8k.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-06-04",
+      "reportDate": "2025-06-02",
+      "items": [
+        "5.02",
+        "5.07"
+      ],
+      "accessionNumber": "0000731766-25-000154",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000154/unh-20250602.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-05-21",
+      "reportDate": "2025-05-20",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0000731766-25-000150",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000150/unh-20250520.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-05-14",
+      "reportDate": "2025-05-12",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-25-000134",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000134/unh-20250512.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-04-29",
+      "reportDate": "2025-04-29",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0000731766-25-000125",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000125/unh-20250429.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-04-17",
+      "reportDate": "2025-04-17",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-25-000123",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000123/unh-20250417.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-01-16",
+      "reportDate": "2025-01-16",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-25-000022",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176625000022/unh-20250116.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2024-12-04",
+      "reportDate": "2024-12-04",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-24-000340",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176624000340/unh-20241204.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2024-12-03",
+      "reportDate": "2024-12-03",
+      "items": [
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-24-000338",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176624000338/unh-20241203.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2024-11-26",
+      "reportDate": "2024-11-26",
+      "items": [
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-24-000334",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176624000334/unh-20241126.htm"
+    },
+    {
+      "cik": "731766",
+      "companyName": "UnitedHealth Group, Inc.",
+      "form": "8-K",
+      "filingDate": "2024-10-15",
+      "reportDate": "2024-10-15",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000731766-24-000320",
+      "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176624000320/unh-20241015.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2026-08-17",
+      "reportDate": "2026-08-13",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-26-354096",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312526354096/d129035d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2026-08-05",
+      "reportDate": "2026-08-05",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000064803-26-000097",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480326000097/cvs-20260805.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2026-05-18",
+      "reportDate": "2026-05-14",
+      "items": [
+        "5.02",
+        "5.07"
+      ],
+      "accessionNumber": "0000064803-26-000082",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480326000082/cvs-20260514.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2026-05-06",
+      "reportDate": "2026-05-06",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000064803-26-000051",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480326000051/cvs-20260506.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2026-03-19",
+      "reportDate": "2026-03-18",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0000064803-26-000017",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480326000017/cvs-20260318.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2026-02-10",
+      "reportDate": "2026-02-10",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000064803-26-000009",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480326000009/cvs-20260210.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2025-12-09",
+      "reportDate": "2025-12-09",
+      "items": [
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000064803-25-000082",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480325000082/cvs-20251209.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2025-11-20",
+      "reportDate": "2025-11-20",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-25-289805",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312525289805/d172430d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2025-10-29",
+      "reportDate": "2025-10-29",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000064803-25-000036",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480325000036/cvs-20251029.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2025-09-22",
+      "reportDate": "2025-09-22",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-25-211349",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312525211349/d57621d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2025-08-15",
+      "reportDate": "2025-08-11",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-25-181862",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312525181862/d32562d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2025-07-31",
+      "reportDate": "2025-07-31",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000064803-25-000023",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480325000023/cvs-20250731.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2025-05-20",
+      "reportDate": "2025-05-15",
+      "items": [
+        "5.07"
+      ],
+      "accessionNumber": "0000064803-25-000015",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480325000015/cvs-20250515.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2025-05-01",
+      "reportDate": "2025-05-01",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000064803-25-000012",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480325000012/cvs-20250501.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2025-04-08",
+      "reportDate": "2025-04-07",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-25-075089",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312525075089/d948665d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2025-02-12",
+      "reportDate": "2025-02-12",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000064803-25-000006",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480325000006/cvs-20250212.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2024-12-17",
+      "reportDate": "2024-12-16",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-24-279907",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312524279907/d882067d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2024-12-10",
+      "reportDate": "2024-12-10",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-24-274362",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312524274362/d910925d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2024-12-09",
+      "reportDate": "2024-12-09",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-24-272865",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312524272865/d816178d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2024-12-06",
+      "reportDate": "2024-12-06",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-24-272437",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312524272437/d641657d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2024-12-05",
+      "reportDate": "2024-12-03",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-24-270867",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312524270867/d910747d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2024-12-02",
+      "reportDate": "2024-12-02",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-24-268490",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312524268490/d803850d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2024-11-18",
+      "reportDate": "2024-11-12",
+      "items": [
+        "1.01",
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-24-260405",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312524260405/d828431d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2024-11-06",
+      "reportDate": "2024-11-06",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-24-251673",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312524251673/d781927d8k.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2024-11-06",
+      "reportDate": "2024-11-06",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000064803-24-000033",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000006480324000033/cvs-20241106.htm"
+    },
+    {
+      "cik": "64803",
+      "companyName": "CVS Health Corporation",
+      "form": "8-K",
+      "filingDate": "2024-10-18",
+      "reportDate": "2024-10-17",
+      "items": [
+        "2.02",
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-24-239193",
+      "url": "https://www.sec.gov/Archives/edgar/data/64803/000119312524239193/d837701d8k.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2026-09-01",
+      "reportDate": "2026-09-01",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000049071-26-000052",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907126000052/hum-20260901.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2026-07-29",
+      "reportDate": "2026-07-28",
+      "items": [
+        "5.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-26-000047",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907126000047/hum-20260728.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2026-07-29",
+      "reportDate": "2026-07-29",
+      "items": [
+        "2.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-26-000045",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907126000045/hum-20260729.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2026-06-01",
+      "reportDate": "2026-06-01",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000049071-26-000027",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907126000027/hum-20260601.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2026-05-19",
+      "reportDate": "2026-05-15",
+      "items": [
+        "1.01",
+        "2.03",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-26-000025",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907126000025/hum-20260515.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2026-04-29",
+      "reportDate": "2026-04-29",
+      "items": [
+        "2.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-26-000021",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907126000021/hum-20260429.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2026-04-20",
+      "reportDate": "2026-04-16",
+      "items": [
+        "5.07"
+      ],
+      "accessionNumber": "0000049071-26-000015",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907126000015/hum-20260416.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2026-04-10",
+      "reportDate": "2026-04-10",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0000049071-26-000013",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907126000013/hum-20260410.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2026-03-09",
+      "reportDate": "2026-03-05",
+      "items": [
+        "1.01",
+        "2.03",
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001628280-26-016031",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000162828026016031/hum-20260305.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2026-03-02",
+      "reportDate": "2026-03-02",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000049071-26-000011",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907126000011/hum-20260302.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2026-02-11",
+      "reportDate": "2026-02-11",
+      "items": [
+        "2.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-26-000005",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907126000005/hum-20260211.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-12-16",
+      "reportDate": "2025-12-16",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-25-000061",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907125000061/hum-20251216.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-12-01",
+      "reportDate": "2025-12-01",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000049071-25-000059",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907125000059/hum-20251201.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-11-05",
+      "reportDate": "2025-11-05",
+      "items": [
+        "2.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-25-000055",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907125000055/hum-20251105.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-10-02",
+      "reportDate": "2025-10-02",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000049071-25-000048",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907125000048/hum-20251002.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-08-29",
+      "reportDate": "2025-08-29",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000049071-25-000044",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907125000044/hum-20250829.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-07-30",
+      "reportDate": "2025-07-30",
+      "items": [
+        "2.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-25-000039",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907125000039/hum-20250730.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-06-02",
+      "reportDate": "2025-06-02",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000049071-25-000026",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907125000026/hum-20250602.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-05-30",
+      "reportDate": "2025-05-30",
+      "items": [
+        "1.01",
+        "2.03",
+        "9.01"
+      ],
+      "accessionNumber": "0000895345-25-000200",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000089534525000200/ff4885689_8k-humana.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-04-30",
+      "reportDate": "2025-04-30",
+      "items": [
+        "2.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-25-000021",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907125000021/hum-20250430.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-04-18",
+      "reportDate": "2025-04-17",
+      "items": [
+        "5.07"
+      ],
+      "accessionNumber": "0000049071-25-000016",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907125000016/hum-20250417.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-03-31",
+      "reportDate": "2025-03-26",
+      "items": [
+        "1.01",
+        "2.03",
+        "9.01"
+      ],
+      "accessionNumber": "0001628280-25-015646",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000162828025015646/hum-20250326.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-03-05",
+      "reportDate": "2025-03-03",
+      "items": [
+        "1.01",
+        "2.03",
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001628280-25-010583",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000162828025010583/hum-20250303.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-03-03",
+      "reportDate": "2025-03-03",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000049071-25-000009",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907125000009/hum-20250303.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2025-02-11",
+      "reportDate": "2025-02-11",
+      "items": [
+        "2.02",
+        "7.01"
+      ],
+      "accessionNumber": "0000049071-25-000004",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907125000004/hum-20250211.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2024-12-03",
+      "reportDate": "2024-12-03",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-24-000058",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907124000058/hum-20241203.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2024-10-30",
+      "reportDate": "2024-10-30",
+      "items": [
+        "2.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-24-000051",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907124000051/hum-20241030.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2024-10-23",
+      "reportDate": "2024-10-23",
+      "items": [
+        "5.02",
+        "9.01"
+      ],
+      "accessionNumber": "0000049071-24-000047",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907124000047/hum-20241023.htm"
+    },
+    {
+      "cik": "49071",
+      "companyName": "Humana Inc.",
+      "form": "8-K",
+      "filingDate": "2024-10-02",
+      "reportDate": "2024-10-02",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0000049071-24-000045",
+      "url": "https://www.sec.gov/Archives/edgar/data/49071/000004907124000045/hum-20241002.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2026-09-16",
+      "reportDate": "2026-09-16",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001071739-26-000172",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173926000172/cnc-20260916.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2026-08-17",
+      "reportDate": "2026-08-12",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-26-000165",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173926000165/cnc-20260812.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2026-07-29",
+      "reportDate": "2026-07-29",
+      "items": [
+        "8.01"
+      ],
+      "accessionNumber": "0001071739-26-000162",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173926000162/cnc-20260729.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2026-07-28",
+      "reportDate": "2026-07-28",
+      "items": [
+        "2.02",
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-26-000154",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173926000154/cnc-20260728.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2026-06-22",
+      "reportDate": "2026-06-19",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-26-000132",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173926000132/cnc-20260619.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2026-05-15",
+      "reportDate": "2026-05-12",
+      "items": [
+        "5.02",
+        "5.07"
+      ],
+      "accessionNumber": "0001071739-26-000117",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173926000117/cnc-20260512.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2026-04-28",
+      "reportDate": "2026-04-28",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-26-000099",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173926000099/cnc-20260428.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2026-03-24",
+      "reportDate": "2026-03-18",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0001071739-26-000070",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173926000070/cnc-20260318.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2026-03-10",
+      "reportDate": "2026-03-10",
+      "items": [
+        "7.01",
+        "8.01"
+      ],
+      "accessionNumber": "0001071739-26-000056",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173926000056/cnc-20260310.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2026-02-23",
+      "reportDate": "2026-02-23",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001071739-26-000052",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173926000052/cnc-20260223.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2026-02-06",
+      "reportDate": "2026-02-06",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-26-000031",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173926000031/cnc-20260206.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-11-10",
+      "reportDate": "2025-11-10",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001071739-25-000188",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000188/cnc-20251110.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-10-29",
+      "reportDate": "2025-10-29",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-25-000185",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000185/cnc-20251029.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-09-11",
+      "reportDate": "2025-09-11",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001071739-25-000168",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000168/cnc-20250911.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-08-15",
+      "reportDate": "2025-08-12",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0001071739-25-000162",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000162/cnc-20250812.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-08-04",
+      "reportDate": "2025-08-01",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0001071739-25-000155",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000155/cnc-20250801.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-07-25",
+      "reportDate": "2025-07-25",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-25-000151",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000151/cnc-20250725.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-07-01",
+      "reportDate": "2025-07-01",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-25-000128",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000128/cnc-20250701.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-05-14",
+      "reportDate": "2025-05-13",
+      "items": [
+        "5.07"
+      ],
+      "accessionNumber": "0001071739-25-000094",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000094/cnc-20250513.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-05-06",
+      "reportDate": "2025-05-06",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001071739-25-000092",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000092/cnc-20250506.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-04-25",
+      "reportDate": "2025-04-25",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-25-000087",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000087/cnc-20250425.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-03-12",
+      "reportDate": "2025-03-12",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001071739-25-000042",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000042/cnc-20250312.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-03-05",
+      "reportDate": "2025-03-05",
+      "items": [
+        "1.01",
+        "1.02",
+        "2.03",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-25-000040",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000040/cnc-20250305.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-03-03",
+      "reportDate": "2025-03-03",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001071739-25-000037",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000037/cnc-20250303.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-02-24",
+      "reportDate": "2025-02-20",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-25-000031",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000031/cnc-20250220.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2025-02-04",
+      "reportDate": "2025-02-04",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-25-000013",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000013/cnc-20250204.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2024-12-12",
+      "reportDate": "2024-12-12",
+      "items": [
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-24-000215",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173924000215/cnc-20241212.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2024-11-13",
+      "reportDate": "2024-11-13",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001071739-24-000208",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173924000208/cnc-20241113.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2024-11-12",
+      "reportDate": "2024-11-08",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0001071739-24-000206",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173924000206/cnc-20241108.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2024-10-25",
+      "reportDate": "2024-10-25",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001071739-24-000201",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173924000201/cnc-20241025.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2024-10-11",
+      "reportDate": "2024-10-11",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001071739-24-000192",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173924000192/cnc-20241011.htm"
+    },
+    {
+      "cik": "1071739",
+      "companyName": "Centene Corporation",
+      "form": "8-K",
+      "filingDate": "2024-09-27",
+      "reportDate": "2024-09-25",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0001071739-24-000175",
+      "url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173924000175/cnc-20240925.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2026-07-30",
+      "reportDate": "2026-07-30",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-26-030135",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036126030135/ef20078875_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2026-05-13",
+      "reportDate": "2026-05-13",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001140361-26-020906",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036126020906/ef20073186_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2026-04-30",
+      "reportDate": "2026-04-30",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-26-017971",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036126017971/ef20071317_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2026-04-27",
+      "reportDate": "2026-04-22",
+      "items": [
+        "5.07"
+      ],
+      "accessionNumber": "0001140361-26-017123",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036126017123/ef20071227_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2026-03-03",
+      "reportDate": "2026-02-25",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-26-007450",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036126007450/ef20066976_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2026-02-27",
+      "reportDate": "2026-02-27",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001140361-26-007049",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036126007049/ef20066640_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2026-02-05",
+      "reportDate": "2026-02-05",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-26-003768",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036126003768/ef20064751_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-11-18",
+      "reportDate": "2025-10-22",
+      "items": [
+        "8.01"
+      ],
+      "accessionNumber": "0001140361-25-042597",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125042597/ef20059558_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-10-30",
+      "reportDate": "2025-10-30",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-25-039777",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125039777/ef20057735_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-10-20",
+      "reportDate": "2025-10-15",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0001140361-25-038670",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125038670/ef20057405_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-09-04",
+      "reportDate": "2025-09-04",
+      "items": [
+        "1.01",
+        "2.03",
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-25-033986",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125033986/ny20054607x5_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-09-02",
+      "reportDate": "2025-09-02",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001140361-25-033536",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125033536/ef20054926_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-07-31",
+      "reportDate": "2025-07-31",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-25-028099",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125028099/ef20052574_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-06-02",
+      "reportDate": "2025-05-30",
+      "items": [
+        "5.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-25-021143",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125021143/ef20050060_8-k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-05-20",
+      "reportDate": "2025-05-20",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001140361-25-019807",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125019807/ef20049268_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-05-02",
+      "reportDate": "2025-05-02",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-25-017006",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125017006/ef20048097_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-04-28",
+      "reportDate": "2025-04-22",
+      "items": [
+        "1.01",
+        "1.02",
+        "2.03",
+        "5.02",
+        "5.07"
+      ],
+      "accessionNumber": "0001140361-25-016027",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125016027/ef20048062_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-04-18",
+      "reportDate": "2025-04-15",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0001140361-25-014574",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125014574/ef20047681_form8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-03-19",
+      "reportDate": "2025-03-19",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-25-009365",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125009365/ef20045617_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-03-13",
+      "reportDate": "2025-03-10",
+      "items": [
+        "5.02",
+        "7.01"
+      ],
+      "accessionNumber": "0001140361-25-008555",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125008555/ef20045433_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-03-03",
+      "reportDate": "2025-03-03",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001140361-25-006753",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125006753/ef20044506_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2025-01-30",
+      "reportDate": "2025-01-30",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-25-002386",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036125002386/ef20042519_8k.htm"
+    },
+    {
+      "cik": "1739940",
+      "companyName": "The Cigna Group",
+      "form": "8-K",
+      "filingDate": "2024-10-31",
+      "reportDate": "2024-10-31",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001140361-24-044674",
+      "url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036124044674/ef20037812_8k.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-09-10",
+      "reportDate": "2026-09-10",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001156039-26-000063",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603926000063/elv-20260910.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-07-15",
+      "reportDate": "2026-07-15",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001156039-26-000058",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603926000058/elv-20260715.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-06-10",
+      "reportDate": "2026-06-10",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001156039-26-000049",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603926000049/elv-20260610.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-05-13",
+      "reportDate": "2026-05-13",
+      "items": [
+        "5.07"
+      ],
+      "accessionNumber": "0001156039-26-000046",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603926000046/elv-20260513.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-04-22",
+      "reportDate": "2026-04-22",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001156039-26-000039",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603926000039/elv-20260422.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-03-10",
+      "reportDate": "2026-03-10",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001156039-26-000024",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603926000024/elv-20260310.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-03-02",
+      "reportDate": "2026-03-02",
+      "items": [
+        "8.01"
+      ],
+      "accessionNumber": "0001156039-26-000022",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603926000022/elv-20260302.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-02-26",
+      "reportDate": "2026-02-26",
+      "items": [
+        "5.02",
+        "7.01"
+      ],
+      "accessionNumber": "0001156039-26-000019",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603926000019/elv-20260226.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2026-01-28",
+      "reportDate": "2026-01-28",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001156039-26-000006",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603926000006/elv-20260128.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-12-10",
+      "reportDate": "2025-12-10",
+      "items": [
+        "5.02"
+      ],
+      "accessionNumber": "0001156039-25-000142",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603925000142/elv-20251210.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-11-10",
+      "reportDate": "2025-11-10",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001156039-25-000139",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603925000139/elv-20251110.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-10-21",
+      "reportDate": "2025-10-21",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-25-244191",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000119312525244191/d270615d8k.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-09-15",
+      "reportDate": "2025-09-08",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-25-203542",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000119312525203542/d79603d8k.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-09-04",
+      "reportDate": "2025-09-04",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001156039-25-000129",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603925000129/elv-20250904.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-07-28",
+      "reportDate": "2025-07-28",
+      "items": [
+        "5.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001156039-25-000118",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603925000118/elv-20250728.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-07-17",
+      "reportDate": "2025-07-17",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001156039-25-000111",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603925000111/elv-20250717.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-05-28",
+      "reportDate": "2025-05-28",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001156039-25-000096",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603925000096/elv-20250528.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-05-14",
+      "reportDate": "2025-05-14",
+      "items": [
+        "5.07"
+      ],
+      "accessionNumber": "0001156039-25-000065",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603925000065/elv-20250514.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-04-22",
+      "reportDate": "2025-04-22",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001156039-25-000056",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603925000056/elv-20250422.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-04-17",
+      "reportDate": "2025-04-17",
+      "items": [
+        "2.02",
+        "7.01"
+      ],
+      "accessionNumber": "0001156039-25-000051",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603925000051/elv-20250417.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-03-10",
+      "reportDate": "2025-03-10",
+      "items": [
+        "7.01"
+      ],
+      "accessionNumber": "0001193125-25-050889",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000119312525050889/d926071d8k.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2025-01-23",
+      "reportDate": "2025-01-23",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001156039-25-000007",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603925000007/elv-20250123.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2024-10-31",
+      "reportDate": "2024-10-22",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "accessionNumber": "0001193125-24-248691",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000119312524248691/d888716d8k.htm"
+    },
+    {
+      "cik": "1156039",
+      "companyName": "Elevance Health, Inc.",
+      "form": "8-K",
+      "filingDate": "2024-10-17",
+      "reportDate": "2024-10-17",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "accessionNumber": "0001156039-24-000119",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603924000119/elv-20241017.htm"
+    }
+  ]
+}

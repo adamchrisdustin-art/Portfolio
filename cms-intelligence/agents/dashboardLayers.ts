@@ -46,6 +46,9 @@ const LAYER_RANGES: LayerRange[] = [
   { from: 96, to: 101, layer: "claims-cost" }, // pharmacy/Part D economics
   { from: 102, to: 107, layer: "provider-network" }, // value-based care
   { from: 108, to: 112, layer: "executive-pulse" },
+  { from: 113, to: 124, layer: "emerging-signals" }, // Market/Catalyst Intelligence - reuses Emerging Signals rather than an 8th layer, see AGENT_ARCHITECTURE.md
+  { from: 125, to: 128, layer: "provider-network" }, // hospital star rating vs. quality outcomes - same layer as Q036-045/Q102-107
+  { from: 129, to: 129, layer: "emerging-signals" }, // NIH research-theme frequency - same layer as the rest of Market/Catalyst Intelligence
 ];
 
 export function layerForQuestion(questionId: string): DashboardLayer {

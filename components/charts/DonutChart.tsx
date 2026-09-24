@@ -1,5 +1,5 @@
 import type { ChartDonut } from "@/cms-intelligence/intelligence/evidence/schema";
-import { CATEGORICAL, INK_PRIMARY, INK_SECONDARY } from "./chartTheme";
+import { CATEGORICAL, CHART_TITLE_STYLE, INK_PRIMARY, INK_SECONDARY } from "./chartTheme";
 
 function arcPath(cx: number, cy: number, r: number, innerR: number, startAngle: number, endAngle: number): string {
   const toXY = (radius: number, angle: number) => [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)];
@@ -36,36 +36,41 @@ export default function DonutChart({ chart }: { chart: ChartDonut }) {
   });
 
   return (
-    <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "center", flexWrap: "wrap", width: "100%" }}>
-      <svg
-        width={size}
-        height={size}
-        style={{ flexShrink: 0 }}
-        role="img"
-        aria-label={`${chart.title}: ${chart.slices.map((s) => `${s.label} ${s.value}`).join(", ")}`}
-      >
-        {slicesWithAngles.map((slice) => (
-          <path
-            key={slice.label}
-            d={arcPath(cx, cy, r, innerR, slice.startAngle, slice.endAngle)}
-            fill={slice.color}
-            stroke="var(--surface)"
-            strokeWidth={2}
-          >
-            <title>{`${slice.label}: ${slice.value.toLocaleString()} ${chart.unit} (${(slice.fraction * 100).toFixed(1)}%)`}</title>
-          </path>
-        ))}
-      </svg>
-      <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: "0.78rem", minWidth: 0, maxWidth: 220 }}>
-        {slicesWithAngles.map((slice) => (
-          <div key={slice.label} style={{ display: "flex", alignItems: "start", gap: 6 }}>
-            <span style={{ width: 10, height: 10, borderRadius: 2, background: slice.color, flexShrink: 0, marginTop: 3 }} />
-            <span style={{ color: INK_PRIMARY, wordBreak: "break-word" }}>{slice.label}</span>
-            <span className="mono" style={{ color: INK_SECONDARY, flexShrink: 0, marginLeft: "auto" }}>
-              {(slice.fraction * 100).toFixed(0)}%
-            </span>
-          </div>
-        ))}
+    <div>
+      <div className="mono" style={CHART_TITLE_STYLE}>
+        {chart.title}
+      </div>
+      <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "center", flexWrap: "wrap", width: "100%" }}>
+        <svg
+          width={size}
+          height={size}
+          style={{ flexShrink: 0 }}
+          role="img"
+          aria-label={`${chart.title}: ${chart.slices.map((s) => `${s.label} ${s.value}`).join(", ")}`}
+        >
+          {slicesWithAngles.map((slice) => (
+            <path
+              key={slice.label}
+              d={arcPath(cx, cy, r, innerR, slice.startAngle, slice.endAngle)}
+              fill={slice.color}
+              stroke="var(--surface)"
+              strokeWidth={2}
+            >
+              <title>{`${slice.label}: ${slice.value.toLocaleString()} ${chart.unit} (${(slice.fraction * 100).toFixed(1)}%)`}</title>
+            </path>
+          ))}
+        </svg>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: "0.78rem", minWidth: 0, maxWidth: 220 }}>
+          {slicesWithAngles.map((slice) => (
+            <div key={slice.label} style={{ display: "flex", alignItems: "start", gap: 6 }}>
+              <span style={{ width: 10, height: 10, borderRadius: 2, background: slice.color, flexShrink: 0, marginTop: 3 }} />
+              <span style={{ color: INK_PRIMARY, wordBreak: "break-word" }}>{slice.label}</span>
+              <span className="mono" style={{ color: INK_SECONDARY, flexShrink: 0, marginLeft: "auto" }}>
+                {(slice.fraction * 100).toFixed(0)}%
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
