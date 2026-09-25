@@ -16,20 +16,35 @@ the standard `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` variables the code
 reads; if either secret is missing, reasoning skips at $0.
 
 **Next session, in order:**
-1. **First live autonomous run.** It hasn't happened yet as of
-   2026-09-25. Trigger it by hand (Actions → "Healthcare Intelligence Data
-   Pipeline" → Run workflow, or `gh workflow run
-   healthcare-intelligence-pipeline.yml`) rather than waiting for the
-   Oct 1 cron. The first run treats every source as new, so it does a
-   full reasoning pass for about $0.10–0.30.
-2. **Review the first run.** Read the committed
-   `data/healthcare-intelligence/reasoned/*.json`, especially
-   `analyst.rejected` (what grounding blocked, and why) and the briefing's
-   quality, then check the live dashboard's Executive Pulse. Tune prompts
-   from that real output, not from guesses.
+1. **Replay the tuned analyst prompt.** The first live autonomous run
+   happened 2026-09-25 (hand-triggered, run 36166201308, bot commit
+   `bf0aec2`, live on the Executive Pulse). Opus 5.5 returned 5 findings,
+   3 patterns and a briefing, and grounding rejected 0 items: every number
+   and company name traced to the agents' facts. Salience had no
+   rejections either. The 4 "deterministic" selections are agents where
+   candidates ≤ topN, which is by design. The review found three reasoning
+   errors that grounding can't catch, because each one used real numbers
+   and names:
+   - ETCAMAH was grouped with the PRIORITY approvals, but it was STANDARD
+     (an attribute attached to the wrong item).
+   - "New-drug uptake will flow largely through Part D" is an unsupported
+     inference. ISEMBYLD is an infused biologic and PIXCLARA is a PET
+     agent.
+   - A forced pattern paired 8-K leadership-change counts with enrollment
+     share, and the briefing called the filings "frequent" for all four
+     insurers, although Humana filed only 5.
+   The analyst prompt now has rules against all three. Verify them with
+   `npx tsx cms-intelligence/reasoning/replay-analyst.ts`, run with
+   `ANTHROPIC_API_KEY` set in Adam's terminal. It is one Opus call
+   (~$0.05–0.10), writes nothing, and prints the published and replayed
+   output side by side.
+2. **Salience prompt tightening: deferred.** The real run showed no
+   salience rejections, so there is no live evidence for it yet. The
+   benchmark note below still stands; revisit it if a monthly run logs
+   fallbacks.
 3. **Richer stats for the analyst.** Add code-computed candidates
    (month-over-month deltas, outliers) as monthly history accumulates.
-4. **Optional salience prompt tightening.** Every rejected salience answer
+4. **Salience benchmark note.** Every rejected salience answer
    in the benchmark was a model calculating a number itself (day spans,
    counts, sums). Telling the salience prompt "copy numbers exactly, never
    calculate new ones", as the analyst prompt already does, would likely

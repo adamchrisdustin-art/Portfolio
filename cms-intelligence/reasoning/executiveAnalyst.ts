@@ -55,7 +55,12 @@ Rules - a response that breaks one is discarded:
 - Only reference insight ids that appear in the facts.
 - Name a company only if that exact name appears in the facts.
 - Correlation is not causation. A proposed rule is not a final rule. A baseline is not a trend. Respect each fact's confidence and limitations.
-- Prefer facts marked newThisCycle when they are comparably important.`;
+- Keep each attribute on the item the facts give it to. When a fact lists items with their own labels (review type, status, effective date), never group an item under a label it doesn't carry.
+- A label you apply to a group ("frequent", "large", "leading") must fit every member the numbers cover; if it doesn't, name only the members it fits.
+- Never infer how something is paid for, billed, covered, or priced (for example Part B vs Part D, or cost impact) unless a fact states it.
+- Prefer facts marked newThisCycle when they are comparably important.
+
+Patterns: a pattern is a real link where one fact bears on the other - the same population, program, market, or decision affected from two angles. Two independent counts that merely involve the same companies, or a share placed beside a count, are not a pattern even with a hedge attached. Fewer, stronger patterns beat filling the quota; [] is a good answer.`;
 
 function factsPayload(insights: Insight[], changedSourceIds: string[]): string {
   const changed = new Set(changedSourceIds);
