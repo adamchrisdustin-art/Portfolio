@@ -6,7 +6,7 @@
  * instead of) the per-insight charts on agent-finding cards - see
  * docs/cms-intelligence/DASHBOARD_BLUEPRINT.md's Charts section.
  *
- * Every number here is computed directly from the same three real,
+ * Every number here is computed directly from the same real,
  * live-pulled adapters the agents use - never fabricated, never a
  * placeholder. Where a chart type from the reference dashboards Adam
  * shared isn't honestly buildable yet (a real geographic US map needs
@@ -15,11 +15,7 @@
  * this project provides), it's simply not included here rather than
  * faked - see this file's own header notes per panel.
  */
-import {
-  listSnapshotFiles as listHospitalSnapshots,
-  loadSnapshot as loadHospitalSnapshotAt,
-  loadLatestSnapshot as loadHospitalSnapshot,
-} from "../data/adapters/hospitalGeneralInformation";
+import { loadLatestSnapshot as loadHospitalSnapshot } from "../data/adapters/hospitalGeneralInformation";
 import { loadLatestSnapshot as loadHomeHealthSnapshot } from "../data/adapters/homeHealthCareAgencies";
 import { loadAllYears as loadPhysicianYears } from "../data/adapters/physicianByProviderSummary";
 import { loadLatestSnapshot as loadFederalRegisterSnapshot } from "../data/adapters/federalRegisterDocuments";
@@ -28,7 +24,8 @@ import { loadAllPlanYears as loadMarketplaceYears } from "../data/adapters/marke
 import { panelStates } from "../intelligence/metrics/marketplaceTrends";
 import { loadAllOepYears, totalRow as oepTotalRow, valueOf as oepValue } from "../data/adapters/marketplaceEnrollment";
 import { tukeyBox } from "../intelligence/metrics/metrics";
-import { dateFromSnapshotFilename } from "../data/sources/snapshotHistory";
+import { loadAllMonths as loadMaMonths } from "../data/adapters/maPartDHistory";
+import { nationalTotals } from "../intelligence/metrics/physicianTrends";
 import { boxplotByState } from "../agents/claims-utilization-cost/agent";
 import { cr4For } from "../agents/provider-network/agent";
 import { computeStatsByProviderType, type ProviderTypeStats } from "../agents/reimbursement-payment/agent";
@@ -57,8 +54,8 @@ export interface AnalyticsOverview {
   serviceMixBar: ChartBar | null;
   paymentByProviderTypeBar: ChartBar | null;
   spendingRatioBoxplot: ChartBoxPlot | null;
-  facilityCountSeries: InsightSeries | null;
-  ownershipConcentrationSeries: InsightSeries | null;
+  maEnrollmentSeries: InsightSeries | null;
+  partBPaymentSeries: InsightSeries | null;
   federalRegisterDocumentTypeDonut: ChartDonut | null;
   federalRegisterRulesByMonthBar: ChartBar | null;
   maPartDOrgTypeDonut: ChartDonut | null;
@@ -135,8 +132,8 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
   let serviceMixBar: ChartBar | null = null;
   let paymentByProviderTypeBar: ChartBar | null = null;
   let spendingRatioBoxplot: ChartBoxPlot | null = null;
-  let facilityCountSeries: InsightSeries | null = null;
-  let ownershipConcentrationSeries: InsightSeries | null = null;
+  let maEnrollmentSeries: InsightSeries | null = null;
+  let partBPaymentSeries: InsightSeries | null = null;
   let federalRegisterDocumentTypeDonut: ChartDonut | null = null;
   let federalRegisterRulesByMonthBar: ChartBar | null = null;
   let maPartDOrgTypeDonut: ChartDonut | null = null;
@@ -145,18 +142,20 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
   let marketplacePlanAvailabilityBar: ChartBar | null = null;
   let marketplaceFastestRisingLines: MultiLineChartData | null = null;
 
-  const hospitalFiles = listHospitalSnapshots();
-  if (hospitalFiles.length >= 2) {
-    const snapshots = hospitalFiles.map((f) => ({ date: dateFromSnapshotFilename(f), snapshot: loadHospitalSnapshotAt(f) }));
-    facilityCountSeries = {
-      label: "Total hospital facility count",
-      unit: "facilities",
-      points: snapshots.map((s) => ({ date: s.date, value: s.snapshot.rowCount })),
+  // Multi-year histories, not the few-day snapshot history the hospital file has so far.
+  if (physicianYears.length >= 2) {
+    partBPaymentSeries = {
+      label: "Total Medicare Part B professional payment",
+      unit: "USD",
+      points: physicianYears.map((y) => ({ date: `${y.dataYear}-12-31`, value: Math.round(nationalTotals(y).medicarePayment) })),
     };
-    ownershipConcentrationSeries = {
-      label: "Hospital ownership concentration (CR4)",
-      unit: "percent",
-      points: snapshots.map((s) => ({ date: s.date, value: Math.round(cr4For(s.snapshot.rows) * 10) / 10 })),
+  }
+  const maMonths = loadMaMonths();
+  if (maMonths.length >= 2) {
+    maEnrollmentSeries = {
+      label: "Medicare Advantage enrollment",
+      unit: "enrollees",
+      points: maMonths.map((m) => ({ date: `${m.reportPeriod}-01`, value: m.totals.ma })),
     };
   }
 
@@ -228,7 +227,7 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
   }
 
   if (federalRegister && federalRegister.documents.length > 0) {
-    kpis.push({ label: "CMS Federal Register documents (120-day window)", value: federalRegister.documents.length.toLocaleString() });
+    kpis.push({ label: "CMS Federal Register documents (2-year window)", value: federalRegister.documents.length.toLocaleString() });
 
     const typeCounts = new Map<string, number>();
     for (const doc of federalRegister.documents) {
@@ -237,7 +236,7 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
     federalRegisterDocumentTypeDonut = donutFromCounts("CMS Federal Register documents by type", "documents", typeCounts, 5);
 
     const rules = federalRegister.documents.filter((d) => d.type === "Rule");
-    kpis.push({ label: "Rules finalized (120-day window)", value: rules.length.toLocaleString() });
+    kpis.push({ label: "Rules finalized (2-year window)", value: rules.length.toLocaleString() });
     const proposed = federalRegister.documents.filter((d) => d.type === "Proposed Rule");
     kpis.push({ label: "Rules currently proposed", value: proposed.length.toLocaleString() });
 
@@ -247,13 +246,20 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
         const month = r.publicationDate.slice(0, 7);
         byMonth.set(month, (byMonth.get(month) ?? 0) + 1);
       }
+      // Every month in the span, including real zero-rule months, so the columns read as an even time axis.
+      const months = Array.from(byMonth.keys()).sort();
+      const bars: { label: string; value: number }[] = [];
+      for (let d = new Date(`${months[0]}-01T00:00:00Z`); ; d.setUTCMonth(d.getUTCMonth() + 1)) {
+        const label = d.toISOString().slice(0, 7);
+        bars.push({ label, value: byMonth.get(label) ?? 0 });
+        if (label === months[months.length - 1]) break;
+      }
       federalRegisterRulesByMonthBar = {
         type: "bar",
-        title: "CMS rules finalized per month (trailing 120 days)",
+        orientation: "vertical",
+        title: "CMS rules finalized per month (trailing 2 years)",
         unit: "rules",
-        bars: Array.from(byMonth.entries())
-          .sort((a, b) => (a[0] < b[0] ? -1 : 1))
-          .map(([label, value]) => ({ label, value })),
+        bars,
       };
     }
   }
@@ -271,6 +277,7 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
     maPartDOrgTypeDonut = donutFromCounts(`MA/Part D enrollment by organization type, ${maPartD.reportPeriod}`, "enrollees", orgTypeCounts, 5);
     maPartDPlanTypeBar = {
       type: "bar",
+      orientation: "vertical",
       title: `MA/Part D enrollment by plan type, ${maPartD.reportPeriod}`,
       unit: "enrollees",
       bars: Array.from(planTypeCounts.entries())
@@ -301,7 +308,7 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
     const boxes = Array.from(byState.entries())
       .filter(([, values]) => values.length >= MIN_RATING_AREAS_FOR_BOX)
       .map(([state, values]) => ({ label: state, ...tukeyBox(values) }))
-      .sort((a, b) => a.median - b.median);
+      .sort((a, b) => b.median - a.median);
     if (boxes.length > 0) {
       marketplacePremiumBoxplot = {
         type: "boxplot",
@@ -311,12 +318,13 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
       };
     }
 
-    // Issuers per state, fewest first - the low end is the competitive-intensity signal (Q071).
+    // Issuers per state, most first.
     marketplacePlanAvailabilityBar = {
       type: "bar",
-      title: `Marketplace issuers per HealthCare.gov state, plan year ${marketplace.planYear} (fewest first)`,
+      orientation: "vertical",
+      title: `Marketplace issuers per HealthCare.gov state, plan year ${marketplace.planYear} (most first)`,
       unit: "issuers",
-      bars: marketplace.states.map((st) => ({ label: st.state, value: st.issuerIds.length })).sort((a, b) => a.value - b.value),
+      bars: marketplace.states.map((st) => ({ label: st.state, value: st.issuerIds.length })).sort((a, b) => b.value - a.value),
     };
 
     // Cumulative benchmark change since the first plan year, for the states that rose most. Only states on
@@ -355,8 +363,8 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
     serviceMixBar,
     paymentByProviderTypeBar,
     spendingRatioBoxplot,
-    facilityCountSeries,
-    ownershipConcentrationSeries,
+    maEnrollmentSeries,
+    partBPaymentSeries,
     federalRegisterDocumentTypeDonut,
     federalRegisterRulesByMonthBar,
     maPartDOrgTypeDonut,

@@ -36,7 +36,7 @@ export default function DonutChart({ chart }: { chart: ChartDonut }) {
   });
 
   return (
-    <div>
+    <div className="chart">
       <div className="mono" style={CHART_TITLE_STYLE}>
         {chart.title}
       </div>

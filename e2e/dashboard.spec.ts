@@ -67,7 +67,26 @@ for (const route of ROUTES) {
   });
 }
 
+// Most findings sit inside closed <details>, which the checks above never see.
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`/healthcare-intelligence with every drawer open (${colorScheme}) has no overflow or accessibility violations`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await page.goto("/healthcare-intelligence");
+    await page.waitForLoadState("networkidle");
+    await page.evaluate(() => document.querySelectorAll("details").forEach((d) => (d.open = true)));
+    const { scrollWidth, clientWidth } = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+    expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 1);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  });
+}
+
 test("a chart wider than its card starts scrolled to its left edge, not centered (labels visible, never clipped)", async ({ page }) => {
+  // Phone width: on desktop the wide Data Explorer charts now fit their full-width panels, so nothing would overflow to check.
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/healthcare-intelligence");
   await page.waitForLoadState("networkidle");
   // Real bug this guards against: `justifyContent: "center"` on an overflowing scroll
@@ -85,12 +104,29 @@ test("a chart wider than its card starts scrolled to its left edge, not centered
   }
 });
 
-test("the evidence drawer opens and shows a confidence rationale", async ({ page }) => {
+test("category > finding > evidence drawer opens down to the confidence rationale", async ({ page }) => {
   await page.goto("/healthcare-intelligence");
-  // Scope to the actual <summary> toggle, not the "Inspect evidence" prose
-  // in the "How this works" panel above it (getByText would match that
-  // plain text first and click a no-op element).
-  const details = page.locator("details", { hasText: "Inspect evidence" }).first();
-  await details.locator("summary").click();
-  await expect(details.getByText(/Why (low|medium|high) confidence:/)).toBeVisible();
+  const category = page.locator("details.category-details").first();
+  await category.locator(":scope > summary").click();
+  const finding = category.locator("details.insight-details").first();
+  await finding.locator(":scope > summary").click();
+  const evidence = finding.locator("details", { hasText: "Inspect evidence" }).first();
+  await evidence.locator(":scope > summary").click();
+  await expect(evidence.getByText(/Why (low|medium|high) confidence:/)).toBeVisible();
+});
+
+test("each finding appears once on the page, not duplicated across sections", async ({ page }) => {
+  await page.goto("/healthcare-intelligence");
+  const ids = await page.locator("article.card[id]").evaluateAll((els) => els.map((el) => el.id));
+  expect(ids.length).toBeGreaterThan(0);
+  expect(new Set(ids).size).toBe(ids.length);
+});
+
+test("an anchor link to a finding opens its category and the finding itself", async ({ page }) => {
+  await page.goto("/healthcare-intelligence");
+  await page.waitForLoadState("networkidle"); // hydrated, so OpenOnHash is listening (like a real in-page link click)
+  const id = await page.locator("article.card[id]").first().getAttribute("id");
+  await page.goto(`/healthcare-intelligence#${id}`);
+  await expect(page.locator(`[id="${id}"]`).locator("xpath=ancestor::details[contains(@class,'category-details')]")).toHaveAttribute("open", "");
+  await expect(page.locator(`[id="${id}"] details.insight-details`)).toHaveAttribute("open", "");
 });

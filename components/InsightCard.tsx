@@ -2,13 +2,6 @@ import type { Insight } from "@/cms-intelligence/intelligence/evidence/schema";
 import ChartRenderer from "./charts/ChartRenderer";
 import Sparkline from "./Sparkline";
 
-const confidenceColor: Record<Insight["confidence"], string> = {
-  high: "#1a7f4b",
-  // The site's --accent-strong (5.8:1 on white). The lighter --accent failed 4.5:1 once a medium-confidence insight first rendered (2026-09-25).
-  medium: "#8f5a06",
-  low: "#8a3a3a",
-};
-
 const populationLabel: Record<Insight["population"], string> = {
   "medicare-ffs": "Medicare FFS",
   "medicare-advantage": "Medicare Advantage",
@@ -22,31 +15,21 @@ const populationLabel: Record<Insight["population"], string> = {
 };
 
 /**
+ * Confidence is shown only inside the evidence drawer: with about a week of
+ * snapshot history, nearly every finding reads "low", so a badge on every
+ * card was noise rather than signal (Adam, 2026-09-25).
+ *
  * Renders one Insight per docs/cms-intelligence/EVIDENCE_MODEL.md's
  * schema, with an inline evidence drawer (native <details> - no client
  * JS needed, works the same in a static export). This is the one shared
  * card component every dashboard layer uses - see DASHBOARD_BLUEPRINT.md's
  * "shared components across all seven layers" section.
  */
-export default function InsightCard({ insight }: { insight: Insight }) {
-  return (
-    <article id={insight.id} className="card" style={{ padding: 22, display: "flex", flexDirection: "column", gap: 12, scrollMarginTop: 80 }}>
+export default function InsightCard({ insight, collapsible = false }: { insight: Insight; collapsible?: boolean }) {
+  const headline = <h3 style={{ margin: 0, fontSize: "1.05rem", lineHeight: 1.4, display: "inline" }}>{insight.headline}</h3>;
+  const body = (
+    <>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-        <span
-          className="mono"
-          style={{
-            fontSize: "0.72rem",
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: "0.04em",
-            color: confidenceColor[insight.confidence],
-            border: `1px solid ${confidenceColor[insight.confidence]}`,
-            borderRadius: 999,
-            padding: "2px 9px",
-          }}
-        >
-          {insight.confidence} confidence
-        </span>
         <span
           className="mono"
           style={{
@@ -90,8 +73,6 @@ export default function InsightCard({ insight }: { insight: Insight }) {
         )}
       </div>
 
-      <h3 style={{ margin: 0, fontSize: "1.05rem", lineHeight: 1.4 }}>{insight.headline}</h3>
-
       <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.92rem" }}>{insight.businessRelevance}</p>
 
       <div className="mono" style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
@@ -105,7 +86,13 @@ export default function InsightCard({ insight }: { insight: Insight }) {
         <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: "0.88rem", color: "var(--accent-strong)" }}>
           Inspect evidence
         </summary>
-        <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 10, fontSize: "0.86rem" }}>
+        <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 10, fontSize: "0.86rem", overflowWrap: "anywhere" }}>
+          <div>
+            <strong>Confidence:</strong>{" "}
+            <span className="mono" style={{ fontWeight: 700, textTransform: "uppercase" }}>
+              {insight.confidence}
+            </span>
+          </div>
           <div>
             <strong>Why {insight.confidence} confidence:</strong>{" "}
             <span style={{ color: "var(--text-muted)" }}>{insight.confidenceRationale}</span>
@@ -148,6 +135,24 @@ export default function InsightCard({ insight }: { insight: Insight }) {
           </div>
         </div>
       </details>
+    </>
+  );
+
+  const cardStyle = { padding: collapsible ? "14px 18px" : 22, scrollMarginTop: 80 } as const;
+  if (collapsible) {
+    return (
+      <article id={insight.id} className="card" style={cardStyle}>
+        <details className="insight-details">
+          <summary style={{ cursor: "pointer" }}>{headline}</summary>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 14 }}>{body}</div>
+        </details>
+      </article>
+    );
+  }
+  return (
+    <article id={insight.id} className="card" style={{ ...cardStyle, display: "flex", flexDirection: "column", gap: 12 }}>
+      <h3 style={{ margin: 0, fontSize: "1.05rem", lineHeight: 1.4 }}>{insight.headline}</h3>
+      {body}
     </article>
   );
 }

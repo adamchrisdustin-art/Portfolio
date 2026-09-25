@@ -72,6 +72,8 @@ export interface ChartBar {
   title: string;
   unit: string;
   bars: ChartBarDatum[]; // pre-sorted in display order
+  /** Vertical draws columns (categories along the bottom). Defaults to horizontal bars. */
+  orientation?: "horizontal" | "vertical";
 }
 
 export interface ChartDonutDatum {

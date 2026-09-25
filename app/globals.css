@@ -142,3 +142,22 @@ button:focus-visible {
 .skip-link:focus {
   left: 0;
 }
+
+/* Data Explorer panels: grid rows stretch cards to the tallest sibling, so center each chart
+   between its title and the card bottom with auto margins (never justify-content on a chart's
+   scroll wrapper - see DASHBOARD_BLUEPRINT.md's chart conventions). */
+.chart-panel {
+  display: flex;
+  flex-direction: column;
+}
+.chart-panel > .chart {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.chart-panel > .chart > :nth-child(2) {
+  margin-top: auto;
+}
+.chart-panel > .chart > :last-child {
+  margin-bottom: auto;
+}

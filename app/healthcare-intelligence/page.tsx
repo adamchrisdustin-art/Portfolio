@@ -7,6 +7,8 @@ import AnalyticsExplorer from "@/components/AnalyticsExplorer";
 import InsightCard from "@/components/InsightCard";
 import EmptyLayerState from "@/components/EmptyLayerState";
 import StatTile from "@/components/charts/StatTile";
+import OpenOnHash from "@/components/OpenOnHash";
+import TeamSection from "@/components/TeamSection";
 
 export const metadata: Metadata = {
   title: "Healthcare Intelligence Dashboard",
@@ -43,6 +45,10 @@ export default async function HealthcareIntelligencePage() {
     return weight[b.confidence] - weight[a.confidence];
   });
 
+  const sortedByLayer = Object.fromEntries(
+    Object.keys(sweep.insightsByLayer).map((key) => [key, pulseInsights.filter((i) => sweep.insightsByLayer[key as keyof typeof sweep.insightsByLayer].includes(i))])
+  ) as typeof sweep.insightsByLayer;
+
   const dashboardLayers: { key: keyof typeof sweep.insightsByLayer; label: string }[] = [
     { key: "market-growth", label: LAYER_LABELS["market-growth"] },
     { key: "claims-cost", label: LAYER_LABELS["claims-cost"] },
@@ -54,6 +60,7 @@ export default async function HealthcareIntelligencePage() {
 
   return (
     <>
+      <OpenOnHash />
       <section className="container" style={{ padding: "56px 24px 32px" }}>
         <p className="eyebrow">Portfolio Project · In Progress</p>
         <h1 style={{ fontSize: "2rem", margin: "10px 0 12px" }}>Healthcare Intelligence Dashboard</h1>
@@ -72,8 +79,9 @@ export default async function HealthcareIntelligencePage() {
               What it watches
             </p>
             <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.92rem" }}>
-              Public datasets published by Medicare&apos;s administrator (CMS) — hospital directories, home health
-              agency quality and spending data, and more being added over time. No private or proprietary data.
+              Public data from Medicare&apos;s administrator (CMS) — hospitals, home health, physician payments,
+              Medicare Advantage enrollment, ACA Marketplace pricing and federal rules — plus public FDA, NIH,
+              ClinicalTrials.gov and SEC records. No private or proprietary data.
             </p>
           </div>
           <div>
@@ -91,15 +99,13 @@ export default async function HealthcareIntelligencePage() {
               How a claim gets traced
             </p>
             <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.92rem" }}>
-              Every card below has an &quot;Inspect evidence&quot; section — open it to see exactly which dataset
-              produced the number, when that data was published, and the confidence level with a plain-language
-              reason for it.
+              Every finding below has an &quot;Inspect evidence&quot; section — open it to see exactly which dataset
+              produced the number, when that data was published, and how much confidence it deserves, with a
+              plain-language reason why.
             </p>
           </div>
         </div>
       </section>
-
-      <AnalyticsExplorer overview={analyticsOverview} />
 
       <section className="container" style={{ padding: "32px 24px 32px", borderTop: "1px solid var(--border)" }}>
         <p className="eyebrow" style={{ marginBottom: 6 }}>
@@ -116,6 +122,8 @@ export default async function HealthcareIntelligencePage() {
           />
         </div>
       </section>
+
+      <TeamSection />
 
       {failedAgents.length > 0 && (
         <section className="container" style={{ padding: "0 24px" }}>
@@ -137,7 +145,12 @@ export default async function HealthcareIntelligencePage() {
           <p className="eyebrow" style={{ marginBottom: 8 }}>
             {analyst ? `Executive briefing · reasoned autonomously on ${reasonedOn}` : "Synthesis this cycle"}
           </p>
-          <p style={{ margin: 0, fontSize: "0.92rem", whiteSpace: "pre-line" }}>{analyst?.briefing ?? sweep.synthesis}</p>
+          <p style={{ margin: 0, fontSize: "0.92rem", color: "var(--text-muted)" }}>
+            Swept {sweep.agentStatuses.filter((a) => a.ok).length} of {sweep.agentStatuses.length} specialist agents this cycle;{" "}
+            {sweep.allInsights.length} insight{sweep.allInsights.length === 1 ? "" : "s"} returned. Open a category, then a finding, for its
+            details, chart and evidence.
+          </p>
+          {analyst && <p style={{ margin: "12px 0 0", fontSize: "0.92rem", whiteSpace: "pre-line" }}>{analyst.briefing}</p>}
           {analyst && analyst.topFindings.length > 0 && (
             <>
               <p className="eyebrow" style={{ margin: "16px 0 8px" }}>
@@ -188,31 +201,32 @@ export default async function HealthcareIntelligencePage() {
         {pulseInsights.length === 0 ? (
           <EmptyLayerState reason="No agent has produced a finding yet this cycle." />
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 18 }}>
-            {pulseInsights.map((insight) => (
-              <InsightCard key={insight.id} insight={insight} />
-            ))}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {dashboardLayers.map(({ key, label }) => {
+              const insights = sortedByLayer[key];
+              return (
+                <details key={key} className="card category-details" data-testid={`category-${key}`} style={{ padding: "14px 18px" }}>
+                  <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: "1.05rem" }}>
+                    {label}{" "}
+                    <span style={{ fontWeight: 400, fontSize: "0.88rem", color: "var(--text-muted)" }}>
+                      · {insights.length} finding{insights.length === 1 ? "" : "s"}
+                    </span>
+                  </summary>
+                  <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+                    {insights.length === 0 ? (
+                      <EmptyLayerState reason={LAYER_EMPTY_REASONS[key] ?? "A live data source hasn't been wired to this layer yet."} />
+                    ) : (
+                      insights.map((insight) => <InsightCard key={insight.id} insight={insight} collapsible />)
+                    )}
+                  </div>
+                </details>
+              );
+            })}
           </div>
         )}
       </section>
 
-      {dashboardLayers.map(({ key, label }) => {
-        const insights = sweep.insightsByLayer[key];
-        return (
-          <section key={key} className="container" style={{ padding: "32px 24px", borderTop: "1px solid var(--border)" }}>
-            <h2 style={{ fontSize: "1.3rem", marginBottom: 16 }}>{label}</h2>
-            {insights.length === 0 ? (
-              <EmptyLayerState reason={LAYER_EMPTY_REASONS[key] ?? "A live data source hasn't been wired to this layer yet."} />
-            ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 18 }}>
-                {insights.map((insight) => (
-                  <InsightCard key={insight.id} insight={insight} />
-                ))}
-              </div>
-            )}
-          </section>
-        );
-      })}
+      <AnalyticsExplorer overview={analyticsOverview} />
 
       <section className="container" style={{ padding: "48px 24px 72px", borderTop: "1px solid var(--border)" }}>
         <p className="eyebrow">Case study</p>
@@ -239,9 +253,9 @@ export default async function HealthcareIntelligencePage() {
           <div>
             <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Architecture</h3>
             <p style={{ margin: 0, color: "var(--text-muted)", marginBottom: 10 }}>
-              Dashboard → Executive Orchestrator → 12 domain specialist agents (market, claims, reimbursement,
-              provider network, Medicare Advantage/Part D, Medicaid, Marketplace, policy, emerging signals,
-              market/catalyst intelligence, plus two infrastructure agents for data-source monitoring and the
+              Dashboard → Executive Orchestrator → 12 agents: 10 domain specialists (market growth, claims and
+              cost, reimbursement, provider network, Medicare Advantage/Part D, Medicaid, Marketplace, policy,
+              emerging trends, market catalysts) and two infrastructure agents (data-source monitoring and the
               shared semantic model) → data adapters → public sources (CMS program data plus SEC EDGAR, openFDA,
               NIH RePORTER, and ClinicalTrials.gov). A model-provider interface sits behind every agent&apos;s
               reasoning step, so the same system can run on different language models without changing any
@@ -250,7 +264,7 @@ export default async function HealthcareIntelligencePage() {
             <p style={{ margin: 0, color: "var(--text-muted)" }}>
               {sweep.agentStatuses.length} agents ran this cycle, producing {sweep.allInsights.length} evidence-backed
               insight{sweep.allInsights.length === 1 ? "" : "s"} from real public data — every one traceable through
-              the &quot;Inspect evidence&quot; drawer above.
+              each finding&apos;s &quot;Inspect evidence&quot; drawer above.
             </p>
           </div>
           <div>
@@ -275,7 +289,7 @@ export default async function HealthcareIntelligencePage() {
               because each is directly fetchable and updates on a predictable cadence, which matters for a project
               run on a fixed budget and a monthly refresh schedule rather than a live production feed. Two
               independent CMS sources sharing the same states is also what makes the Emerging Signals cross-check
-              below possible.
+              above possible.
             </p>
           </div>
           <div>
@@ -284,8 +298,9 @@ export default async function HealthcareIntelligencePage() {
               A single data point is never called a trend. A finding only earns that label once it holds across
               multiple periods, or a specific, cited event explains it — otherwise it&apos;s labeled a baseline, plainly.
               Confidence levels aren&apos;t a vibe — they&apos;re computed from whether a finding has enough history,
-              persists, and is corroborated by an independent source, and every card shows its reasoning, not just a
-              label. Every number is still computed by deterministic code, never an LLM — but which of several real,
+              persists, and is corroborated by an independent source, and each finding&apos;s evidence drawer shows the
+              level with its reasoning, not just a label. The level stays inside that drawer rather than on the
+              finding itself, since with only days of snapshot history nearly everything reads low for now. Every number is still computed by deterministic code, never an LLM — but which of several real,
               computed candidates is worth an executive&apos;s attention is a judgment call, so agents route that
               specific decision through a reasoning layer that can only choose among and briefly explain real
               candidates it&apos;s given, never invent one. Once a month, after the data refresh, the agents re-run
@@ -354,8 +369,8 @@ export default async function HealthcareIntelligencePage() {
                 a week of real snapshot history behind them so far.
               </li>
               <li>
-                No proprietary insurer data is used anywhere — every number below is public CMS data. A real
-                carrier name (e.g. in the Medicare Advantage enrollment ranking below) only ever appears when it&apos;s
+                No proprietary insurer data is used anywhere — every number on this page is public data. A real
+                carrier name (e.g. in the Medicare Advantage enrollment ranking above) only ever appears when it&apos;s
                 a genuine, sourced finding computed from that public data, the same kind of reading a real industry
                 directory publishes — never a fabricated claim or an implied look at any carrier&apos;s real internal
                 systems.

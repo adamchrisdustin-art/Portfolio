@@ -24,10 +24,19 @@ describe("buildAnalyticsOverview", () => {
   it("Federal Register rules-by-month bar has only real, non-negative counts", () => {
     const overview = buildAnalyticsOverview();
     if (!overview.federalRegisterRulesByMonthBar) return;
-    for (const bar of overview.federalRegisterRulesByMonthBar.bars) {
-      expect(bar.value).toBeGreaterThan(0);
+    const bars = overview.federalRegisterRulesByMonthBar.bars;
+    for (const bar of bars) {
+      expect(bar.value).toBeGreaterThanOrEqual(0);
+      expect(Number.isInteger(bar.value)).toBe(true);
       expect(bar.label).toMatch(/^\d{4}-\d{2}$/);
     }
+    // Contiguous months (zero-rule months included), so the columns read as an even time axis.
+    for (let i = 1; i < bars.length; i++) {
+      const next = new Date(`${bars[i - 1].label}-01T00:00:00Z`);
+      next.setUTCMonth(next.getUTCMonth() + 1);
+      expect(bars[i].label).toBe(next.toISOString().slice(0, 7));
+    }
+    expect(bars.some((b) => b.value > 0)).toBe(true);
   });
 
   it("Marketplace boxplot has correctly ordered whiskers and Marketplace charts never name a real carrier", () => {
@@ -91,10 +100,19 @@ describe("buildAnalyticsOverview", () => {
     }
   });
 
-  it("time-series points are real and chronologically ordered", () => {
+  it("time-series points are real, multi-period and chronologically ordered", () => {
     const overview = buildAnalyticsOverview();
-    if (!overview.facilityCountSeries) return;
-    const dates = overview.facilityCountSeries.points.map((p) => p.date);
-    expect(dates).toEqual([...dates].sort());
+    for (const series of [overview.maEnrollmentSeries, overview.partBPaymentSeries]) {
+      expect(series).not.toBeNull();
+      const dates = series!.points.map((p) => p.date);
+      expect(dates.length).toBeGreaterThanOrEqual(10);
+      expect(dates).toEqual([...dates].sort());
+      for (const p of series!.points) expect(p.value).toBeGreaterThan(0);
+    }
+  });
+
+  it("ranks Marketplace issuers per state highest first", () => {
+    const bars = buildAnalyticsOverview().marketplacePlanAvailabilityBar?.bars ?? [];
+    for (let i = 1; i < bars.length; i++) expect(bars[i].value).toBeLessThanOrEqual(bars[i - 1].value);
   });
 });

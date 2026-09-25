@@ -10,7 +10,7 @@ import { CHART_TITLE_STYLE, INK_PRIMARY, INK_SECONDARY, MAGNITUDE_HUE } from "./
  */
 export default function ListChart({ chart }: { chart: ChartList }) {
   return (
-    <div>
+    <div className="chart">
       <div className="mono" style={CHART_TITLE_STYLE}>
         {chart.title}
       </div>

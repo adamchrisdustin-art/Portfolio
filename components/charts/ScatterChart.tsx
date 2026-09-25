@@ -41,7 +41,7 @@ export default function ScatterChart({ chart }: { chart: ChartScatter }) {
   const yTicks = [yDomainMin, (yDomainMin + yDomainMax) / 2, yDomainMax];
 
   return (
-    <div>
+    <div className="chart">
       <div className="mono" style={CHART_TITLE_STYLE}>
         {chart.title}
       </div>

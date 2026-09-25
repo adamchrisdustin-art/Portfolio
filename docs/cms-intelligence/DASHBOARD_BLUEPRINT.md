@@ -357,6 +357,20 @@ live page — stated here as rules, not narrated as history:
   link.
 - A single current value is a stat tile (`StatTile.tsx`), not a one-bar
   bar chart.
+- **Orientation is an explicit per-chart choice** (`orientation` on
+  `ChartBar`, 2026-09-25 from Adam's PDF review). Bars
+  default horizontal, which suits long category names; a month series or
+  a short-coded ranking (state codes, plan types) reads better as vertical
+  columns (`orientation: "vertical"`, value labels in compact notation,
+  angled category labels when long, zero-count months filled so the time
+  axis is even). Box plots stay vertical; with many categories they widen to fill
+  inside a full-width panel so labels don't collide. Wide Data Explorer charts get a full-width panel.
+- **Data Explorer panels center their chart vertically** between title and
+  card bottom via the `.chart-panel` / `.chart` CSS in `app/globals.css`
+  (auto margins in a flex column) - never `justifyContent` on the scroll
+  wrapper, per the first rule above.
+- **Confidence lives in the evidence drawer only**, not as a badge on the
+  finding, until there's enough snapshot history for levels to vary.
 
 These conventions produced `components/Sparkline.tsx` (multi-snapshot
 trend lines), `components/charts/{BarChart,DonutChart,BoxPlot,

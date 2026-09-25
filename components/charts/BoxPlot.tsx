@@ -30,7 +30,8 @@ import {
  * tooltip, never hidden just because it's off the visible scale.
  */
 export default function BoxPlot({ chart }: { chart: ChartBoxPlot }) {
-  const width = 360;
+  // Many-category plots (e.g. 20+ states) fill a full-width panel so their labels don't collide.
+  const width = chart.boxes.length > 8 ? Math.max(1020, 52 + chart.boxes.length * 36) : 360;
   const height = 200;
   const padding = { top: 12, right: 12, bottom: 24, left: 40 };
   const plotWidth = width - padding.left - padding.right;
@@ -56,7 +57,7 @@ export default function BoxPlot({ chart }: { chart: ChartBoxPlot }) {
   const hasOffScaleOutliers = chart.boxes.some((b) => b.outliers.some(isOffScale));
 
   return (
-    <div>
+    <div className="chart">
       <div className="mono" style={CHART_TITLE_STYLE}>
         {chart.title}
         {hasOutliers && " (dots = outliers beyond 1.5×IQR"}
@@ -126,3 +127,4 @@ export default function BoxPlot({ chart }: { chart: ChartBoxPlot }) {
     </div>
   );
 }
+

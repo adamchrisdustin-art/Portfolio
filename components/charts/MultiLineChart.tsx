@@ -50,7 +50,7 @@ export default function MultiLineChart({ chart }: { chart: MultiLineChartData })
     .join("; ");
 
   return (
-    <div>
+    <div className="chart">
       <div className="mono" style={CHART_TITLE_STYLE}>
         {chart.title}
       </div>
