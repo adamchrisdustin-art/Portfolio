@@ -39,8 +39,9 @@ jobs:
       - name: Pull CMS Home Health Care Agencies
         run: npx tsx cms-intelligence/data/adapters/pull-home-health.ts
 
-      - name: Pull CMS Medicare Physician & Other Practitioners
-        run: npx tsx cms-intelligence/data/adapters/pull-physician-other-practitioners.ts
+      - name: Summarize CMS Medicare Physician & Other Practitioners (every provider, new data years only)
+        # Past data years are already committed; this only pulls a year CMS has newly published (~5 min each).
+        run: npx tsx cms-intelligence/data/adapters/pull-physician-by-provider-summary.ts
 
       - name: Pull Federal Register CMS documents
         run: npx tsx cms-intelligence/data/adapters/pull-federal-register.ts
@@ -57,7 +58,7 @@ jobs:
       - name: Pull openFDA novel drug approvals
         run: npx tsx cms-intelligence/data/adapters/pull-fda-drug-approvals.ts
 
-      - name: Pull NIH RePORTER award notices
+      - name: Pull NIH RePORTER award notices (top 100 + every award summarized, ~6 min at NIH's 1 request/second)
         run: npx tsx cms-intelligence/data/adapters/pull-nih-reporter-awards.ts
 
       - name: Pull ClinicalTrials.gov Phase 3 results postings

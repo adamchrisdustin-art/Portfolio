@@ -24,7 +24,7 @@ export const SOURCE_ID_BY_DATASET: Record<string, string> = {
   "hospital-general-information": "cms:hospital-general-information",
   "ma-part-d-enrollment": "cms:ma-part-d-enrollment",
   "marketplace-rate-puf": "cms:marketplace-rate-puf",
-  "medicare-physician-other-practitioners": "cms:medicare-physician-other-practitioners",
+  "medicare-physician-by-provider-summary": "cms:medicare-physician-by-provider",
   "nih-reporter-awards": "nih-reporter:project-awards",
   "sec-edgar-healthcare-filings": "sec-edgar:healthcare-8k-filings",
 };

@@ -1,6 +1,6 @@
 {
   "dataset": "nih-reporter-awards",
-  "pulledAt": "2026-09-25T17:19:14.652Z",
+  "pulledAt": "2026-09-25T18:43:31.088Z",
   "windowStart": "2024-09-25",
   "totalAvailable": 140720,
   "awards": [
@@ -23896,5 +23896,5309 @@
         "trial design"
       ]
     }
-  ]
+  ],
+  "summary": {
+    "notices": 140718,
+    "dollars": 79468259291,
+    "reportedTotal": 140718,
+    "missingAmount": 3129,
+    "byMonth": [
+      {
+        "month": "2024-09",
+        "notices": 198,
+        "dollars": 181057042
+      },
+      {
+        "month": "2024-10",
+        "notices": 758,
+        "dollars": 65964461
+      },
+      {
+        "month": "2024-11",
+        "notices": 2614,
+        "dollars": 1365606738
+      },
+      {
+        "month": "2024-12",
+        "notices": 3823,
+        "dollars": 1766178411
+      },
+      {
+        "month": "2025-01",
+        "notices": 3475,
+        "dollars": 1611302872
+      },
+      {
+        "month": "2025-02",
+        "notices": 2475,
+        "dollars": 1189059445
+      },
+      {
+        "month": "2025-03",
+        "notices": 4481,
+        "dollars": 2436125236
+      },
+      {
+        "month": "2025-04",
+        "notices": 6345,
+        "dollars": 3285120760
+      },
+      {
+        "month": "2025-05",
+        "notices": 5057,
+        "dollars": 2634933926
+      },
+      {
+        "month": "2025-06",
+        "notices": 6015,
+        "dollars": 3414130298
+      },
+      {
+        "month": "2025-07",
+        "notices": 11911,
+        "dollars": 6626905866
+      },
+      {
+        "month": "2025-08",
+        "notices": 15138,
+        "dollars": 9211652638
+      },
+      {
+        "month": "2025-09",
+        "notices": 10383,
+        "dollars": 6498819011
+      },
+      {
+        "month": "2025-10",
+        "notices": 206,
+        "dollars": 0
+      },
+      {
+        "month": "2025-11",
+        "notices": 204,
+        "dollars": 78509031
+      },
+      {
+        "month": "2025-12",
+        "notices": 2492,
+        "dollars": 1289156182
+      },
+      {
+        "month": "2026-01",
+        "notices": 3639,
+        "dollars": 2042371183
+      },
+      {
+        "month": "2026-02",
+        "notices": 3864,
+        "dollars": 1984540026
+      },
+      {
+        "month": "2026-03",
+        "notices": 3834,
+        "dollars": 2018256672
+      },
+      {
+        "month": "2026-04",
+        "notices": 5973,
+        "dollars": 3226922402
+      },
+      {
+        "month": "2026-05",
+        "notices": 7183,
+        "dollars": 4113424623
+      },
+      {
+        "month": "2026-06",
+        "notices": 9000,
+        "dollars": 5245620519
+      },
+      {
+        "month": "2026-07",
+        "notices": 10706,
+        "dollars": 6304266101
+      },
+      {
+        "month": "2026-08",
+        "notices": 12792,
+        "dollars": 7789022491
+      },
+      {
+        "month": "2026-09",
+        "notices": 8152,
+        "dollars": 5089313357
+      }
+    ],
+    "byMonthInstitute": [
+      {
+        "month": "2024-09",
+        "institute": "FDA",
+        "notices": 10,
+        "dollars": 4220380
+      },
+      {
+        "month": "2024-09",
+        "institute": "NCI",
+        "notices": 37,
+        "dollars": 10120725
+      },
+      {
+        "month": "2024-09",
+        "institute": "NHGRI",
+        "notices": 13,
+        "dollars": 7287475
+      },
+      {
+        "month": "2024-09",
+        "institute": "NHLBI",
+        "notices": 20,
+        "dollars": 85022872
+      },
+      {
+        "month": "2024-09",
+        "institute": "NIA",
+        "notices": 52,
+        "dollars": 43566184
+      },
+      {
+        "month": "2024-09",
+        "institute": "NIAAA",
+        "notices": 3,
+        "dollars": 1113612
+      },
+      {
+        "month": "2024-09",
+        "institute": "NIAID",
+        "notices": 4,
+        "dollars": 778500
+      },
+      {
+        "month": "2024-09",
+        "institute": "NIAMS",
+        "notices": 7,
+        "dollars": 3229206
+      },
+      {
+        "month": "2024-09",
+        "institute": "NICHD",
+        "notices": 6,
+        "dollars": 1263765
+      },
+      {
+        "month": "2024-09",
+        "institute": "NIDCD",
+        "notices": 1,
+        "dollars": 347438
+      },
+      {
+        "month": "2024-09",
+        "institute": "NIDCR",
+        "notices": 2,
+        "dollars": 123587
+      },
+      {
+        "month": "2024-09",
+        "institute": "NIEHS",
+        "notices": 5,
+        "dollars": 2709640
+      },
+      {
+        "month": "2024-09",
+        "institute": "NIGMS",
+        "notices": 9,
+        "dollars": 3318552
+      },
+      {
+        "month": "2024-09",
+        "institute": "NIMH",
+        "notices": 1,
+        "dollars": 802948
+      },
+      {
+        "month": "2024-09",
+        "institute": "NIMHD",
+        "notices": 5,
+        "dollars": 587066
+      },
+      {
+        "month": "2024-09",
+        "institute": "NINDS",
+        "notices": 2,
+        "dollars": 2818770
+      },
+      {
+        "month": "2024-09",
+        "institute": "NINR",
+        "notices": 2,
+        "dollars": 594732
+      },
+      {
+        "month": "2024-09",
+        "institute": "OD",
+        "notices": 6,
+        "dollars": 13151590
+      },
+      {
+        "month": "2024-09",
+        "institute": "VA",
+        "notices": 13,
+        "dollars": 0
+      },
+      {
+        "month": "2024-10",
+        "institute": "AHRQ",
+        "notices": 1,
+        "dollars": 790649
+      },
+      {
+        "month": "2024-10",
+        "institute": "FIC",
+        "notices": 3,
+        "dollars": 300000
+      },
+      {
+        "month": "2024-10",
+        "institute": "NCCIH",
+        "notices": 3,
+        "dollars": 1831154
+      },
+      {
+        "month": "2024-10",
+        "institute": "NCI",
+        "notices": 6,
+        "dollars": 1373061
+      },
+      {
+        "month": "2024-10",
+        "institute": "NEI",
+        "notices": 1,
+        "dollars": 178435
+      },
+      {
+        "month": "2024-10",
+        "institute": "NHLBI",
+        "notices": 1,
+        "dollars": 570910
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIA",
+        "notices": 8,
+        "dollars": 486539
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIAAA",
+        "notices": 2,
+        "dollars": 216018
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIAID",
+        "notices": 87,
+        "dollars": 38892384
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIAMS",
+        "notices": 2,
+        "dollars": 560314
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIBIB",
+        "notices": 1,
+        "dollars": 73000
+      },
+      {
+        "month": "2024-10",
+        "institute": "NICHD",
+        "notices": 5,
+        "dollars": 2627056
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIDA",
+        "notices": 7,
+        "dollars": 1193419
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIDCD",
+        "notices": 4,
+        "dollars": 814508
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIDCR",
+        "notices": 12,
+        "dollars": 1273432
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIDDK",
+        "notices": 2,
+        "dollars": 166484
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIEHS",
+        "notices": 27,
+        "dollars": 11469881
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIGMS",
+        "notices": 4,
+        "dollars": 1547823
+      },
+      {
+        "month": "2024-10",
+        "institute": "NIMHD",
+        "notices": 6,
+        "dollars": 1442510
+      },
+      {
+        "month": "2024-10",
+        "institute": "NINDS",
+        "notices": 1,
+        "dollars": 156884
+      },
+      {
+        "month": "2024-10",
+        "institute": "VA",
+        "notices": 575,
+        "dollars": 0
+      },
+      {
+        "month": "2024-11",
+        "institute": "AHRQ",
+        "notices": 44,
+        "dollars": 21199448
+      },
+      {
+        "month": "2024-11",
+        "institute": "FDA",
+        "notices": 6,
+        "dollars": 600000
+      },
+      {
+        "month": "2024-11",
+        "institute": "FIC",
+        "notices": 3,
+        "dollars": 763623
+      },
+      {
+        "month": "2024-11",
+        "institute": "NCATS",
+        "notices": 6,
+        "dollars": 5067048
+      },
+      {
+        "month": "2024-11",
+        "institute": "NCCDPHP",
+        "notices": 1,
+        "dollars": 15246
+      },
+      {
+        "month": "2024-11",
+        "institute": "NCCIH",
+        "notices": 6,
+        "dollars": 1864559
+      },
+      {
+        "month": "2024-11",
+        "institute": "NCI",
+        "notices": 318,
+        "dollars": 142658685
+      },
+      {
+        "month": "2024-11",
+        "institute": "NEI",
+        "notices": 34,
+        "dollars": 10319180
+      },
+      {
+        "month": "2024-11",
+        "institute": "NHGRI",
+        "notices": 4,
+        "dollars": 653728
+      },
+      {
+        "month": "2024-11",
+        "institute": "NHLBI",
+        "notices": 272,
+        "dollars": 143116869
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIA",
+        "notices": 179,
+        "dollars": 87917958
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIAAA",
+        "notices": 37,
+        "dollars": 13272568
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIAID",
+        "notices": 451,
+        "dollars": 445355180
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIAMS",
+        "notices": 33,
+        "dollars": 12617554
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIBIB",
+        "notices": 42,
+        "dollars": 15327960
+      },
+      {
+        "month": "2024-11",
+        "institute": "NICHD",
+        "notices": 54,
+        "dollars": 21652576
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIDA",
+        "notices": 16,
+        "dollars": 4641209
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIDCD",
+        "notices": 88,
+        "dollars": 35149116
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIDCR",
+        "notices": 11,
+        "dollars": 3809479
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIDDK",
+        "notices": 164,
+        "dollars": 62555320
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIEHS",
+        "notices": 92,
+        "dollars": 35745169
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIGMS",
+        "notices": 141,
+        "dollars": 41330630
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIMH",
+        "notices": 177,
+        "dollars": 86710462
+      },
+      {
+        "month": "2024-11",
+        "institute": "NIMHD",
+        "notices": 53,
+        "dollars": 27714011
+      },
+      {
+        "month": "2024-11",
+        "institute": "NINDS",
+        "notices": 303,
+        "dollars": 111304426
+      },
+      {
+        "month": "2024-11",
+        "institute": "NINR",
+        "notices": 5,
+        "dollars": 1989991
+      },
+      {
+        "month": "2024-11",
+        "institute": "OD",
+        "notices": 17,
+        "dollars": 32254743
+      },
+      {
+        "month": "2024-11",
+        "institute": "VA",
+        "notices": 57,
+        "dollars": 0
+      },
+      {
+        "month": "2024-12",
+        "institute": "AHRQ",
+        "notices": 23,
+        "dollars": 10785398
+      },
+      {
+        "month": "2024-12",
+        "institute": "FDA",
+        "notices": 6,
+        "dollars": 2126862
+      },
+      {
+        "month": "2024-12",
+        "institute": "FIC",
+        "notices": 21,
+        "dollars": 5512029
+      },
+      {
+        "month": "2024-12",
+        "institute": "NCATS",
+        "notices": 8,
+        "dollars": 15190880
+      },
+      {
+        "month": "2024-12",
+        "institute": "NCCIH",
+        "notices": 20,
+        "dollars": 5095630
+      },
+      {
+        "month": "2024-12",
+        "institute": "NCEZID",
+        "notices": 3,
+        "dollars": 1620000
+      },
+      {
+        "month": "2024-12",
+        "institute": "NCI",
+        "notices": 520,
+        "dollars": 240054970
+      },
+      {
+        "month": "2024-12",
+        "institute": "NCIRD",
+        "notices": 1,
+        "dollars": 484260
+      },
+      {
+        "month": "2024-12",
+        "institute": "NEI",
+        "notices": 111,
+        "dollars": 36754276
+      },
+      {
+        "month": "2024-12",
+        "institute": "NHGRI",
+        "notices": 19,
+        "dollars": 5377003
+      },
+      {
+        "month": "2024-12",
+        "institute": "NHLBI",
+        "notices": 455,
+        "dollars": 213411834
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIA",
+        "notices": 275,
+        "dollars": 155839786
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIAAA",
+        "notices": 21,
+        "dollars": 8441582
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIAID",
+        "notices": 422,
+        "dollars": 269210375
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIAMS",
+        "notices": 66,
+        "dollars": 22419803
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIBIB",
+        "notices": 47,
+        "dollars": 20211995
+      },
+      {
+        "month": "2024-12",
+        "institute": "NICHD",
+        "notices": 109,
+        "dollars": 66739761
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIDA",
+        "notices": 83,
+        "dollars": 24329950
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIDCD",
+        "notices": 93,
+        "dollars": 27012565
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIDCR",
+        "notices": 30,
+        "dollars": 11719838
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIDDK",
+        "notices": 244,
+        "dollars": 111280873
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIEHS",
+        "notices": 98,
+        "dollars": 33737433
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIGMS",
+        "notices": 378,
+        "dollars": 139851825
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIMH",
+        "notices": 258,
+        "dollars": 115621210
+      },
+      {
+        "month": "2024-12",
+        "institute": "NIMHD",
+        "notices": 54,
+        "dollars": 25887970
+      },
+      {
+        "month": "2024-12",
+        "institute": "NINDS",
+        "notices": 323,
+        "dollars": 140794003
+      },
+      {
+        "month": "2024-12",
+        "institute": "NINR",
+        "notices": 5,
+        "dollars": 2698262
+      },
+      {
+        "month": "2024-12",
+        "institute": "NLM",
+        "notices": 17,
+        "dollars": 3673136
+      },
+      {
+        "month": "2024-12",
+        "institute": "OD",
+        "notices": 17,
+        "dollars": 50294902
+      },
+      {
+        "month": "2024-12",
+        "institute": "VA",
+        "notices": 96,
+        "dollars": 0
+      },
+      {
+        "month": "2025-01",
+        "institute": "AHRQ",
+        "notices": 9,
+        "dollars": 2682090
+      },
+      {
+        "month": "2025-01",
+        "institute": "FDA",
+        "notices": 2,
+        "dollars": 579803
+      },
+      {
+        "month": "2025-01",
+        "institute": "FIC",
+        "notices": 14,
+        "dollars": 3694652
+      },
+      {
+        "month": "2025-01",
+        "institute": "NCATS",
+        "notices": 8,
+        "dollars": 11132601
+      },
+      {
+        "month": "2025-01",
+        "institute": "NCCIH",
+        "notices": 13,
+        "dollars": 5878002
+      },
+      {
+        "month": "2025-01",
+        "institute": "NCI",
+        "notices": 451,
+        "dollars": 205574024
+      },
+      {
+        "month": "2025-01",
+        "institute": "NCIRD",
+        "notices": 3,
+        "dollars": 2679111
+      },
+      {
+        "month": "2025-01",
+        "institute": "NEI",
+        "notices": 98,
+        "dollars": 36273846
+      },
+      {
+        "month": "2025-01",
+        "institute": "NHGRI",
+        "notices": 23,
+        "dollars": 10266371
+      },
+      {
+        "month": "2025-01",
+        "institute": "NHLBI",
+        "notices": 405,
+        "dollars": 201577178
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIA",
+        "notices": 219,
+        "dollars": 140202421
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIAAA",
+        "notices": 32,
+        "dollars": 11738096
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIAID",
+        "notices": 426,
+        "dollars": 233677965
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIAMS",
+        "notices": 73,
+        "dollars": 32054168
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIBIB",
+        "notices": 60,
+        "dollars": 21971991
+      },
+      {
+        "month": "2025-01",
+        "institute": "NICHD",
+        "notices": 124,
+        "dollars": 47704450
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIDA",
+        "notices": 135,
+        "dollars": 75827058
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIDCD",
+        "notices": 48,
+        "dollars": 19087073
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIDCR",
+        "notices": 43,
+        "dollars": 18482843
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIDDK",
+        "notices": 119,
+        "dollars": 48322573
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIEHS",
+        "notices": 79,
+        "dollars": 31338532
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIGMS",
+        "notices": 356,
+        "dollars": 143188996
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIMH",
+        "notices": 198,
+        "dollars": 105943630
+      },
+      {
+        "month": "2025-01",
+        "institute": "NIMHD",
+        "notices": 37,
+        "dollars": 16701170
+      },
+      {
+        "month": "2025-01",
+        "institute": "NINDS",
+        "notices": 266,
+        "dollars": 121844961
+      },
+      {
+        "month": "2025-01",
+        "institute": "NINR",
+        "notices": 7,
+        "dollars": 4899620
+      },
+      {
+        "month": "2025-01",
+        "institute": "NLM",
+        "notices": 6,
+        "dollars": 2201054
+      },
+      {
+        "month": "2025-01",
+        "institute": "OD",
+        "notices": 38,
+        "dollars": 55778593
+      },
+      {
+        "month": "2025-01",
+        "institute": "VA",
+        "notices": 183,
+        "dollars": 0
+      },
+      {
+        "month": "2025-02",
+        "institute": "AHRQ",
+        "notices": 14,
+        "dollars": 4310860
+      },
+      {
+        "month": "2025-02",
+        "institute": "FDA",
+        "notices": 1,
+        "dollars": 280000
+      },
+      {
+        "month": "2025-02",
+        "institute": "FIC",
+        "notices": 33,
+        "dollars": 7815857
+      },
+      {
+        "month": "2025-02",
+        "institute": "NCATS",
+        "notices": 1,
+        "dollars": 1117161
+      },
+      {
+        "month": "2025-02",
+        "institute": "NCCIH",
+        "notices": 1,
+        "dollars": 461592
+      },
+      {
+        "month": "2025-02",
+        "institute": "NCI",
+        "notices": 440,
+        "dollars": 204071770
+      },
+      {
+        "month": "2025-02",
+        "institute": "NEI",
+        "notices": 87,
+        "dollars": 54854084
+      },
+      {
+        "month": "2025-02",
+        "institute": "NHGRI",
+        "notices": 24,
+        "dollars": 18043059
+      },
+      {
+        "month": "2025-02",
+        "institute": "NHLBI",
+        "notices": 220,
+        "dollars": 118022838
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIA",
+        "notices": 46,
+        "dollars": 43024214
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIAAA",
+        "notices": 3,
+        "dollars": 1329873
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIAID",
+        "notices": 310,
+        "dollars": 178817843
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIAMS",
+        "notices": 51,
+        "dollars": 18744356
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIBIB",
+        "notices": 25,
+        "dollars": 10138070
+      },
+      {
+        "month": "2025-02",
+        "institute": "NICHD",
+        "notices": 98,
+        "dollars": 39900457
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIDA",
+        "notices": 41,
+        "dollars": 23282126
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIDCD",
+        "notices": 49,
+        "dollars": 22126861
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIDCR",
+        "notices": 17,
+        "dollars": 9183399
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIDDK",
+        "notices": 305,
+        "dollars": 147193815
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIEHS",
+        "notices": 29,
+        "dollars": 13312698
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIGMS",
+        "notices": 147,
+        "dollars": 70970118
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIMH",
+        "notices": 151,
+        "dollars": 78881169
+      },
+      {
+        "month": "2025-02",
+        "institute": "NIMHD",
+        "notices": 42,
+        "dollars": 19728316
+      },
+      {
+        "month": "2025-02",
+        "institute": "NINDS",
+        "notices": 180,
+        "dollars": 76090135
+      },
+      {
+        "month": "2025-02",
+        "institute": "NINR",
+        "notices": 16,
+        "dollars": 9584079
+      },
+      {
+        "month": "2025-02",
+        "institute": "NLM",
+        "notices": 7,
+        "dollars": 2739490
+      },
+      {
+        "month": "2025-02",
+        "institute": "OD",
+        "notices": 24,
+        "dollars": 15035205
+      },
+      {
+        "month": "2025-02",
+        "institute": "VA",
+        "notices": 113,
+        "dollars": 0
+      },
+      {
+        "month": "2025-03",
+        "institute": "AHRQ",
+        "notices": 36,
+        "dollars": 10265958
+      },
+      {
+        "month": "2025-03",
+        "institute": "FDA",
+        "notices": 2,
+        "dollars": 4050000
+      },
+      {
+        "month": "2025-03",
+        "institute": "FIC",
+        "notices": 37,
+        "dollars": 9577656
+      },
+      {
+        "month": "2025-03",
+        "institute": "NCATS",
+        "notices": 15,
+        "dollars": 8312637
+      },
+      {
+        "month": "2025-03",
+        "institute": "NCCIH",
+        "notices": 30,
+        "dollars": 12227559
+      },
+      {
+        "month": "2025-03",
+        "institute": "NCEZID",
+        "notices": 1,
+        "dollars": 149939
+      },
+      {
+        "month": "2025-03",
+        "institute": "NCI",
+        "notices": 946,
+        "dollars": 526650805
+      },
+      {
+        "month": "2025-03",
+        "institute": "NEI",
+        "notices": 131,
+        "dollars": 55491525
+      },
+      {
+        "month": "2025-03",
+        "institute": "NHGRI",
+        "notices": 44,
+        "dollars": 25782414
+      },
+      {
+        "month": "2025-03",
+        "institute": "NHLBI",
+        "notices": 373,
+        "dollars": 302975568
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIA",
+        "notices": 550,
+        "dollars": 451210117
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIAAA",
+        "notices": 25,
+        "dollars": 11235233
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIAID",
+        "notices": 302,
+        "dollars": 157268995
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIAMS",
+        "notices": 143,
+        "dollars": 54441300
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIBIB",
+        "notices": 77,
+        "dollars": 34841217
+      },
+      {
+        "month": "2025-03",
+        "institute": "NICHD",
+        "notices": 128,
+        "dollars": 52463369
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIDA",
+        "notices": 184,
+        "dollars": 125963753
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIDCD",
+        "notices": 93,
+        "dollars": 34242387
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIDCR",
+        "notices": 116,
+        "dollars": 53471821
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIDDK",
+        "notices": 114,
+        "dollars": 49704633
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIEHS",
+        "notices": 90,
+        "dollars": 41625356
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIGMS",
+        "notices": 169,
+        "dollars": 71078638
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIMH",
+        "notices": 288,
+        "dollars": 148318451
+      },
+      {
+        "month": "2025-03",
+        "institute": "NIMHD",
+        "notices": 15,
+        "dollars": 8395074
+      },
+      {
+        "month": "2025-03",
+        "institute": "NINDS",
+        "notices": 356,
+        "dollars": 156546690
+      },
+      {
+        "month": "2025-03",
+        "institute": "NINR",
+        "notices": 7,
+        "dollars": 2820766
+      },
+      {
+        "month": "2025-03",
+        "institute": "NLM",
+        "notices": 8,
+        "dollars": 2802863
+      },
+      {
+        "month": "2025-03",
+        "institute": "OD",
+        "notices": 26,
+        "dollars": 24210512
+      },
+      {
+        "month": "2025-03",
+        "institute": "VA",
+        "notices": 175,
+        "dollars": 0
+      },
+      {
+        "month": "2025-04",
+        "institute": "AHRQ",
+        "notices": 2,
+        "dollars": 191795
+      },
+      {
+        "month": "2025-04",
+        "institute": "FIC",
+        "notices": 15,
+        "dollars": 2818478
+      },
+      {
+        "month": "2025-04",
+        "institute": "NCATS",
+        "notices": 13,
+        "dollars": 15140671
+      },
+      {
+        "month": "2025-04",
+        "institute": "NCCDPHP",
+        "notices": 50,
+        "dollars": 8645521
+      },
+      {
+        "month": "2025-04",
+        "institute": "NCCIH",
+        "notices": 27,
+        "dollars": 13338876
+      },
+      {
+        "month": "2025-04",
+        "institute": "NCEZID",
+        "notices": 1,
+        "dollars": 10000
+      },
+      {
+        "month": "2025-04",
+        "institute": "NCI",
+        "notices": 903,
+        "dollars": 517115353
+      },
+      {
+        "month": "2025-04",
+        "institute": "NEI",
+        "notices": 139,
+        "dollars": 59268342
+      },
+      {
+        "month": "2025-04",
+        "institute": "NHGRI",
+        "notices": 38,
+        "dollars": 24948612
+      },
+      {
+        "month": "2025-04",
+        "institute": "NHLBI",
+        "notices": 529,
+        "dollars": 317774419
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIA",
+        "notices": 443,
+        "dollars": 341557353
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIAAA",
+        "notices": 37,
+        "dollars": 12659323
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIAID",
+        "notices": 789,
+        "dollars": 461591721
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIAMS",
+        "notices": 135,
+        "dollars": 47911337
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIBIB",
+        "notices": 117,
+        "dollars": 42870137
+      },
+      {
+        "month": "2025-04",
+        "institute": "NICHD",
+        "notices": 465,
+        "dollars": 200209904
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIDA",
+        "notices": 311,
+        "dollars": 182991406
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIDCD",
+        "notices": 103,
+        "dollars": 43925468
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIDCR",
+        "notices": 73,
+        "dollars": 30697301
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIDDK",
+        "notices": 401,
+        "dollars": 171354109
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIEHS",
+        "notices": 80,
+        "dollars": 33244478
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIGMS",
+        "notices": 634,
+        "dollars": 279602657
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIMH",
+        "notices": 319,
+        "dollars": 174477333
+      },
+      {
+        "month": "2025-04",
+        "institute": "NIMHD",
+        "notices": 122,
+        "dollars": 85037445
+      },
+      {
+        "month": "2025-04",
+        "institute": "NINDS",
+        "notices": 331,
+        "dollars": 169012178
+      },
+      {
+        "month": "2025-04",
+        "institute": "NINR",
+        "notices": 8,
+        "dollars": 4289417
+      },
+      {
+        "month": "2025-04",
+        "institute": "NLM",
+        "notices": 10,
+        "dollars": 3057365
+      },
+      {
+        "month": "2025-04",
+        "institute": "OD",
+        "notices": 72,
+        "dollars": 41379761
+      },
+      {
+        "month": "2025-04",
+        "institute": "VA",
+        "notices": 178,
+        "dollars": 0
+      },
+      {
+        "month": "2025-05",
+        "institute": "CGH",
+        "notices": 1,
+        "dollars": 238000
+      },
+      {
+        "month": "2025-05",
+        "institute": "FDA",
+        "notices": 2,
+        "dollars": 939394
+      },
+      {
+        "month": "2025-05",
+        "institute": "FIC",
+        "notices": 18,
+        "dollars": 2970817
+      },
+      {
+        "month": "2025-05",
+        "institute": "NCATS",
+        "notices": 19,
+        "dollars": 35076874
+      },
+      {
+        "month": "2025-05",
+        "institute": "NCCIH",
+        "notices": 4,
+        "dollars": 2009547
+      },
+      {
+        "month": "2025-05",
+        "institute": "NCI",
+        "notices": 449,
+        "dollars": 188956097
+      },
+      {
+        "month": "2025-05",
+        "institute": "NEI",
+        "notices": 89,
+        "dollars": 36646114
+      },
+      {
+        "month": "2025-05",
+        "institute": "NHGRI",
+        "notices": 21,
+        "dollars": 22748074
+      },
+      {
+        "month": "2025-05",
+        "institute": "NHLBI",
+        "notices": 350,
+        "dollars": 194320567
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIA",
+        "notices": 374,
+        "dollars": 241851273
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIAAA",
+        "notices": 124,
+        "dollars": 46232573
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIAID",
+        "notices": 623,
+        "dollars": 386143511
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIAMS",
+        "notices": 90,
+        "dollars": 37315953
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIBIB",
+        "notices": 101,
+        "dollars": 38700641
+      },
+      {
+        "month": "2025-05",
+        "institute": "NICHD",
+        "notices": 250,
+        "dollars": 117107841
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIDA",
+        "notices": 240,
+        "dollars": 128841884
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIDCD",
+        "notices": 124,
+        "dollars": 55404110
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIDCR",
+        "notices": 95,
+        "dollars": 49678334
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIDDK",
+        "notices": 366,
+        "dollars": 168582962
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIEHS",
+        "notices": 55,
+        "dollars": 27704092
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIGMS",
+        "notices": 839,
+        "dollars": 403107809
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIMH",
+        "notices": 197,
+        "dollars": 123481566
+      },
+      {
+        "month": "2025-05",
+        "institute": "NIMHD",
+        "notices": 16,
+        "dollars": 8823969
+      },
+      {
+        "month": "2025-05",
+        "institute": "NINDS",
+        "notices": 458,
+        "dollars": 243698408
+      },
+      {
+        "month": "2025-05",
+        "institute": "NINR",
+        "notices": 3,
+        "dollars": 1670667
+      },
+      {
+        "month": "2025-05",
+        "institute": "NLM",
+        "notices": 16,
+        "dollars": 5942591
+      },
+      {
+        "month": "2025-05",
+        "institute": "OD",
+        "notices": 50,
+        "dollars": 66740258
+      },
+      {
+        "month": "2025-05",
+        "institute": "VA",
+        "notices": 83,
+        "dollars": 0
+      },
+      {
+        "month": "2025-06",
+        "institute": "AHRQ",
+        "notices": 47,
+        "dollars": 19292471
+      },
+      {
+        "month": "2025-06",
+        "institute": "CGH",
+        "notices": 1,
+        "dollars": 211000
+      },
+      {
+        "month": "2025-06",
+        "institute": "FDA",
+        "notices": 125,
+        "dollars": 28431264
+      },
+      {
+        "month": "2025-06",
+        "institute": "FIC",
+        "notices": 17,
+        "dollars": 3004358
+      },
+      {
+        "month": "2025-06",
+        "institute": "NCATS",
+        "notices": 79,
+        "dollars": 144855428
+      },
+      {
+        "month": "2025-06",
+        "institute": "NCBDDD",
+        "notices": 5,
+        "dollars": 2659795
+      },
+      {
+        "month": "2025-06",
+        "institute": "NCCDPHP",
+        "notices": 6,
+        "dollars": 3449952
+      },
+      {
+        "month": "2025-06",
+        "institute": "NCCIH",
+        "notices": 22,
+        "dollars": 9860001
+      },
+      {
+        "month": "2025-06",
+        "institute": "NCEZID",
+        "notices": 8,
+        "dollars": 4782174
+      },
+      {
+        "month": "2025-06",
+        "institute": "NCI",
+        "notices": 743,
+        "dollars": 347190172
+      },
+      {
+        "month": "2025-06",
+        "institute": "NCIPC",
+        "notices": 9,
+        "dollars": 4057752
+      },
+      {
+        "month": "2025-06",
+        "institute": "NEI",
+        "notices": 51,
+        "dollars": 20194136
+      },
+      {
+        "month": "2025-06",
+        "institute": "NHGRI",
+        "notices": 28,
+        "dollars": 29827632
+      },
+      {
+        "month": "2025-06",
+        "institute": "NHLBI",
+        "notices": 300,
+        "dollars": 182643313
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIA",
+        "notices": 416,
+        "dollars": 265740996
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIAAA",
+        "notices": 6,
+        "dollars": 2666266
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIAID",
+        "notices": 600,
+        "dollars": 408316365
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIAMS",
+        "notices": 140,
+        "dollars": 52437240
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIBIB",
+        "notices": 111,
+        "dollars": 42398964
+      },
+      {
+        "month": "2025-06",
+        "institute": "NICHD",
+        "notices": 231,
+        "dollars": 108544381
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIDA",
+        "notices": 301,
+        "dollars": 184331566
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIDCD",
+        "notices": 108,
+        "dollars": 46568292
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIDCR",
+        "notices": 137,
+        "dollars": 60875848
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIDDK",
+        "notices": 522,
+        "dollars": 220754429
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIEHS",
+        "notices": 134,
+        "dollars": 58641997
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIGMS",
+        "notices": 889,
+        "dollars": 433262513
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIMH",
+        "notices": 306,
+        "dollars": 194826157
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIMHD",
+        "notices": 24,
+        "dollars": 28823981
+      },
+      {
+        "month": "2025-06",
+        "institute": "NINDS",
+        "notices": 425,
+        "dollars": 223903605
+      },
+      {
+        "month": "2025-06",
+        "institute": "NINR",
+        "notices": 37,
+        "dollars": 17292390
+      },
+      {
+        "month": "2025-06",
+        "institute": "NIOSH",
+        "notices": 35,
+        "dollars": 34878411
+      },
+      {
+        "month": "2025-06",
+        "institute": "NLM",
+        "notices": 27,
+        "dollars": 20734346
+      },
+      {
+        "month": "2025-06",
+        "institute": "OD",
+        "notices": 78,
+        "dollars": 208673103
+      },
+      {
+        "month": "2025-06",
+        "institute": "VA",
+        "notices": 47,
+        "dollars": 0
+      },
+      {
+        "month": "2025-07",
+        "institute": "AHRQ",
+        "notices": 4,
+        "dollars": 1171480
+      },
+      {
+        "month": "2025-07",
+        "institute": "ATSDR",
+        "notices": 4,
+        "dollars": 1766706
+      },
+      {
+        "month": "2025-07",
+        "institute": "FDA",
+        "notices": 41,
+        "dollars": 20916051
+      },
+      {
+        "month": "2025-07",
+        "institute": "FIC",
+        "notices": 60,
+        "dollars": 15226216
+      },
+      {
+        "month": "2025-07",
+        "institute": "NCATS",
+        "notices": 97,
+        "dollars": 234773348
+      },
+      {
+        "month": "2025-07",
+        "institute": "NCCDPHP",
+        "notices": 1,
+        "dollars": 774997
+      },
+      {
+        "month": "2025-07",
+        "institute": "NCCIH",
+        "notices": 54,
+        "dollars": 27447529
+      },
+      {
+        "month": "2025-07",
+        "institute": "NCEZID",
+        "notices": 6,
+        "dollars": 8498979
+      },
+      {
+        "month": "2025-07",
+        "institute": "NCI",
+        "notices": 1459,
+        "dollars": 649808505
+      },
+      {
+        "month": "2025-07",
+        "institute": "NCIPC",
+        "notices": 1,
+        "dollars": 791052
+      },
+      {
+        "month": "2025-07",
+        "institute": "NCIRD",
+        "notices": 13,
+        "dollars": 22319410
+      },
+      {
+        "month": "2025-07",
+        "institute": "NEI",
+        "notices": 276,
+        "dollars": 107205691
+      },
+      {
+        "month": "2025-07",
+        "institute": "NHGRI",
+        "notices": 72,
+        "dollars": 63017662
+      },
+      {
+        "month": "2025-07",
+        "institute": "NHLBI",
+        "notices": 1003,
+        "dollars": 546405519
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIA",
+        "notices": 995,
+        "dollars": 760828109
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIAAA",
+        "notices": 201,
+        "dollars": 73028048
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIAID",
+        "notices": 1178,
+        "dollars": 837090743
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIAMS",
+        "notices": 278,
+        "dollars": 104782905
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIBIB",
+        "notices": 184,
+        "dollars": 80833879
+      },
+      {
+        "month": "2025-07",
+        "institute": "NICHD",
+        "notices": 698,
+        "dollars": 287685820
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIDA",
+        "notices": 515,
+        "dollars": 317591209
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIDCD",
+        "notices": 147,
+        "dollars": 56690480
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIDCR",
+        "notices": 204,
+        "dollars": 76572166
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIDDK",
+        "notices": 896,
+        "dollars": 446877635
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIEHS",
+        "notices": 280,
+        "dollars": 138657824
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIGMS",
+        "notices": 1484,
+        "dollars": 692157354
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIMH",
+        "notices": 325,
+        "dollars": 174129480
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIMHD",
+        "notices": 269,
+        "dollars": 197126403
+      },
+      {
+        "month": "2025-07",
+        "institute": "NINDS",
+        "notices": 768,
+        "dollars": 387008795
+      },
+      {
+        "month": "2025-07",
+        "institute": "NINR",
+        "notices": 83,
+        "dollars": 47738693
+      },
+      {
+        "month": "2025-07",
+        "institute": "NIOSH",
+        "notices": 71,
+        "dollars": 42242913
+      },
+      {
+        "month": "2025-07",
+        "institute": "NLM",
+        "notices": 44,
+        "dollars": 22435344
+      },
+      {
+        "month": "2025-07",
+        "institute": "OD",
+        "notices": 147,
+        "dollars": 183304921
+      },
+      {
+        "month": "2025-07",
+        "institute": "VA",
+        "notices": 53,
+        "dollars": 0
+      },
+      {
+        "month": "2025-08",
+        "institute": "CGH",
+        "notices": 4,
+        "dollars": 1399874
+      },
+      {
+        "month": "2025-08",
+        "institute": "FDA",
+        "notices": 61,
+        "dollars": 43322204
+      },
+      {
+        "month": "2025-08",
+        "institute": "FIC",
+        "notices": 64,
+        "dollars": 12808388
+      },
+      {
+        "month": "2025-08",
+        "institute": "GHC",
+        "notices": 2,
+        "dollars": 606872
+      },
+      {
+        "month": "2025-08",
+        "institute": "NCATS",
+        "notices": 83,
+        "dollars": 190766776
+      },
+      {
+        "month": "2025-08",
+        "institute": "NCBDDD",
+        "notices": 21,
+        "dollars": 5949464
+      },
+      {
+        "month": "2025-08",
+        "institute": "NCCDPHP",
+        "notices": 6,
+        "dollars": 3367000
+      },
+      {
+        "month": "2025-08",
+        "institute": "NCCIH",
+        "notices": 81,
+        "dollars": 92627453
+      },
+      {
+        "month": "2025-08",
+        "institute": "NCEZID",
+        "notices": 3,
+        "dollars": 100001
+      },
+      {
+        "month": "2025-08",
+        "institute": "NCHHSTP",
+        "notices": 5,
+        "dollars": 4076247
+      },
+      {
+        "month": "2025-08",
+        "institute": "NCI",
+        "notices": 2071,
+        "dollars": 1129219295
+      },
+      {
+        "month": "2025-08",
+        "institute": "NCIPC",
+        "notices": 9,
+        "dollars": 7411535
+      },
+      {
+        "month": "2025-08",
+        "institute": "NCIRD",
+        "notices": 9,
+        "dollars": 11313973
+      },
+      {
+        "month": "2025-08",
+        "institute": "NEI",
+        "notices": 383,
+        "dollars": 166829848
+      },
+      {
+        "month": "2025-08",
+        "institute": "NHGRI",
+        "notices": 106,
+        "dollars": 93547614
+      },
+      {
+        "month": "2025-08",
+        "institute": "NHLBI",
+        "notices": 1537,
+        "dollars": 736324043
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIA",
+        "notices": 1495,
+        "dollars": 1386737935
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIAAA",
+        "notices": 378,
+        "dollars": 161378707
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIAID",
+        "notices": 1658,
+        "dollars": 1025698136
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIAMS",
+        "notices": 296,
+        "dollars": 130285809
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIBIB",
+        "notices": 203,
+        "dollars": 119512290
+      },
+      {
+        "month": "2025-08",
+        "institute": "NICHD",
+        "notices": 695,
+        "dollars": 359021064
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIDA",
+        "notices": 531,
+        "dollars": 373925893
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIDCD",
+        "notices": 180,
+        "dollars": 87285886
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIDCR",
+        "notices": 143,
+        "dollars": 68758880
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIDDK",
+        "notices": 855,
+        "dollars": 418283625
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIEHS",
+        "notices": 275,
+        "dollars": 135091706
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIGMS",
+        "notices": 1749,
+        "dollars": 905472755
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIMH",
+        "notices": 574,
+        "dollars": 416138492
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIMHD",
+        "notices": 120,
+        "dollars": 91933843
+      },
+      {
+        "month": "2025-08",
+        "institute": "NINDS",
+        "notices": 1045,
+        "dollars": 740458235
+      },
+      {
+        "month": "2025-08",
+        "institute": "NINR",
+        "notices": 38,
+        "dollars": 18276546
+      },
+      {
+        "month": "2025-08",
+        "institute": "NIOSH",
+        "notices": 66,
+        "dollars": 37161361
+      },
+      {
+        "month": "2025-08",
+        "institute": "NLM",
+        "notices": 30,
+        "dollars": 9182603
+      },
+      {
+        "month": "2025-08",
+        "institute": "OD",
+        "notices": 239,
+        "dollars": 227378285
+      },
+      {
+        "month": "2025-08",
+        "institute": "VA",
+        "notices": 123,
+        "dollars": 0
+      },
+      {
+        "month": "2025-09",
+        "institute": "AHRQ",
+        "notices": 74,
+        "dollars": 38842891
+      },
+      {
+        "month": "2025-09",
+        "institute": "ATSDR",
+        "notices": 4,
+        "dollars": 1144925
+      },
+      {
+        "month": "2025-09",
+        "institute": "CGH",
+        "notices": 1,
+        "dollars": 6288488
+      },
+      {
+        "month": "2025-09",
+        "institute": "FDA",
+        "notices": 184,
+        "dollars": 107484863
+      },
+      {
+        "month": "2025-09",
+        "institute": "FIC",
+        "notices": 128,
+        "dollars": 38433901
+      },
+      {
+        "month": "2025-09",
+        "institute": "NCATS",
+        "notices": 15,
+        "dollars": 10699675
+      },
+      {
+        "month": "2025-09",
+        "institute": "NCBDDD",
+        "notices": 10,
+        "dollars": 689999
+      },
+      {
+        "month": "2025-09",
+        "institute": "NCCDPHP",
+        "notices": 78,
+        "dollars": 48872498
+      },
+      {
+        "month": "2025-09",
+        "institute": "NCCIH",
+        "notices": 17,
+        "dollars": 12409674
+      },
+      {
+        "month": "2025-09",
+        "institute": "NCEH",
+        "notices": 8,
+        "dollars": 1524109
+      },
+      {
+        "month": "2025-09",
+        "institute": "NCEZID",
+        "notices": 7,
+        "dollars": 5504218
+      },
+      {
+        "month": "2025-09",
+        "institute": "NCHHSTP",
+        "notices": 19,
+        "dollars": 12823085
+      },
+      {
+        "month": "2025-09",
+        "institute": "NCI",
+        "notices": 2741,
+        "dollars": 1547943629
+      },
+      {
+        "month": "2025-09",
+        "institute": "NCIPC",
+        "notices": 68,
+        "dollars": 33944792
+      },
+      {
+        "month": "2025-09",
+        "institute": "NCIRD",
+        "notices": 4,
+        "dollars": 3483297
+      },
+      {
+        "month": "2025-09",
+        "institute": "NEI",
+        "notices": 370,
+        "dollars": 139756356
+      },
+      {
+        "month": "2025-09",
+        "institute": "NHGRI",
+        "notices": 182,
+        "dollars": 167850929
+      },
+      {
+        "month": "2025-09",
+        "institute": "NHLBI",
+        "notices": 921,
+        "dollars": 519512169
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIA",
+        "notices": 768,
+        "dollars": 720747607
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIAAA",
+        "notices": 342,
+        "dollars": 161354146
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIAID",
+        "notices": 943,
+        "dollars": 535777077
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIAMS",
+        "notices": 292,
+        "dollars": 139661041
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIBIB",
+        "notices": 21,
+        "dollars": 17144602
+      },
+      {
+        "month": "2025-09",
+        "institute": "NICHD",
+        "notices": 490,
+        "dollars": 277973280
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIDA",
+        "notices": 95,
+        "dollars": 89601253
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIDCD",
+        "notices": 63,
+        "dollars": 19619985
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIDCR",
+        "notices": 32,
+        "dollars": 25175121
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIDDK",
+        "notices": 516,
+        "dollars": 343293320
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIEHS",
+        "notices": 122,
+        "dollars": 83186061
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIGMS",
+        "notices": 592,
+        "dollars": 355704023
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIMH",
+        "notices": 491,
+        "dollars": 305223638
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIMHD",
+        "notices": 109,
+        "dollars": 94323130
+      },
+      {
+        "month": "2025-09",
+        "institute": "NINDS",
+        "notices": 313,
+        "dollars": 204791584
+      },
+      {
+        "month": "2025-09",
+        "institute": "NINR",
+        "notices": 62,
+        "dollars": 44110223
+      },
+      {
+        "month": "2025-09",
+        "institute": "NIOSH",
+        "notices": 20,
+        "dollars": 12232481
+      },
+      {
+        "month": "2025-09",
+        "institute": "NLM",
+        "notices": 43,
+        "dollars": 23674036
+      },
+      {
+        "month": "2025-09",
+        "institute": "OD",
+        "notices": 96,
+        "dollars": 348016905
+      },
+      {
+        "month": "2025-09",
+        "institute": "VA",
+        "notices": 142,
+        "dollars": 0
+      },
+      {
+        "month": "2025-10",
+        "institute": "VA",
+        "notices": 206,
+        "dollars": 0
+      },
+      {
+        "month": "2025-11",
+        "institute": "NCI",
+        "notices": 1,
+        "dollars": 87708
+      },
+      {
+        "month": "2025-11",
+        "institute": "NIA",
+        "notices": 5,
+        "dollars": 2911341
+      },
+      {
+        "month": "2025-11",
+        "institute": "NIAID",
+        "notices": 88,
+        "dollars": 45469324
+      },
+      {
+        "month": "2025-11",
+        "institute": "NIAMS",
+        "notices": 3,
+        "dollars": 1556157
+      },
+      {
+        "month": "2025-11",
+        "institute": "NICHD",
+        "notices": 4,
+        "dollars": 179446
+      },
+      {
+        "month": "2025-11",
+        "institute": "NIDA",
+        "notices": 1,
+        "dollars": 123426
+      },
+      {
+        "month": "2025-11",
+        "institute": "NIDCD",
+        "notices": 27,
+        "dollars": 12409188
+      },
+      {
+        "month": "2025-11",
+        "institute": "NIDCR",
+        "notices": 3,
+        "dollars": 1097070
+      },
+      {
+        "month": "2025-11",
+        "institute": "NIMH",
+        "notices": 21,
+        "dollars": 13428960
+      },
+      {
+        "month": "2025-11",
+        "institute": "NIMHD",
+        "notices": 1,
+        "dollars": 592155
+      },
+      {
+        "month": "2025-11",
+        "institute": "NLM",
+        "notices": 3,
+        "dollars": 654256
+      },
+      {
+        "month": "2025-11",
+        "institute": "VA",
+        "notices": 47,
+        "dollars": 0
+      },
+      {
+        "month": "2025-12",
+        "institute": "FDA",
+        "notices": 1,
+        "dollars": 250000
+      },
+      {
+        "month": "2025-12",
+        "institute": "FIC",
+        "notices": 8,
+        "dollars": 1473672
+      },
+      {
+        "month": "2025-12",
+        "institute": "NCATS",
+        "notices": 5,
+        "dollars": 8833678
+      },
+      {
+        "month": "2025-12",
+        "institute": "NCI",
+        "notices": 388,
+        "dollars": 185344580
+      },
+      {
+        "month": "2025-12",
+        "institute": "NEI",
+        "notices": 50,
+        "dollars": 17151897
+      },
+      {
+        "month": "2025-12",
+        "institute": "NHGRI",
+        "notices": 16,
+        "dollars": 8768086
+      },
+      {
+        "month": "2025-12",
+        "institute": "NHLBI",
+        "notices": 1,
+        "dollars": 504671
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIA",
+        "notices": 185,
+        "dollars": 130668145
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIAID",
+        "notices": 468,
+        "dollars": 368079558
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIAMS",
+        "notices": 65,
+        "dollars": 27070226
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIBIB",
+        "notices": 37,
+        "dollars": 13696041
+      },
+      {
+        "month": "2025-12",
+        "institute": "NICHD",
+        "notices": 61,
+        "dollars": 33099332
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIDA",
+        "notices": 10,
+        "dollars": 1903531
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIDCD",
+        "notices": 74,
+        "dollars": 26108039
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIDCR",
+        "notices": 32,
+        "dollars": 10025954
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIDDK",
+        "notices": 241,
+        "dollars": 112610233
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIEHS",
+        "notices": 73,
+        "dollars": 35568664
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIGMS",
+        "notices": 197,
+        "dollars": 79566018
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIMH",
+        "notices": 151,
+        "dollars": 85677053
+      },
+      {
+        "month": "2025-12",
+        "institute": "NIMHD",
+        "notices": 28,
+        "dollars": 13600184
+      },
+      {
+        "month": "2025-12",
+        "institute": "NINDS",
+        "notices": 271,
+        "dollars": 121970562
+      },
+      {
+        "month": "2025-12",
+        "institute": "NINR",
+        "notices": 2,
+        "dollars": 594427
+      },
+      {
+        "month": "2025-12",
+        "institute": "NLM",
+        "notices": 5,
+        "dollars": 1557824
+      },
+      {
+        "month": "2025-12",
+        "institute": "OD",
+        "notices": 7,
+        "dollars": 5033807
+      },
+      {
+        "month": "2025-12",
+        "institute": "VA",
+        "notices": 116,
+        "dollars": 0
+      },
+      {
+        "month": "2026-01",
+        "institute": "FDA",
+        "notices": 2,
+        "dollars": 1900000
+      },
+      {
+        "month": "2026-01",
+        "institute": "FIC",
+        "notices": 21,
+        "dollars": 3562500
+      },
+      {
+        "month": "2026-01",
+        "institute": "NCATS",
+        "notices": 7,
+        "dollars": 15315047
+      },
+      {
+        "month": "2026-01",
+        "institute": "NCI",
+        "notices": 395,
+        "dollars": 198775047
+      },
+      {
+        "month": "2026-01",
+        "institute": "NEI",
+        "notices": 122,
+        "dollars": 65307442
+      },
+      {
+        "month": "2026-01",
+        "institute": "NHGRI",
+        "notices": 25,
+        "dollars": 14458501
+      },
+      {
+        "month": "2026-01",
+        "institute": "NHLBI",
+        "notices": 95,
+        "dollars": 61682783
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIA",
+        "notices": 380,
+        "dollars": 260259539
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIAAA",
+        "notices": 34,
+        "dollars": 10890111
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIAID",
+        "notices": 634,
+        "dollars": 544586239
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIAMS",
+        "notices": 79,
+        "dollars": 32812368
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIBIB",
+        "notices": 40,
+        "dollars": 15435800
+      },
+      {
+        "month": "2026-01",
+        "institute": "NICHD",
+        "notices": 144,
+        "dollars": 67190650
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIDA",
+        "notices": 93,
+        "dollars": 33933960
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIDCD",
+        "notices": 59,
+        "dollars": 23301336
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIDCR",
+        "notices": 65,
+        "dollars": 28983156
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIDDK",
+        "notices": 257,
+        "dollars": 134782206
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIEHS",
+        "notices": 135,
+        "dollars": 63338187
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIGMS",
+        "notices": 422,
+        "dollars": 169197567
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIMH",
+        "notices": 175,
+        "dollars": 89056836
+      },
+      {
+        "month": "2026-01",
+        "institute": "NIMHD",
+        "notices": 53,
+        "dollars": 27775540
+      },
+      {
+        "month": "2026-01",
+        "institute": "NINDS",
+        "notices": 291,
+        "dollars": 122591682
+      },
+      {
+        "month": "2026-01",
+        "institute": "NINR",
+        "notices": 5,
+        "dollars": 5443121
+      },
+      {
+        "month": "2026-01",
+        "institute": "NLM",
+        "notices": 3,
+        "dollars": 1141307
+      },
+      {
+        "month": "2026-01",
+        "institute": "OD",
+        "notices": 13,
+        "dollars": 50650258
+      },
+      {
+        "month": "2026-01",
+        "institute": "VA",
+        "notices": 90,
+        "dollars": 0
+      },
+      {
+        "month": "2026-02",
+        "institute": "FIC",
+        "notices": 69,
+        "dollars": 10739396
+      },
+      {
+        "month": "2026-02",
+        "institute": "NCATS",
+        "notices": 17,
+        "dollars": 35760722
+      },
+      {
+        "month": "2026-02",
+        "institute": "NCCIH",
+        "notices": 1,
+        "dollars": 29965
+      },
+      {
+        "month": "2026-02",
+        "institute": "NCI",
+        "notices": 455,
+        "dollars": 203068494
+      },
+      {
+        "month": "2026-02",
+        "institute": "NEI",
+        "notices": 38,
+        "dollars": 13277824
+      },
+      {
+        "month": "2026-02",
+        "institute": "NHGRI",
+        "notices": 20,
+        "dollars": 16238609
+      },
+      {
+        "month": "2026-02",
+        "institute": "NHLBI",
+        "notices": 526,
+        "dollars": 281257048
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIA",
+        "notices": 311,
+        "dollars": 221527538
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIAAA",
+        "notices": 58,
+        "dollars": 23886800
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIAID",
+        "notices": 490,
+        "dollars": 309877258
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIAMS",
+        "notices": 53,
+        "dollars": 20695870
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIBIB",
+        "notices": 44,
+        "dollars": 16496573
+      },
+      {
+        "month": "2026-02",
+        "institute": "NICHD",
+        "notices": 83,
+        "dollars": 31944862
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIDA",
+        "notices": 220,
+        "dollars": 112331349
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIDCD",
+        "notices": 70,
+        "dollars": 35489119
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIDCR",
+        "notices": 40,
+        "dollars": 19430648
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIDDK",
+        "notices": 312,
+        "dollars": 160244056
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIEHS",
+        "notices": 77,
+        "dollars": 34735354
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIGMS",
+        "notices": 354,
+        "dollars": 157051453
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIMH",
+        "notices": 201,
+        "dollars": 103915189
+      },
+      {
+        "month": "2026-02",
+        "institute": "NIMHD",
+        "notices": 40,
+        "dollars": 24170420
+      },
+      {
+        "month": "2026-02",
+        "institute": "NINDS",
+        "notices": 276,
+        "dollars": 126896094
+      },
+      {
+        "month": "2026-02",
+        "institute": "NINR",
+        "notices": 18,
+        "dollars": 8318289
+      },
+      {
+        "month": "2026-02",
+        "institute": "NLM",
+        "notices": 3,
+        "dollars": 1374482
+      },
+      {
+        "month": "2026-02",
+        "institute": "OD",
+        "notices": 23,
+        "dollars": 15782614
+      },
+      {
+        "month": "2026-02",
+        "institute": "VA",
+        "notices": 65,
+        "dollars": 0
+      },
+      {
+        "month": "2026-03",
+        "institute": "FDA",
+        "notices": 4,
+        "dollars": 6850000
+      },
+      {
+        "month": "2026-03",
+        "institute": "FIC",
+        "notices": 11,
+        "dollars": 1822454
+      },
+      {
+        "month": "2026-03",
+        "institute": "NCATS",
+        "notices": 16,
+        "dollars": 44767648
+      },
+      {
+        "month": "2026-03",
+        "institute": "NCCIH",
+        "notices": 29,
+        "dollars": 12233935
+      },
+      {
+        "month": "2026-03",
+        "institute": "NCI",
+        "notices": 635,
+        "dollars": 318938022
+      },
+      {
+        "month": "2026-03",
+        "institute": "NEI",
+        "notices": 13,
+        "dollars": 750914
+      },
+      {
+        "month": "2026-03",
+        "institute": "NHGRI",
+        "notices": 27,
+        "dollars": 16967166
+      },
+      {
+        "month": "2026-03",
+        "institute": "NHLBI",
+        "notices": 466,
+        "dollars": 249037191
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIA",
+        "notices": 330,
+        "dollars": 244450903
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIAAA",
+        "notices": 69,
+        "dollars": 26681098
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIAID",
+        "notices": 249,
+        "dollars": 130855693
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIAMS",
+        "notices": 59,
+        "dollars": 24045550
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIBIB",
+        "notices": 72,
+        "dollars": 31570147
+      },
+      {
+        "month": "2026-03",
+        "institute": "NICHD",
+        "notices": 186,
+        "dollars": 69229547
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIDA",
+        "notices": 204,
+        "dollars": 175369477
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIDCD",
+        "notices": 48,
+        "dollars": 20866402
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIDCR",
+        "notices": 46,
+        "dollars": 17913732
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIDDK",
+        "notices": 319,
+        "dollars": 139105715
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIEHS",
+        "notices": 68,
+        "dollars": 28614356
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIGMS",
+        "notices": 238,
+        "dollars": 110587199
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIMH",
+        "notices": 228,
+        "dollars": 135754506
+      },
+      {
+        "month": "2026-03",
+        "institute": "NIMHD",
+        "notices": 33,
+        "dollars": 18814940
+      },
+      {
+        "month": "2026-03",
+        "institute": "NINDS",
+        "notices": 332,
+        "dollars": 159980476
+      },
+      {
+        "month": "2026-03",
+        "institute": "NINR",
+        "notices": 12,
+        "dollars": 7287850
+      },
+      {
+        "month": "2026-03",
+        "institute": "NLM",
+        "notices": 2,
+        "dollars": 175453
+      },
+      {
+        "month": "2026-03",
+        "institute": "OD",
+        "notices": 42,
+        "dollars": 25586298
+      },
+      {
+        "month": "2026-03",
+        "institute": "VA",
+        "notices": 96,
+        "dollars": 0
+      },
+      {
+        "month": "2026-04",
+        "institute": "AHRQ",
+        "notices": 35,
+        "dollars": 15116143
+      },
+      {
+        "month": "2026-04",
+        "institute": "FDA",
+        "notices": 3,
+        "dollars": 1348159
+      },
+      {
+        "month": "2026-04",
+        "institute": "NCATS",
+        "notices": 25,
+        "dollars": 56613259
+      },
+      {
+        "month": "2026-04",
+        "institute": "NCCDPHP",
+        "notices": 48,
+        "dollars": 8351884
+      },
+      {
+        "month": "2026-04",
+        "institute": "NCCIH",
+        "notices": 27,
+        "dollars": 13337363
+      },
+      {
+        "month": "2026-04",
+        "institute": "NCEZID",
+        "notices": 2,
+        "dollars": 2510000
+      },
+      {
+        "month": "2026-04",
+        "institute": "NCI",
+        "notices": 815,
+        "dollars": 418420631
+      },
+      {
+        "month": "2026-04",
+        "institute": "NCIPC",
+        "notices": 1,
+        "dollars": 67117
+      },
+      {
+        "month": "2026-04",
+        "institute": "NEI",
+        "notices": 253,
+        "dollars": 118233637
+      },
+      {
+        "month": "2026-04",
+        "institute": "NHGRI",
+        "notices": 52,
+        "dollars": 55443303
+      },
+      {
+        "month": "2026-04",
+        "institute": "NHLBI",
+        "notices": 367,
+        "dollars": 197571363
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIA",
+        "notices": 440,
+        "dollars": 314319529
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIAAA",
+        "notices": 91,
+        "dollars": 32081492
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIAID",
+        "notices": 811,
+        "dollars": 415431071
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIAMS",
+        "notices": 76,
+        "dollars": 45485081
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIBIB",
+        "notices": 89,
+        "dollars": 33734292
+      },
+      {
+        "month": "2026-04",
+        "institute": "NICHD",
+        "notices": 240,
+        "dollars": 115111145
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIDA",
+        "notices": 254,
+        "dollars": 166024637
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIDCD",
+        "notices": 106,
+        "dollars": 41717589
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIDCR",
+        "notices": 61,
+        "dollars": 30467474
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIDDK",
+        "notices": 346,
+        "dollars": 159435634
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIEHS",
+        "notices": 117,
+        "dollars": 65472313
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIGMS",
+        "notices": 831,
+        "dollars": 427245469
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIMH",
+        "notices": 262,
+        "dollars": 177783988
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIMHD",
+        "notices": 69,
+        "dollars": 42365943
+      },
+      {
+        "month": "2026-04",
+        "institute": "NINDS",
+        "notices": 377,
+        "dollars": 211098180
+      },
+      {
+        "month": "2026-04",
+        "institute": "NINR",
+        "notices": 10,
+        "dollars": 11658032
+      },
+      {
+        "month": "2026-04",
+        "institute": "NIOSH",
+        "notices": 1,
+        "dollars": 302424
+      },
+      {
+        "month": "2026-04",
+        "institute": "NLM",
+        "notices": 29,
+        "dollars": 12030641
+      },
+      {
+        "month": "2026-04",
+        "institute": "OD",
+        "notices": 45,
+        "dollars": 38144609
+      },
+      {
+        "month": "2026-04",
+        "institute": "VA",
+        "notices": 90,
+        "dollars": 0
+      },
+      {
+        "month": "2026-05",
+        "institute": "FDA",
+        "notices": 3,
+        "dollars": 2596647
+      },
+      {
+        "month": "2026-05",
+        "institute": "FIC",
+        "notices": 12,
+        "dollars": 5097121
+      },
+      {
+        "month": "2026-05",
+        "institute": "NCATS",
+        "notices": 42,
+        "dollars": 123263060
+      },
+      {
+        "month": "2026-05",
+        "institute": "NCCIH",
+        "notices": 21,
+        "dollars": 11715270
+      },
+      {
+        "month": "2026-05",
+        "institute": "NCEZID",
+        "notices": 11,
+        "dollars": 6495175
+      },
+      {
+        "month": "2026-05",
+        "institute": "NCI",
+        "notices": 859,
+        "dollars": 422803361
+      },
+      {
+        "month": "2026-05",
+        "institute": "NCIPC",
+        "notices": 1,
+        "dollars": 400000
+      },
+      {
+        "month": "2026-05",
+        "institute": "NEI",
+        "notices": 139,
+        "dollars": 53210762
+      },
+      {
+        "month": "2026-05",
+        "institute": "NHGRI",
+        "notices": 47,
+        "dollars": 50580243
+      },
+      {
+        "month": "2026-05",
+        "institute": "NHLBI",
+        "notices": 593,
+        "dollars": 363487674
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIA",
+        "notices": 599,
+        "dollars": 451468187
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIAAA",
+        "notices": 131,
+        "dollars": 53941788
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIAID",
+        "notices": 871,
+        "dollars": 522792563
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIAMS",
+        "notices": 125,
+        "dollars": 53537932
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIBIB",
+        "notices": 105,
+        "dollars": 46538079
+      },
+      {
+        "month": "2026-05",
+        "institute": "NICHD",
+        "notices": 329,
+        "dollars": 149756482
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIDA",
+        "notices": 347,
+        "dollars": 229914333
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIDCD",
+        "notices": 123,
+        "dollars": 57487258
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIDCR",
+        "notices": 80,
+        "dollars": 41543743
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIDDK",
+        "notices": 473,
+        "dollars": 216075295
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIEHS",
+        "notices": 220,
+        "dollars": 128336592
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIGMS",
+        "notices": 980,
+        "dollars": 502618138
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIMH",
+        "notices": 325,
+        "dollars": 230305768
+      },
+      {
+        "month": "2026-05",
+        "institute": "NIMHD",
+        "notices": 69,
+        "dollars": 50413799
+      },
+      {
+        "month": "2026-05",
+        "institute": "NINDS",
+        "notices": 478,
+        "dollars": 255287295
+      },
+      {
+        "month": "2026-05",
+        "institute": "NINR",
+        "notices": 23,
+        "dollars": 12942853
+      },
+      {
+        "month": "2026-05",
+        "institute": "NLM",
+        "notices": 29,
+        "dollars": 12346675
+      },
+      {
+        "month": "2026-05",
+        "institute": "OD",
+        "notices": 59,
+        "dollars": 58468530
+      },
+      {
+        "month": "2026-05",
+        "institute": "VA",
+        "notices": 89,
+        "dollars": 0
+      },
+      {
+        "month": "2026-06",
+        "institute": "FDA",
+        "notices": 44,
+        "dollars": 4379642
+      },
+      {
+        "month": "2026-06",
+        "institute": "FIC",
+        "notices": 89,
+        "dollars": 19586941
+      },
+      {
+        "month": "2026-06",
+        "institute": "NCATS",
+        "notices": 46,
+        "dollars": 71331887
+      },
+      {
+        "month": "2026-06",
+        "institute": "NCBDDD",
+        "notices": 5,
+        "dollars": 1250000
+      },
+      {
+        "month": "2026-06",
+        "institute": "NCCIH",
+        "notices": 24,
+        "dollars": 15458313
+      },
+      {
+        "month": "2026-06",
+        "institute": "NCEZID",
+        "notices": 4,
+        "dollars": 7998609
+      },
+      {
+        "month": "2026-06",
+        "institute": "NCHHSTP",
+        "notices": 5,
+        "dollars": 1749766
+      },
+      {
+        "month": "2026-06",
+        "institute": "NCI",
+        "notices": 1116,
+        "dollars": 696417770
+      },
+      {
+        "month": "2026-06",
+        "institute": "NEI",
+        "notices": 234,
+        "dollars": 96993187
+      },
+      {
+        "month": "2026-06",
+        "institute": "NHGRI",
+        "notices": 52,
+        "dollars": 57894938
+      },
+      {
+        "month": "2026-06",
+        "institute": "NHLBI",
+        "notices": 636,
+        "dollars": 373639628
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIA",
+        "notices": 717,
+        "dollars": 552830335
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIAAA",
+        "notices": 144,
+        "dollars": 63248806
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIAID",
+        "notices": 1265,
+        "dollars": 759752712
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIAMS",
+        "notices": 202,
+        "dollars": 94233657
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIBIB",
+        "notices": 135,
+        "dollars": 53600164
+      },
+      {
+        "month": "2026-06",
+        "institute": "NICHD",
+        "notices": 470,
+        "dollars": 226236081
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIDA",
+        "notices": 362,
+        "dollars": 208195343
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIDCD",
+        "notices": 139,
+        "dollars": 56676093
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIDCR",
+        "notices": 109,
+        "dollars": 56714168
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIDDK",
+        "notices": 580,
+        "dollars": 268263475
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIEHS",
+        "notices": 213,
+        "dollars": 117650462
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIGMS",
+        "notices": 1028,
+        "dollars": 503630123
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIMH",
+        "notices": 337,
+        "dollars": 239522757
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIMHD",
+        "notices": 136,
+        "dollars": 84243160
+      },
+      {
+        "month": "2026-06",
+        "institute": "NINDS",
+        "notices": 499,
+        "dollars": 268933148
+      },
+      {
+        "month": "2026-06",
+        "institute": "NINR",
+        "notices": 53,
+        "dollars": 30800921
+      },
+      {
+        "month": "2026-06",
+        "institute": "NIOSH",
+        "notices": 74,
+        "dollars": 37239076
+      },
+      {
+        "month": "2026-06",
+        "institute": "NLM",
+        "notices": 16,
+        "dollars": 7035050
+      },
+      {
+        "month": "2026-06",
+        "institute": "OD",
+        "notices": 140,
+        "dollars": 270114307
+      },
+      {
+        "month": "2026-06",
+        "institute": "VA",
+        "notices": 126,
+        "dollars": 0
+      },
+      {
+        "month": "2026-07",
+        "institute": "AHRQ",
+        "notices": 1,
+        "dollars": 1000000
+      },
+      {
+        "month": "2026-07",
+        "institute": "FDA",
+        "notices": 131,
+        "dollars": 48235749
+      },
+      {
+        "month": "2026-07",
+        "institute": "FIC",
+        "notices": 103,
+        "dollars": 19215820
+      },
+      {
+        "month": "2026-07",
+        "institute": "NCATS",
+        "notices": 99,
+        "dollars": 178398856
+      },
+      {
+        "month": "2026-07",
+        "institute": "NCCIH",
+        "notices": 34,
+        "dollars": 15292256
+      },
+      {
+        "month": "2026-07",
+        "institute": "NCI",
+        "notices": 1474,
+        "dollars": 903425562
+      },
+      {
+        "month": "2026-07",
+        "institute": "NCIRD",
+        "notices": 3,
+        "dollars": 8285000
+      },
+      {
+        "month": "2026-07",
+        "institute": "NEI",
+        "notices": 218,
+        "dollars": 100065946
+      },
+      {
+        "month": "2026-07",
+        "institute": "NHGRI",
+        "notices": 97,
+        "dollars": 74631126
+      },
+      {
+        "month": "2026-07",
+        "institute": "NHLBI",
+        "notices": 894,
+        "dollars": 546300757
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIA",
+        "notices": 720,
+        "dollars": 609154544
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIAAA",
+        "notices": 192,
+        "dollars": 86619085
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIAID",
+        "notices": 1265,
+        "dollars": 728735081
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIAMS",
+        "notices": 256,
+        "dollars": 124841171
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIBIB",
+        "notices": 121,
+        "dollars": 47583438
+      },
+      {
+        "month": "2026-07",
+        "institute": "NICHD",
+        "notices": 436,
+        "dollars": 207406784
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIDA",
+        "notices": 433,
+        "dollars": 265768415
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIDCD",
+        "notices": 183,
+        "dollars": 85949159
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIDCR",
+        "notices": 160,
+        "dollars": 74824766
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIDDK",
+        "notices": 712,
+        "dollars": 396302889
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIEHS",
+        "notices": 167,
+        "dollars": 65434268
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIGMS",
+        "notices": 1453,
+        "dollars": 695728099
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIMH",
+        "notices": 491,
+        "dollars": 319772186
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIMHD",
+        "notices": 146,
+        "dollars": 121678640
+      },
+      {
+        "month": "2026-07",
+        "institute": "NINDS",
+        "notices": 568,
+        "dollars": 313535652
+      },
+      {
+        "month": "2026-07",
+        "institute": "NINR",
+        "notices": 50,
+        "dollars": 29457793
+      },
+      {
+        "month": "2026-07",
+        "institute": "NIOSH",
+        "notices": 3,
+        "dollars": 3788834
+      },
+      {
+        "month": "2026-07",
+        "institute": "NLM",
+        "notices": 35,
+        "dollars": 17300146
+      },
+      {
+        "month": "2026-07",
+        "institute": "OD",
+        "notices": 144,
+        "dollars": 215534079
+      },
+      {
+        "month": "2026-07",
+        "institute": "VA",
+        "notices": 117,
+        "dollars": 0
+      },
+      {
+        "month": "2026-08",
+        "institute": "AHRQ",
+        "notices": 17,
+        "dollars": 7062766
+      },
+      {
+        "month": "2026-08",
+        "institute": "ATSDR",
+        "notices": 2,
+        "dollars": 119998
+      },
+      {
+        "month": "2026-08",
+        "institute": "CGH",
+        "notices": 6,
+        "dollars": 7610000
+      },
+      {
+        "month": "2026-08",
+        "institute": "FDA",
+        "notices": 94,
+        "dollars": 61951510
+      },
+      {
+        "month": "2026-08",
+        "institute": "FIC",
+        "notices": 111,
+        "dollars": 19982241
+      },
+      {
+        "month": "2026-08",
+        "institute": "NCATS",
+        "notices": 66,
+        "dollars": 115831652
+      },
+      {
+        "month": "2026-08",
+        "institute": "NCBDDD",
+        "notices": 31,
+        "dollars": 6677088
+      },
+      {
+        "month": "2026-08",
+        "institute": "NCCDPHP",
+        "notices": 7,
+        "dollars": 4579857
+      },
+      {
+        "month": "2026-08",
+        "institute": "NCCIH",
+        "notices": 54,
+        "dollars": 30682370
+      },
+      {
+        "month": "2026-08",
+        "institute": "NCEZID",
+        "notices": 9,
+        "dollars": 6655729
+      },
+      {
+        "month": "2026-08",
+        "institute": "NCHHSTP",
+        "notices": 5,
+        "dollars": 4161735
+      },
+      {
+        "month": "2026-08",
+        "institute": "NCI",
+        "notices": 1844,
+        "dollars": 1013465714
+      },
+      {
+        "month": "2026-08",
+        "institute": "NCIPC",
+        "notices": 19,
+        "dollars": 16547000
+      },
+      {
+        "month": "2026-08",
+        "institute": "NCIRD",
+        "notices": 9,
+        "dollars": 4038000
+      },
+      {
+        "month": "2026-08",
+        "institute": "NEI",
+        "notices": 222,
+        "dollars": 93881576
+      },
+      {
+        "month": "2026-08",
+        "institute": "NHGRI",
+        "notices": 99,
+        "dollars": 90725853
+      },
+      {
+        "month": "2026-08",
+        "institute": "NHLBI",
+        "notices": 1460,
+        "dollars": 870625254
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIA",
+        "notices": 1207,
+        "dollars": 1213018756
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIAAA",
+        "notices": 295,
+        "dollars": 137192084
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIAID",
+        "notices": 1314,
+        "dollars": 748447290
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIAMS",
+        "notices": 228,
+        "dollars": 104408884
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIBIB",
+        "notices": 279,
+        "dollars": 139317228
+      },
+      {
+        "month": "2026-08",
+        "institute": "NICHD",
+        "notices": 770,
+        "dollars": 430467866
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIDA",
+        "notices": 335,
+        "dollars": 187679922
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIDCD",
+        "notices": 161,
+        "dollars": 69382000
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIDCR",
+        "notices": 165,
+        "dollars": 72282771
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIDDK",
+        "notices": 801,
+        "dollars": 506519896
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIEHS",
+        "notices": 107,
+        "dollars": 77249142
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIGMS",
+        "notices": 1168,
+        "dollars": 614291750
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIMH",
+        "notices": 589,
+        "dollars": 304166209
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIMHD",
+        "notices": 62,
+        "dollars": 41690212
+      },
+      {
+        "month": "2026-08",
+        "institute": "NINDS",
+        "notices": 826,
+        "dollars": 504929912
+      },
+      {
+        "month": "2026-08",
+        "institute": "NINR",
+        "notices": 32,
+        "dollars": 15187008
+      },
+      {
+        "month": "2026-08",
+        "institute": "NIOSH",
+        "notices": 95,
+        "dollars": 72287730
+      },
+      {
+        "month": "2026-08",
+        "institute": "NLM",
+        "notices": 37,
+        "dollars": 14349860
+      },
+      {
+        "month": "2026-08",
+        "institute": "OD",
+        "notices": 145,
+        "dollars": 181555628
+      },
+      {
+        "month": "2026-08",
+        "institute": "VA",
+        "notices": 121,
+        "dollars": 0
+      },
+      {
+        "month": "2026-09",
+        "institute": "AHRQ",
+        "notices": 17,
+        "dollars": 6831458
+      },
+      {
+        "month": "2026-09",
+        "institute": "FDA",
+        "notices": 40,
+        "dollars": 21597959
+      },
+      {
+        "month": "2026-09",
+        "institute": "FIC",
+        "notices": 73,
+        "dollars": 11963927
+      },
+      {
+        "month": "2026-09",
+        "institute": "NCATS",
+        "notices": 20,
+        "dollars": 39714315
+      },
+      {
+        "month": "2026-09",
+        "institute": "NCCIH",
+        "notices": 73,
+        "dollars": 75792690
+      },
+      {
+        "month": "2026-09",
+        "institute": "NCEZID",
+        "notices": 1,
+        "dollars": 50000
+      },
+      {
+        "month": "2026-09",
+        "institute": "NCI",
+        "notices": 2252,
+        "dollars": 1257500709
+      },
+      {
+        "month": "2026-09",
+        "institute": "NEI",
+        "notices": 262,
+        "dollars": 128380011
+      },
+      {
+        "month": "2026-09",
+        "institute": "NHGRI",
+        "notices": 71,
+        "dollars": 73678983
+      },
+      {
+        "month": "2026-09",
+        "institute": "NHLBI",
+        "notices": 907,
+        "dollars": 473129104
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIA",
+        "notices": 745,
+        "dollars": 617009762
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIAAA",
+        "notices": 121,
+        "dollars": 54912188
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIAID",
+        "notices": 514,
+        "dollars": 348727284
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIAMS",
+        "notices": 267,
+        "dollars": 120472599
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIBIB",
+        "notices": 73,
+        "dollars": 41053299
+      },
+      {
+        "month": "2026-09",
+        "institute": "NICHD",
+        "notices": 462,
+        "dollars": 262094802
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIDA",
+        "notices": 185,
+        "dollars": 138219451
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIDCD",
+        "notices": 45,
+        "dollars": 21265807
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIDCR",
+        "notices": 111,
+        "dollars": 56414670
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIDDK",
+        "notices": 171,
+        "dollars": 109695394
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIEHS",
+        "notices": 41,
+        "dollars": 29451286
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIGMS",
+        "notices": 465,
+        "dollars": 291966556
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIMH",
+        "notices": 372,
+        "dollars": 211394492
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIMHD",
+        "notices": 55,
+        "dollars": 37162692
+      },
+      {
+        "month": "2026-09",
+        "institute": "NINDS",
+        "notices": 544,
+        "dollars": 376751288
+      },
+      {
+        "month": "2026-09",
+        "institute": "NINR",
+        "notices": 25,
+        "dollars": 17425564
+      },
+      {
+        "month": "2026-09",
+        "institute": "NIOSH",
+        "notices": 3,
+        "dollars": 1239442
+      },
+      {
+        "month": "2026-09",
+        "institute": "NLM",
+        "notices": 34,
+        "dollars": 13755653
+      },
+      {
+        "month": "2026-09",
+        "institute": "OD",
+        "notices": 75,
+        "dollars": 251661972
+      },
+      {
+        "month": "2026-09",
+        "institute": "VA",
+        "notices": 128,
+        "dollars": 0
+      }
+    ],
+    "byState": [
+      {
+        "state": "AB",
+        "notices": 8,
+        "dollars": 4736680
+      },
+      {
+        "state": "AK",
+        "notices": 96,
+        "dollars": 51334757
+      },
+      {
+        "state": "AL",
+        "notices": 1614,
+        "dollars": 836568130
+      },
+      {
+        "state": "AR",
+        "notices": 496,
+        "dollars": 242285577
+      },
+      {
+        "state": "AS",
+        "notices": 3,
+        "dollars": 4390764
+      },
+      {
+        "state": "AZ",
+        "notices": 1478,
+        "dollars": 912270281
+      },
+      {
+        "state": "BC",
+        "notices": 17,
+        "dollars": 10279425
+      },
+      {
+        "state": "CA",
+        "notices": 19027,
+        "dollars": 11192174125
+      },
+      {
+        "state": "CO",
+        "notices": 2702,
+        "dollars": 1235363074
+      },
+      {
+        "state": "CT",
+        "notices": 3180,
+        "dollars": 1747915572
+      },
+      {
+        "state": "DC",
+        "notices": 877,
+        "dollars": 457380501
+      },
+      {
+        "state": "DE",
+        "notices": 369,
+        "dollars": 225397524
+      },
+      {
+        "state": "FL",
+        "notices": 3618,
+        "dollars": 2039657387
+      },
+      {
+        "state": "GA",
+        "notices": 3291,
+        "dollars": 1684897045
+      },
+      {
+        "state": "GU",
+        "notices": 11,
+        "dollars": 3276232
+      },
+      {
+        "state": "HI",
+        "notices": 289,
+        "dollars": 170688675
+      },
+      {
+        "state": "IA",
+        "notices": 1008,
+        "dollars": 445651373
+      },
+      {
+        "state": "ID",
+        "notices": 121,
+        "dollars": 75070040
+      },
+      {
+        "state": "IL",
+        "notices": 4765,
+        "dollars": 2784219327
+      },
+      {
+        "state": "IN",
+        "notices": 1836,
+        "dollars": 930663299
+      },
+      {
+        "state": "KS",
+        "notices": 711,
+        "dollars": 369262059
+      },
+      {
+        "state": "KY",
+        "notices": 1034,
+        "dollars": 546510288
+      },
+      {
+        "state": "LA",
+        "notices": 957,
+        "dollars": 487173043
+      },
+      {
+        "state": "MA",
+        "notices": 12305,
+        "dollars": 7325001045
+      },
+      {
+        "state": "MB",
+        "notices": 3,
+        "dollars": 1321238
+      },
+      {
+        "state": "MD",
+        "notices": 5227,
+        "dollars": 3175893552
+      },
+      {
+        "state": "ME",
+        "notices": 494,
+        "dollars": 325903405
+      },
+      {
+        "state": "MI",
+        "notices": 4258,
+        "dollars": 2264202811
+      },
+      {
+        "state": "MN",
+        "notices": 2975,
+        "dollars": 1710851184
+      },
+      {
+        "state": "MO",
+        "notices": 3504,
+        "dollars": 1995286881
+      },
+      {
+        "state": "MP",
+        "notices": 2,
+        "dollars": 350000
+      },
+      {
+        "state": "MS",
+        "notices": 267,
+        "dollars": 146442550
+      },
+      {
+        "state": "MT",
+        "notices": 212,
+        "dollars": 122024476
+      },
+      {
+        "state": "NC",
+        "notices": 5816,
+        "dollars": 3558918465
+      },
+      {
+        "state": "ND",
+        "notices": 111,
+        "dollars": 57401023
+      },
+      {
+        "state": "NE",
+        "notices": 741,
+        "dollars": 354458307
+      },
+      {
+        "state": "NH",
+        "notices": 582,
+        "dollars": 344986801
+      },
+      {
+        "state": "NJ",
+        "notices": 1712,
+        "dollars": 916388587
+      },
+      {
+        "state": "NM",
+        "notices": 554,
+        "dollars": 334789058
+      },
+      {
+        "state": "NS",
+        "notices": 3,
+        "dollars": 723990
+      },
+      {
+        "state": "NV",
+        "notices": 175,
+        "dollars": 89072296
+      },
+      {
+        "state": "NY",
+        "notices": 13557,
+        "dollars": 7800183390
+      },
+      {
+        "state": "OH",
+        "notices": 4182,
+        "dollars": 2165263819
+      },
+      {
+        "state": "OK",
+        "notices": 825,
+        "dollars": 412933006
+      },
+      {
+        "state": "ON",
+        "notices": 74,
+        "dollars": 44330682
+      },
+      {
+        "state": "OR",
+        "notices": 1645,
+        "dollars": 908044994
+      },
+      {
+        "state": "PA",
+        "notices": 8898,
+        "dollars": 5131943766
+      },
+      {
+        "state": "PQ",
+        "notices": 13,
+        "dollars": 8508450
+      },
+      {
+        "state": "PR",
+        "notices": 235,
+        "dollars": 159238298
+      },
+      {
+        "state": "QC",
+        "notices": 4,
+        "dollars": 1084067
+      },
+      {
+        "state": "RI",
+        "notices": 1306,
+        "dollars": 604015121
+      },
+      {
+        "state": "SC",
+        "notices": 1241,
+        "dollars": 579178571
+      },
+      {
+        "state": "SD",
+        "notices": 132,
+        "dollars": 87184198
+      },
+      {
+        "state": "TN",
+        "notices": 2988,
+        "dollars": 1656268238
+      },
+      {
+        "state": "TX",
+        "notices": 7892,
+        "dollars": 4195892179
+      },
+      {
+        "state": "unknown",
+        "notices": 1004,
+        "dollars": 352814995
+      },
+      {
+        "state": "UT",
+        "notices": 1410,
+        "dollars": 650143967
+      },
+      {
+        "state": "VA",
+        "notices": 2145,
+        "dollars": 1170594271
+      },
+      {
+        "state": "VI",
+        "notices": 2,
+        "dollars": 1186419
+      },
+      {
+        "state": "VT",
+        "notices": 258,
+        "dollars": 129548240
+      },
+      {
+        "state": "WA",
+        "notices": 3830,
+        "dollars": 2715745338
+      },
+      {
+        "state": "WI",
+        "notices": 2350,
+        "dollars": 1350489383
+      },
+      {
+        "state": "WV",
+        "notices": 221,
+        "dollars": 129645159
+      },
+      {
+        "state": "WY",
+        "notices": 57,
+        "dollars": 32841893
+      }
+    ],
+    "byActivityCode": [
+      {
+        "activityCode": "C06",
+        "notices": 36,
+        "dollars": 177099589
+      },
+      {
+        "activityCode": "D43",
+        "notices": 428,
+        "dollars": 98666284
+      },
+      {
+        "activityCode": "D71",
+        "notices": 5,
+        "dollars": 150510
+      },
+      {
+        "activityCode": "DP1",
+        "notices": 223,
+        "dollars": 203172212
+      },
+      {
+        "activityCode": "DP2",
+        "notices": 393,
+        "dollars": 298869355
+      },
+      {
+        "activityCode": "DP5",
+        "notices": 106,
+        "dollars": 55238343
+      },
+      {
+        "activityCode": "F30",
+        "notices": 1574,
+        "dollars": 75364783
+      },
+      {
+        "activityCode": "F31",
+        "notices": 3978,
+        "dollars": 168889293
+      },
+      {
+        "activityCode": "F32",
+        "notices": 1291,
+        "dollars": 96181129
+      },
+      {
+        "activityCode": "F99",
+        "notices": 126,
+        "dollars": 4843127
+      },
+      {
+        "activityCode": "FM1",
+        "notices": 12,
+        "dollars": 651760
+      },
+      {
+        "activityCode": "G08",
+        "notices": 12,
+        "dollars": 2237345
+      },
+      {
+        "activityCode": "G11",
+        "notices": 8,
+        "dollars": 710828
+      },
+      {
+        "activityCode": "G13",
+        "notices": 14,
+        "dollars": 979253
+      },
+      {
+        "activityCode": "I01",
+        "notices": 2127,
+        "dollars": 0
+      },
+      {
+        "activityCode": "I21",
+        "notices": 148,
+        "dollars": 0
+      },
+      {
+        "activityCode": "I50",
+        "notices": 43,
+        "dollars": 0
+      },
+      {
+        "activityCode": "IK1",
+        "notices": 32,
+        "dollars": 0
+      },
+      {
+        "activityCode": "IK2",
+        "notices": 459,
+        "dollars": 0
+      },
+      {
+        "activityCode": "IK3",
+        "notices": 1,
+        "dollars": 0
+      },
+      {
+        "activityCode": "IK4",
+        "notices": 4,
+        "dollars": 0
+      },
+      {
+        "activityCode": "IK6",
+        "notices": 308,
+        "dollars": 0
+      },
+      {
+        "activityCode": "IS1",
+        "notices": 2,
+        "dollars": 0
+      },
+      {
+        "activityCode": "IU1",
+        "notices": 4,
+        "dollars": 0
+      },
+      {
+        "activityCode": "K00",
+        "notices": 386,
+        "dollars": 35529878
+      },
+      {
+        "activityCode": "K01",
+        "notices": 2124,
+        "dollars": 326134253
+      },
+      {
+        "activityCode": "K02",
+        "notices": 28,
+        "dollars": 4441424
+      },
+      {
+        "activityCode": "K07",
+        "notices": 21,
+        "dollars": 3102976
+      },
+      {
+        "activityCode": "K08",
+        "notices": 2033,
+        "dollars": 382760878
+      },
+      {
+        "activityCode": "K12",
+        "notices": 366,
+        "dollars": 273157533
+      },
+      {
+        "activityCode": "K18",
+        "notices": 6,
+        "dollars": 1287505
+      },
+      {
+        "activityCode": "K22",
+        "notices": 176,
+        "dollars": 30647818
+      },
+      {
+        "activityCode": "K23",
+        "notices": 2744,
+        "dollars": 488962551
+      },
+      {
+        "activityCode": "K24",
+        "notices": 482,
+        "dollars": 77580669
+      },
+      {
+        "activityCode": "K25",
+        "notices": 117,
+        "dollars": 17079978
+      },
+      {
+        "activityCode": "K26",
+        "notices": 35,
+        "dollars": 3953044
+      },
+      {
+        "activityCode": "K38",
+        "notices": 21,
+        "dollars": 2031867
+      },
+      {
+        "activityCode": "K43",
+        "notices": 112,
+        "dollars": 11645897
+      },
+      {
+        "activityCode": "K76",
+        "notices": 93,
+        "dollars": 21403866
+      },
+      {
+        "activityCode": "K99",
+        "notices": 1425,
+        "dollars": 183012226
+      },
+      {
+        "activityCode": "KL2",
+        "notices": 37,
+        "dollars": 46123051
+      },
+      {
+        "activityCode": "OT2",
+        "notices": 426,
+        "dollars": 1390261614
+      },
+      {
+        "activityCode": "OT3",
+        "notices": 8,
+        "dollars": 17272248
+      },
+      {
+        "activityCode": "P01",
+        "notices": 4360,
+        "dollars": 2920171121
+      },
+      {
+        "activityCode": "P20",
+        "notices": 1904,
+        "dollars": 1358138917
+      },
+      {
+        "activityCode": "P2C",
+        "notices": 151,
+        "dollars": 51303660
+      },
+      {
+        "activityCode": "P30",
+        "notices": 7209,
+        "dollars": 3573514629
+      },
+      {
+        "activityCode": "P40",
+        "notices": 133,
+        "dollars": 75094498
+      },
+      {
+        "activityCode": "P41",
+        "notices": 344,
+        "dollars": 141997792
+      },
+      {
+        "activityCode": "P42",
+        "notices": 332,
+        "dollars": 163531619
+      },
+      {
+        "activityCode": "P50",
+        "notices": 2647,
+        "dollars": 1572326558
+      },
+      {
+        "activityCode": "P51",
+        "notices": 14,
+        "dollars": 152090226
+      },
+      {
+        "activityCode": "P60",
+        "notices": 182,
+        "dollars": 73750592
+      },
+      {
+        "activityCode": "PL1",
+        "notices": 16,
+        "dollars": 9937492
+      },
+      {
+        "activityCode": "R00",
+        "notices": 1931,
+        "dollars": 476390959
+      },
+      {
+        "activityCode": "R01",
+        "notices": 52803,
+        "dollars": 32514180754
+      },
+      {
+        "activityCode": "R03",
+        "notices": 1197,
+        "dollars": 194249218
+      },
+      {
+        "activityCode": "R13",
+        "notices": 874,
+        "dollars": 25232655
+      },
+      {
+        "activityCode": "R15",
+        "notices": 438,
+        "dollars": 211855152
+      },
+      {
+        "activityCode": "R16",
+        "notices": 609,
+        "dollars": 98887564
+      },
+      {
+        "activityCode": "R18",
+        "notices": 78,
+        "dollars": 46467548
+      },
+      {
+        "activityCode": "R21",
+        "notices": 5920,
+        "dollars": 1704564423
+      },
+      {
+        "activityCode": "R24",
+        "notices": 386,
+        "dollars": 344454939
+      },
+      {
+        "activityCode": "R25",
+        "notices": 1550,
+        "dollars": 365765610
+      },
+      {
+        "activityCode": "R28",
+        "notices": 2,
+        "dollars": 980504
+      },
+      {
+        "activityCode": "R33",
+        "notices": 923,
+        "dollars": 559862126
+      },
+      {
+        "activityCode": "R34",
+        "notices": 598,
+        "dollars": 170696021
+      },
+      {
+        "activityCode": "R35",
+        "notices": 7665,
+        "dollars": 3852955848
+      },
+      {
+        "activityCode": "R36",
+        "notices": 68,
+        "dollars": 3562954
+      },
+      {
+        "activityCode": "R37",
+        "notices": 1411,
+        "dollars": 776659020
+      },
+      {
+        "activityCode": "R38",
+        "notices": 78,
+        "dollars": 26359251
+      },
+      {
+        "activityCode": "R41",
+        "notices": 350,
+        "dollars": 113230128
+      },
+      {
+        "activityCode": "R42",
+        "notices": 210,
+        "dollars": 180742849
+      },
+      {
+        "activityCode": "R43",
+        "notices": 741,
+        "dollars": 241637254
+      },
+      {
+        "activityCode": "R44",
+        "notices": 1678,
+        "dollars": 1579570929
+      },
+      {
+        "activityCode": "R49",
+        "notices": 20,
+        "dollars": 16937578
+      },
+      {
+        "activityCode": "R50",
+        "notices": 299,
+        "dollars": 56004737
+      },
+      {
+        "activityCode": "R56",
+        "notices": 410,
+        "dollars": 251608164
+      },
+      {
+        "activityCode": "R61",
+        "notices": 513,
+        "dollars": 305932765
+      },
+      {
+        "activityCode": "R90",
+        "notices": 41,
+        "dollars": 8979628
+      },
+      {
+        "activityCode": "RC2",
+        "notices": 61,
+        "dollars": 89752765
+      },
+      {
+        "activityCode": "RF1",
+        "notices": 469,
+        "dollars": 1028530494
+      },
+      {
+        "activityCode": "RL1",
+        "notices": 24,
+        "dollars": 3768186
+      },
+      {
+        "activityCode": "RM1",
+        "notices": 143,
+        "dollars": 266268228
+      },
+      {
+        "activityCode": "S06",
+        "notices": 125,
+        "dollars": 46886256
+      },
+      {
+        "activityCode": "S10",
+        "notices": 297,
+        "dollars": 221153539
+      },
+      {
+        "activityCode": "S15",
+        "notices": 38,
+        "dollars": 10073634
+      },
+      {
+        "activityCode": "S21",
+        "notices": 12,
+        "dollars": 24000000
+      },
+      {
+        "activityCode": "SB1",
+        "notices": 107,
+        "dollars": 99190877
+      },
+      {
+        "activityCode": "SC1",
+        "notices": 7,
+        "dollars": 2304272
+      },
+      {
+        "activityCode": "SC3",
+        "notices": 13,
+        "dollars": 1424414
+      },
+      {
+        "activityCode": "T03",
+        "notices": 63,
+        "dollars": 14604523
+      },
+      {
+        "activityCode": "T15",
+        "notices": 36,
+        "dollars": 21144270
+      },
+      {
+        "activityCode": "T32",
+        "notices": 3386,
+        "dollars": 1353483809
+      },
+      {
+        "activityCode": "T34",
+        "notices": 141,
+        "dollars": 55029265
+      },
+      {
+        "activityCode": "T35",
+        "notices": 165,
+        "dollars": 14567999
+      },
+      {
+        "activityCode": "T37",
+        "notices": 2,
+        "dollars": 507152
+      },
+      {
+        "activityCode": "T42",
+        "notices": 44,
+        "dollars": 61825961
+      },
+      {
+        "activityCode": "T90",
+        "notices": 41,
+        "dollars": 14892410
+      },
+      {
+        "activityCode": "TL1",
+        "notices": 83,
+        "dollars": 50408175
+      },
+      {
+        "activityCode": "U01",
+        "notices": 4036,
+        "dollars": 3902843379
+      },
+      {
+        "activityCode": "U10",
+        "notices": 102,
+        "dollars": 494779415
+      },
+      {
+        "activityCode": "U13",
+        "notices": 19,
+        "dollars": 2986949
+      },
+      {
+        "activityCode": "U18",
+        "notices": 171,
+        "dollars": 71849382
+      },
+      {
+        "activityCode": "U19",
+        "notices": 2434,
+        "dollars": 2758522063
+      },
+      {
+        "activityCode": "U24",
+        "notices": 1118,
+        "dollars": 1657409393
+      },
+      {
+        "activityCode": "U2C",
+        "notices": 451,
+        "dollars": 394046797
+      },
+      {
+        "activityCode": "U2F",
+        "notices": 278,
+        "dollars": 87518080
+      },
+      {
+        "activityCode": "U2R",
+        "notices": 30,
+        "dollars": 7312556
+      },
+      {
+        "activityCode": "U34",
+        "notices": 10,
+        "dollars": 3344220
+      },
+      {
+        "activityCode": "U3R",
+        "notices": 1,
+        "dollars": 77843
+      },
+      {
+        "activityCode": "U41",
+        "notices": 11,
+        "dollars": 11369082
+      },
+      {
+        "activityCode": "U42",
+        "notices": 167,
+        "dollars": 133133896
+      },
+      {
+        "activityCode": "U43",
+        "notices": 5,
+        "dollars": 4404874
+      },
+      {
+        "activityCode": "U44",
+        "notices": 40,
+        "dollars": 38406358
+      },
+      {
+        "activityCode": "U45",
+        "notices": 82,
+        "dollars": 103358346
+      },
+      {
+        "activityCode": "U48",
+        "notices": 58,
+        "dollars": 34380451
+      },
+      {
+        "activityCode": "U50",
+        "notices": 2,
+        "dollars": 19757702
+      },
+      {
+        "activityCode": "U54",
+        "notices": 3636,
+        "dollars": 2549463390
+      },
+      {
+        "activityCode": "U60",
+        "notices": 55,
+        "dollars": 26966651
+      },
+      {
+        "activityCode": "UC2",
+        "notices": 95,
+        "dollars": 119831288
+      },
+      {
+        "activityCode": "UC7",
+        "notices": 121,
+        "dollars": 221099848
+      },
+      {
+        "activityCode": "UE5",
+        "notices": 99,
+        "dollars": 26258322
+      },
+      {
+        "activityCode": "UF1",
+        "notices": 16,
+        "dollars": 130516421
+      },
+      {
+        "activityCode": "UF4",
+        "notices": 4,
+        "dollars": 3000000
+      },
+      {
+        "activityCode": "UG1",
+        "notices": 637,
+        "dollars": 736253836
+      },
+      {
+        "activityCode": "UG3",
+        "notices": 330,
+        "dollars": 375973341
+      },
+      {
+        "activityCode": "UG4",
+        "notices": 49,
+        "dollars": 31947336
+      },
+      {
+        "activityCode": "UH2",
+        "notices": 22,
+        "dollars": 4950901
+      },
+      {
+        "activityCode": "UH3",
+        "notices": 629,
+        "dollars": 854204449
+      },
+      {
+        "activityCode": "UH4",
+        "notices": 12,
+        "dollars": 18546799
+      },
+      {
+        "activityCode": "UL1",
+        "notices": 43,
+        "dollars": 314919997
+      },
+      {
+        "activityCode": "UM1",
+        "notices": 588,
+        "dollars": 2141821783
+      },
+      {
+        "activityCode": "UM2",
+        "notices": 50,
+        "dollars": 86657587
+      },
+      {
+        "activityCode": "UT2",
+        "notices": 1,
+        "dollars": 1461558
+      }
+    ],
+    "byFundingMechanism": [
+      {
+        "mechanism": "Construction Grants",
+        "notices": 36,
+        "dollars": 177099589
+      },
+      {
+        "mechanism": "Non-SBIR/STTR",
+        "notices": 91303,
+        "dollars": 56730045388
+      },
+      {
+        "mechanism": "Other",
+        "notices": 1617,
+        "dollars": 1646961065
+      },
+      {
+        "mechanism": "Other Research-Related",
+        "notices": 17130,
+        "dollars": 6696771111
+      },
+      {
+        "mechanism": "Research Centers",
+        "notices": 16829,
+        "dollars": 10129268688
+      },
+      {
+        "mechanism": "SBIR/STTR",
+        "notices": 3132,
+        "dollars": 2258644827
+      },
+      {
+        "mechanism": "Training, Individual",
+        "notices": 6855,
+        "dollars": 341086965
+      },
+      {
+        "mechanism": "Training, Institutional",
+        "notices": 3816,
+        "dollars": 1488381658
+      }
+    ]
+  }
 }

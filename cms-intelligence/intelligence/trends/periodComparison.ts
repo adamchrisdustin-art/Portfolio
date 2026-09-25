@@ -41,7 +41,9 @@ export interface PeriodComparison {
 
 export interface CountSeriesInput {
   /** One ISO date (YYYY-MM-DD) per event. */
-  dates: string[];
+  dates?: string[];
+  /** Or counts already bucketed by month ("YYYY-MM"), for sources summarized at pull time. */
+  monthlyCounts?: Record<string, number>;
   /** First date the data covers; periods starting earlier are incomplete. */
   coverageStart: string;
   /** Date of the pull. That day and later count as incomplete. */
@@ -94,10 +96,15 @@ function isComplete(start: number, size: number, input: CountSeriesInput): boole
   return monthStart(start) >= input.coverageStart && monthStart(start + size) <= input.asOf;
 }
 
-function countIn(start: number, size: number, dates: string[]): number {
+function countIn(start: number, size: number, input: CountSeriesInput): number {
+  if (input.monthlyCounts) {
+    let total = 0;
+    for (let m = start; m < start + size; m++) total += input.monthlyCounts[monthLabel(m)] ?? 0;
+    return total;
+  }
   const from = monthStart(start);
   const to = monthStart(start + size);
-  return dates.filter((d) => d >= from && d < to).length;
+  return (input.dates ?? []).filter((d) => d >= from && d < to).length;
 }
 
 function judge(a: number, b: number, view: ComparisonView, seasonal: boolean): { notable: boolean; basis: string } {
@@ -128,8 +135,8 @@ export function comparePeriods(input: CountSeriesInput): PeriodComparison[] {
     const priorStart = start - spec.lag;
     if (!isComplete(start, spec.size, input) || !isComplete(priorStart, spec.size, input)) continue;
 
-    const current = countIn(start, spec.size, input.dates);
-    const prior = countIn(priorStart, spec.size, input.dates);
+    const current = countIn(start, spec.size, input);
+    const prior = countIn(priorStart, spec.size, input);
     results.push({
       view: spec.view,
       current: { period: periodLabel(start, spec.size), count: current },

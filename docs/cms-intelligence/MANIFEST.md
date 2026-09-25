@@ -65,9 +65,31 @@ reads; if either secret is missing, reasoning skips at $0.
    (enrollment, hospitals, home health) have no dated history of their
    own, so they need monthly pulls to build up first. Their comparisons
    will need a level-based rule, because the Poisson count test doesn't
-   fit them. Outlier detection is also still open. **Next:** run
-   `replay-analyst.ts` to see the analyst use the comparisons.
-4. **Salience benchmark note.** Every rejected salience answer
+   fit them. Outlier detection is also still open. The replay (Adam,
+   2026-09-25) used the comparisons correctly: it led with the
+   half-year Phase 3 decline and called final rules steady.
+4. **Full-population summary tables: built 2026-09-25, not yet pushed.**
+   Adam asked whether the NIH and claims samples were hard API limits.
+   They weren't. The limits were our own choices, mostly to keep
+   committed snapshots small, never to save on model cost. Checking them
+   also showed the physician "sample" was biased: the first 1,000 rows
+   per state in API order, 560 providers with low-numbered NPIs. The
+   system now pulls every record and summarizes it at pull time, and
+   keeps the top-N lists alongside (SOURCE_REGISTRY.md, "Full-population
+   summary tables").
+   - Physician data: every Part B provider for 2013-2024.
+   - NIH: all 140,718 awards in the window.
+   - New claims-agent insights: a 12-year national payment trend split
+     into volume and price, provider types whose growth broke from their
+     own history, and state growth on standardized payment.
+   - Reworked insights: the reimbursement agent's payment-to-charge
+     benchmark now covers all providers nationally. The emerging-trends
+     correlation covers 51 states instead of 5. NIH totals and the
+     by-institute split cover every award.
+   - NIH monthly counts joined the period comparisons, marked seasonal.
+   Pushing this changes the committed data, so the live Executive Pulse
+   falls back to the fixed ranking until the next reasoning run.
+5. **Salience benchmark note.** Every rejected salience answer
    in the benchmark was a model calculating a number itself (day spans,
    counts, sums). Telling the salience prompt "copy numbers exactly, never
    calculate new ones", as the analyst prompt already does, would likely

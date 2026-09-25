@@ -41,11 +41,11 @@
  * keyword tag, and generic/common biomedical terms will legitimately
  * recur often regardless of genuine thematic concentration.
  *
- * Sampling bound (same disclosed pattern as physicianOtherPractitioners.ts's
- * 5-state sample): keeps only the top 100 awards by award_amount (already
- * sorted server-side) out of a real ~49,000 total awards in a trailing
- * 150-day window as of 2026-09-24 - a real, disclosed bound, not the full
- * award population for the window.
+ * Two layers: the `awards` list keeps the top 100 awards by award_amount
+ * (sorted server-side) with full detail, and since 2026-09-25 `summary`
+ * covers every award in the window (see NihAwardSummary below). Totals and
+ * breakdowns come from the summary; the top-100 list is for naming
+ * specific awards and recipients.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -82,6 +82,36 @@ export interface NihReporterSnapshot {
   windowStart: string;
   totalAvailable: number; // the API's real reported total in this window - always larger than the 100-row sample kept, see this file's header
   awards: NihAward[];
+  /** Every award notice in the window, summarized. Absent on snapshots from before 2026-09-25. */
+  summary?: NihAwardSummary;
+}
+
+export interface NihTotals {
+  notices: number;
+  dollars: number;
+}
+
+/**
+ * Full-population summary tables (added 2026-09-25): every award notice in
+ * the window, not just the top 100, so agents can analyze funding by
+ * month, institute, state and award type. Built by paging the whole window
+ * one calendar month at a time - verified live 2026-09-25: the API returns
+ * at most 500 records per request and rejects offsets of 15,000 or more,
+ * so a range that exceeds that is split in half until it fits. Paging is
+ * sorted by the unique `appl_id` (returned when requested as "ApplId"),
+ * which keeps pages stable and lets duplicates be dropped exactly.
+ */
+export interface NihAwardSummary extends NihTotals {
+  /** Awards the API reported for the window, to confirm nothing was missed. */
+  reportedTotal: number;
+  /** Awards with no award_amount, counted in notices but adding $0. */
+  missingAmount: number;
+  byMonth: ({ month: string } & NihTotals)[];
+  /** Administering institute (NCI, NIAID...), from agency_ic_admin. */
+  byMonthInstitute: ({ month: string; institute: string } & NihTotals)[];
+  byState: ({ state: string } & NihTotals)[];
+  byActivityCode: ({ activityCode: string } & NihTotals)[];
+  byFundingMechanism: ({ mechanism: string } & NihTotals)[];
 }
 
 interface RawResult {
@@ -149,11 +179,122 @@ async function fetchAwards(windowStart: string, windowEnd: string): Promise<{ aw
   return { awards, total: body.meta.total };
 }
 
+const SUMMARY_PAGE_SIZE = 500; // the API's real per-request maximum
+const MAX_OFFSET = 14_999; // the API rejects offsets of 15,000 or more
+const REQUEST_GAP_MS = 1_100; // NIH asks for no more than 1 request per second
+
+export interface SummaryRecord {
+  appl_id: number;
+  award_amount: number | null;
+  award_notice_date: string;
+  activity_code?: string | null;
+  funding_mechanism?: string | null;
+  organization?: { org_state?: string | null } | null;
+  agency_ic_admin?: { abbreviation?: string | null } | null;
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function searchPage(from: string, to: string, offset: number, attempt = 1): Promise<{ total: number; results: SummaryRecord[] }> {
+  await sleep(REQUEST_GAP_MS);
+  try {
+    const res = await fetch(BASE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        criteria: { award_notice_date: { from_date: from, to_date: to } },
+        include_fields: ["ApplId", "AwardAmount", "AwardNoticeDate", "ActivityCode", "FundingMechanism", "Organization", "AgencyIcAdmin"],
+        sort_field: "appl_id",
+        sort_order: "asc",
+        limit: SUMMARY_PAGE_SIZE,
+        offset,
+      }),
+    });
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    const body = (await res.json()) as { meta: { total: number }; results: SummaryRecord[] };
+    return { total: body.meta.total, results: body.results };
+  } catch (err) {
+    if (attempt >= 4) throw new Error(`NIH RePORTER summary page failed after ${attempt} attempts (${from}..${to} offset ${offset}): ${err}`);
+    await sleep(3000 * attempt);
+    return searchPage(from, to, offset, attempt + 1);
+  }
+}
+
+function addDays(isoDate: string, days: number): string {
+  const d = new Date(`${isoDate}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Every record in [from, to], halving the range whenever it holds more than one query can page through. */
+async function fetchRange(from: string, to: string, into: Map<number, SummaryRecord>): Promise<number> {
+  const first = await searchPage(from, to, 0);
+  if (first.total > MAX_OFFSET + 1 && from !== to) {
+    const days = Math.round((Date.parse(to) - Date.parse(from)) / 86_400_000);
+    const mid = addDays(from, Math.floor(days / 2));
+    return (await fetchRange(from, mid, into)) + (await fetchRange(addDays(mid, 1), to, into));
+  }
+  for (const r of first.results) into.set(r.appl_id, r);
+  for (let offset = SUMMARY_PAGE_SIZE; offset < first.total && offset <= MAX_OFFSET; offset += SUMMARY_PAGE_SIZE) {
+    for (const r of (await searchPage(from, to, offset)).results) into.set(r.appl_id, r);
+  }
+  return first.total;
+}
+
+function tally<K extends string>(records: SummaryRecord[], keyOf: (r: SummaryRecord) => string, name: K): ({ [P in K]: string } & NihTotals)[] {
+  const groups = new Map<string, NihTotals>();
+  for (const r of records) {
+    const key = keyOf(r);
+    const g = groups.get(key) ?? { notices: 0, dollars: 0 };
+    g.notices++;
+    g.dollars += r.award_amount ?? 0;
+    groups.set(key, g);
+  }
+  return [...groups]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, totals]) => ({ [name]: key, ...totals }) as { [P in K]: string } & NihTotals);
+}
+
+/** Folds every award record into the summary tables. Exported for tests. */
+export function summarizeNihRecords(records: SummaryRecord[], reportedTotal: number): NihAwardSummary {
+  const month = (r: SummaryRecord) => r.award_notice_date.slice(0, 7);
+  const institute = (r: SummaryRecord) => r.agency_ic_admin?.abbreviation || "unknown";
+  return {
+    notices: records.length,
+    dollars: records.reduce((s, r) => s + (r.award_amount ?? 0), 0),
+    reportedTotal,
+    missingAmount: records.filter((r) => r.award_amount == null).length,
+    byMonth: tally(records, month, "month"),
+    byMonthInstitute: tally(records, (r) => `${month(r)}\u0000${institute(r)}`, "key").map(({ key, ...totals }) => ({
+      month: key.split("\u0000")[0],
+      institute: key.split("\u0000")[1],
+      ...totals,
+    })),
+    byState: tally(records, (r) => r.organization?.org_state || "unknown", "state"),
+    byActivityCode: tally(records, (r) => r.activity_code || "unknown", "activityCode"),
+    byFundingMechanism: tally(records, (r) => r.funding_mechanism || "unknown", "mechanism"),
+  };
+}
+
+/** Pages the whole window one calendar month at a time (about 290 requests for 2 years, ~6 minutes at NIH's 1 request/second). */
+export async function fetchSummary(windowStart: string, windowEnd: string): Promise<NihAwardSummary> {
+  const records = new Map<number, SummaryRecord>();
+  let reportedTotal = 0;
+  for (let from = windowStart; from <= windowEnd; ) {
+    const monthEnd = addDays(`${addDays(`${from.slice(0, 7)}-01`, 32).slice(0, 7)}-01`, -1);
+    const to = monthEnd < windowEnd ? monthEnd : windowEnd;
+    reportedTotal += await fetchRange(from, to, records);
+    from = addDays(to, 1);
+  }
+  return summarizeNihRecords([...records.values()], reportedTotal);
+}
+
 /** Live pull + snapshot to disk - run manually/on schedule, never from a page load (COST_AND_OPERATING_MODEL.md). */
 export async function fetchAndSnapshot(): Promise<string> {
   const windowStart = windowStartDate();
   const windowEnd = new Date().toISOString().slice(0, 10);
   const { awards, total } = await fetchAwards(windowStart, windowEnd);
+  const summary = await fetchSummary(windowStart, windowEnd);
 
   fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true });
   const stamp = new Date().toISOString().slice(0, 10);
@@ -164,6 +305,7 @@ export async function fetchAndSnapshot(): Promise<string> {
     windowStart,
     totalAvailable: total,
     awards,
+    summary,
   };
   fs.writeFileSync(file, JSON.stringify(snapshot, null, 2));
   return file;

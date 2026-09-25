@@ -30,8 +30,7 @@
  * roughly 70-100 documents per 120-day window under this agency filter
  * (verified 2026-09-23), well under the single-request per_page cap used
  * here - if that ever changes, this file truncates rather than silently
- * paginating forever, same bounded-and-documented posture as
- * physicianOtherPractitioners.ts's 5-state sample.
+ * paginating forever - bounded and documented.
  *
  * Widened 2026-09-24 from 120 to 730 days (real 2-year window) per
  * Adam's request for deeper real historical coverage. Verified live

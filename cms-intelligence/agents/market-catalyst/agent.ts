@@ -49,7 +49,13 @@
  */
 import { loadLatestSnapshot as loadSecSnapshot, SOURCE_ID as SEC_SOURCE_ID, TRACKED_COMPANIES, type SecFiling } from "../../data/adapters/secEdgarFilings";
 import { loadLatestSnapshot as loadFdaSnapshot, SOURCE_ID as FDA_SOURCE_ID, type FdaApproval } from "../../data/adapters/fdaDrugApprovals";
-import { loadLatestSnapshot as loadNihSnapshot, SOURCE_ID as NIH_SOURCE_ID, type NihAward } from "../../data/adapters/nihReporterAwards";
+import {
+  loadLatestSnapshot as loadNihSnapshot,
+  SOURCE_ID as NIH_SOURCE_ID,
+  type NihAward,
+  type NihAwardSummary,
+  type NihReporterSnapshot,
+} from "../../data/adapters/nihReporterAwards";
 import { loadLatestSnapshot as loadCtSnapshot, SOURCE_ID as CT_SOURCE_ID, type ClinicalTrialResult } from "../../data/adapters/clinicalTrialsResults";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
@@ -62,6 +68,7 @@ const AGENT_ID = "market-catalyst-intelligence";
 const NATIONAL_GEO = { level: "national" as const, code: "US", label: "United States" };
 const TOP_N_AWARDS = 10;
 const TOP_N_ORGS = 10;
+const TOP_N_INSTITUTES = 8;
 const MIN_TRIALS_FOR_BOXPLOT = 20;
 const TOP_N_THEMES = 12;
 // A term present in more than this fraction of sampled awards is
@@ -97,9 +104,9 @@ export const marketCatalystAgent: DomainAgent = {
     if (nihSnapshot && nihSnapshot.awards.length > 0) {
       const awardCount = await buildAwardCountSignal(nihSnapshot.awards, nihSnapshot.totalAvailable, nihSnapshot.pulledAt, nihSnapshot.windowStart, ctx);
       if (awardCount) insights.push(awardCount);
-      const totalDollars = buildTotalAwardDollarsSignal(nihSnapshot.awards, nihSnapshot.totalAvailable, nihSnapshot.pulledAt, nihSnapshot.windowStart);
+      const totalDollars = buildTotalAwardDollarsSignal(nihSnapshot);
       if (totalDollars) insights.push(totalDollars);
-      const byAgency = await buildAwardsByAgencySignal(nihSnapshot.awards, nihSnapshot.totalAvailable, nihSnapshot.pulledAt, nihSnapshot.windowStart, ctx);
+      const byAgency = await buildAwardsByAgencySignal(nihSnapshot, ctx);
       if (byAgency) insights.push(byAgency);
       const themes = buildResearchThemesSignal(nihSnapshot.awards, nihSnapshot.pulledAt, nihSnapshot.windowStart);
       if (themes) insights.push(themes);
@@ -207,7 +214,7 @@ async function buildAwardCountSignal(
     confidenceRationale: `${confidence.rationale} This is the first real NIH RePORTER snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
-      `Bounded to the top ${awards.length} awards by dollar amount out of ${totalAvailable.toLocaleString()} real total award notices in this window (a real, disclosed sampling bound, same pattern as physicianOtherPractitioners.ts's 5-state sample) - not the full award population.`,
+      `Bounded to the top ${awards.length} awards by dollar amount out of ${totalAvailable.toLocaleString()} real total award notices in this window - this list names the largest awards; totals and institute breakdowns cover every award (see the Q114/Q115 insights).`,
       "An award notice is a real, real-dollar commitment, not a claim about the research's eventual clinical or commercial outcome.",
       "Single snapshot — a baseline reading, not yet a trend across periods.",
     ],
@@ -226,76 +233,96 @@ async function buildAwardCountSignal(
   return validateInsight(insight);
 }
 
-function buildTotalAwardDollarsSignal(awards: NihAward[], totalAvailable: number, pulledAt: string, windowStart: string): Insight | null {
-  const stamp = pulledAt.slice(0, 10);
-  const totalDollars = awards.reduce((sum, a) => sum + a.awardAmount, 0);
+/** The last calendar month fully covered by the pull. */
+function lastCompleteMonth(summary: NihAwardSummary, pulledAt: string): { month: string; notices: number; dollars: number } | null {
+  const pullMonth = pulledAt.slice(0, 7);
+  const complete = summary.byMonth.filter((m) => m.month < pullMonth);
+  return complete[complete.length - 1] ?? null;
+}
+
+const billionsOf = (usd: number) => `$${(usd / 1e9).toFixed(2)}B`;
+
+function buildTotalAwardDollarsSignal(snapshot: NihReporterSnapshot): Insight | null {
+  const summary = snapshot.summary;
+  if (!summary || summary.notices === 0) return null;
+  const stamp = snapshot.pulledAt.slice(0, 10);
+  const windowStart = snapshot.windowStart;
+  const recent = lastCompleteMonth(summary, snapshot.pulledAt);
   const confidence = baselineConfidence();
 
   const insight: Insight = {
     id: `sig-market-catalyst-${stamp}-nih-total-dollars`,
-    headline: `The ${awards.length.toLocaleString()} sampled NIH award notices between ${windowStart} and ${stamp} total $${totalDollars.toLocaleString()} in aggregate award dollars.`,
+    headline: `NIH issued ${summary.notices.toLocaleString()} award notices totaling ${billionsOf(summary.dollars)} between ${windowStart} and ${stamp}${recent ? `; ${recent.month} alone had ${recent.notices.toLocaleString()} notices worth ${billionsOf(recent.dollars)}` : ""}.`,
     questionId: "Q114",
     signalType: "structural-change",
     period: { start: windowStart, end: stamp },
     population: "n/a",
     geography: NATIONAL_GEO,
-    magnitude: { value: totalDollars, unit: "usd", comparedTo: `${awards.length} sampled award notices` },
+    magnitude: { value: summary.dollars, unit: "usd", comparedTo: `all ${summary.notices.toLocaleString()} award notices in the window` },
     drivers: [
       {
-        description: `Real NIH RePORTER award amounts summed across the ${awards.length} sampled award notices: $${totalDollars.toLocaleString()}.`,
+        description: `Every NIH RePORTER award notice in the window, summed by month (${summary.byMonth.map((m) => `${m.month}: ${m.notices.toLocaleString()} notices, ${billionsOf(m.dollars)}`).join("; ")}).`,
         supportingEvidenceIds: ["ev-nih-total-dollars"],
         relationship: "correlation",
       },
     ],
     businessRelevance:
-      "A distinct aggregate dollar-volume KPI from the single-largest-award headline (Q113) - tracks the overall scale of NIH funding activity in the sample, not just its single most extreme value.",
+      "The overall scale and monthly rhythm of NIH research funding - the upstream pipeline for the therapies and devices a payer will eventually cover. Sudden gaps show up here first.",
     evidence: [
       {
         id: "ev-nih-total-dollars",
         sourceId: NIH_SOURCE_ID,
-        description: `NIH RePORTER projects/search, real award_amount field summed across ${awards.length} sampled award notices, ${windowStart} to ${stamp}`,
+        description: `NIH RePORTER projects/search, every award notice ${windowStart} to ${stamp} (${summary.notices.toLocaleString()} of ${summary.reportedTotal.toLocaleString()} reported), summarized at pull time`,
         datasetVintage: stamp,
       },
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real NIH RePORTER snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Full-population counts, but NIH funding follows the federal fiscal year, so month-to-month swings are mostly seasonal.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
-      `This total covers only the ${awards.length} sampled awards (top by dollar amount) out of ${totalAvailable.toLocaleString()} real total award notices in this window - it understates true total NIH obligations for the window, sometimes substantially, since it excludes every award outside the top-${awards.length} sample.`,
-      "Single snapshot — a baseline reading, not yet a trend across periods.",
+      `${summary.missingAmount.toLocaleString()} notices carry no award amount and count as $0.`,
+      "Award notices are obligations, not money spent; a multi-year project can get several notices.",
+      "The first and last months of the window are partial.",
+      "NIH awards cluster before the September 30 fiscal year-end and slow sharply when federal funding lapses, so compare months year over year, not in sequence.",
     ],
-    nextSignal: "Watch this aggregate figure across a second real pull for a genuine period-over-period shift in sampled NIH funding volume.",
+    nextSignal: "Watch the year-over-year comparison of the same months for a real change in NIH funding pace.",
     recommendedInternalValidation: "Not applicable — this is public aggregate award data, not tied to any specific organization's actual research budget.",
     sourceIds: [NIH_SOURCE_ID],
     generatingAgent: AGENT_ID,
+    series: {
+      label: "NIH award dollars by month",
+      unit: "USD",
+      points: summary.byMonth.map((m) => ({ date: `${m.month}-01`, value: Math.round(m.dollars) })),
+    },
   };
 
   return validateInsight(insight);
 }
 
-async function buildAwardsByAgencySignal(
-  awards: NihAward[],
-  totalAvailable: number,
-  pulledAt: string,
-  windowStart: string,
-  ctx: AgentContext
-): Promise<Insight | null> {
-  const stamp = pulledAt.slice(0, 10);
-  const totals = new Map<string, number>();
-  for (const a of awards) totals.set(a.agencyCode, (totals.get(a.agencyCode) ?? 0) + a.awardAmount);
-  if (totals.size === 0) return null;
-  const totalDollars = Array.from(totals.values()).reduce((s, v) => s + v, 0);
+async function buildAwardsByAgencySignal(snapshot: NihReporterSnapshot, ctx: AgentContext): Promise<Insight | null> {
+  const summary = snapshot.summary;
+  if (!summary || summary.notices === 0) return null;
+  const stamp = snapshot.pulledAt.slice(0, 10);
+  const windowStart = snapshot.windowStart;
+  const totals = new Map<string, { notices: number; dollars: number }>();
+  for (const r of summary.byMonthInstitute) {
+    const t = totals.get(r.institute) ?? { notices: 0, dollars: 0 };
+    t.notices += r.notices;
+    t.dollars += r.dollars;
+    totals.set(r.institute, t);
+  }
+  const totalDollars = summary.dollars;
 
-  const candidates: Candidate[] = Array.from(totals.entries()).map(([agencyCode, dollars]) => ({
-    id: agencyCode,
-    label: agencyCode,
-    summary: `$${dollars.toLocaleString()} (${((dollars / totalDollars) * 100).toFixed(1)}% of $${totalDollars.toLocaleString()} sampled total)`,
-    primaryMetric: dollars,
+  const candidates: Candidate[] = Array.from(totals.entries()).map(([institute, t]) => ({
+    id: institute,
+    label: institute,
+    summary: `${billionsOf(t.dollars)} across ${t.notices.toLocaleString()} notices (${((t.dollars / totalDollars) * 100).toFixed(1)}% of ${billionsOf(totalDollars)})`,
+    primaryMetric: t.dollars,
   }));
 
   const { selections, source } = await selectNoteworthy(
-    { candidates, topN: Math.max(candidates.length, 1), taskDescription: "NIH award dollars by funding agency this cycle" },
+    { candidates, topN: TOP_N_INSTITUTES, taskDescription: "NIH award dollars by administering institute this cycle" },
     ctx
   );
   if (selections.length === 0) return null;
@@ -308,46 +335,46 @@ async function buildAwardsByAgencySignal(
 
   const insight: Insight = {
     id: `sig-market-catalyst-${stamp}-nih-by-agency`,
-    headline: `${leader.label} accounts for $${leader.primaryMetric.toLocaleString()} (${((leader.primaryMetric / totalDollars) * 100).toFixed(0)}%) of the $${totalDollars.toLocaleString()} in sampled NIH award dollars between ${windowStart} and ${stamp}.`,
+    headline: `${leader.label} administers ${billionsOf(leader.primaryMetric)} (${((leader.primaryMetric / totalDollars) * 100).toFixed(0)}%) of the ${billionsOf(totalDollars)} NIH awarded between ${windowStart} and ${stamp}, the most of any of ${candidates.length} institutes and centers.`,
     questionId: "Q115",
     signalType: "structural-change",
     period: { start: windowStart, end: stamp },
     population: "n/a",
     geography: NATIONAL_GEO,
-    magnitude: { value: leader.primaryMetric, unit: "usd", comparedTo: `sampled total ($${totalDollars.toLocaleString()})`, deltaPercent: (leader.primaryMetric / totalDollars) * 100 },
+    magnitude: { value: leader.primaryMetric, unit: "usd", comparedTo: `all NIH award dollars (${billionsOf(totalDollars)})`, deltaPercent: (leader.primaryMetric / totalDollars) * 100 },
     drivers: [
       {
-        description: `Real award dollars summed by NIH RePORTER's own \`agency_code\` field: ${selected.map(({ selection, candidate }) => `${candidate.label}: ${candidate.summary} — ${selection.rationale}`).join("; ")}. Candidate selection method: ${source === "llm" ? "model-reasoned salience ranking" : "deterministic top-N by dollar amount"}.`,
+        description: `Every award notice's dollars summed by its administering institute (NIH RePORTER's agency_ic_admin field): ${selected.map(({ selection, candidate }) => `${candidate.label}: ${candidate.summary}${source === "llm" ? ` — ${selection.rationale}` : ""}`).join("; ")}. Candidate selection method: ${source === "llm" ? `model-reasoned salience ranking over all ${candidates.length} institutes` : "deterministic top-N by dollar amount"}.`,
         supportingEvidenceIds: ["ev-nih-by-agency"],
         relationship: "correlation",
       },
     ],
     businessRelevance:
-      "Shows where sampled NIH funding dollars concentrate across the real funding-agency field this API exposes - a market-level catalyst-concentration read distinct from the per-organization recipient ranking (Q116).",
+      "Which disease areas NIH is funding most heavily - cancer, infectious disease, heart and lung, aging - a leading indicator of where new therapies and the trials behind them will come from.",
     evidence: [
       {
         id: "ev-nih-by-agency",
         sourceId: NIH_SOURCE_ID,
-        description: `NIH RePORTER projects/search, real \`agency_code\` field, award dollars summed across ${awards.length} sampled award notices, ${windowStart} to ${stamp}`,
+        description: `NIH RePORTER projects/search, agency_ic_admin field, every award notice ${windowStart} to ${stamp} (${summary.notices.toLocaleString()} notices)`,
         datasetVintage: stamp,
       },
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real NIH RePORTER snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Full-population totals across the window; a single two-year split is a baseline, not a trend.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
-      "CORRECTION vs. this project's original plan: NIH RePORTER's real `agency_code` field returns the sponsoring HHS operating division/agency (e.g. \"NIH\", \"FDA\", \"ALLCDC\") as verified live 2026-09-24 — it does NOT return NIH institute/center-level detail (e.g. NHLBI vs. NCI vs. NIA) as originally assumed. This insight is honestly labeled \"by funding agency,\" not \"by NIH institute,\" because that is what the real field actually contains.",
-      `Covers only the ${awards.length} sampled awards (top by dollar amount), not the full ${totalAvailable.toLocaleString()}-award population for this window.`,
-      "Single snapshot — a baseline reading, not yet a trend across periods.",
+      "Grouped by the administering institute. Co-funded awards count fully toward the administering one.",
+      `${summary.missingAmount.toLocaleString()} notices carry no award amount and count as $0.`,
+      "Institute budgets are set by Congress, so shares move slowly; a large shift usually reflects appropriations, not research demand.",
     ],
-    nextSignal: "Watch this agency-level split across a second real pull for a genuine shift in where sampled NIH funding concentrates.",
+    nextSignal: "Watch each institute's share across future pulls for a shift in where NIH funding concentrates.",
     recommendedInternalValidation: "Not applicable — this is public aggregate award data.",
     sourceIds: [NIH_SOURCE_ID],
     generatingAgent: AGENT_ID,
     chart: {
       type: "donut",
-      title: `Sampled NIH award dollars by funding agency, ${windowStart} to ${stamp}`,
+      title: `NIH award dollars by administering institute, ${windowStart} to ${stamp}`,
       unit: "usd",
       slices: sortedSlices.map(({ candidate }) => ({ label: candidate.label, value: candidate.primaryMetric })),
     },

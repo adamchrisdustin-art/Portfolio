@@ -3,7 +3,7 @@ import { validateInsight } from "../../intelligence/evidence/validate";
 import { bottomPickingProvider, inventingProvider, TEST_RATIONALE, withoutGeneratedAt } from "../../intelligence/salience/testProviders";
 import { reimbursementPaymentAgent } from "./agent";
 
-/** Runs against the real CMS Medicare Physician & Other Practitioners sample already committed to this repo. */
+/** Runs against the real CMS Medicare Physician & Other Practitioners summary tables already committed to this repo. */
 describe("reimbursementPaymentAgent", () => {
   it("produces a valid, evidence-backed insight from real claims-vs-payment data", async () => {
     const insights = await reimbursementPaymentAgent.run({ modelProvider: null });
@@ -11,14 +11,14 @@ describe("reimbursementPaymentAgent", () => {
     for (const insight of insights) {
       expect(() => validateInsight(insight)).not.toThrow();
       expect(insight.magnitude.unit).toBe("percent");
-      expect(insight.sourceIds).toContain("cms:medicare-physician-other-practitioners");
-      // Never claim this is the full national dataset
-      expect(insight.limitations.join(" ")).toMatch(/5 states|not the full national/i);
+      expect(insight.sourceIds).toContain("cms:medicare-physician-by-provider");
+      // States its real scope: every FFS Part B provider, not MA or commercial
+      expect(insight.limitations.join(" ")).toMatch(/every Medicare fee-for-service Part B provider/);
       expect(insight.chart?.type).toBe("bar");
     }
   });
 
-  it("with a model configured, charts only real candidates the model picked, while the 'largest volume' claim still comes from the full real ranking", async () => {
+  it("with a model configured, charts only real candidates the model picked, while the 'most payment' claim still comes from the full real ranking", async () => {
     const [baseline] = await reimbursementPaymentAgent.run({ modelProvider: null });
     const provider = bottomPickingProvider();
     const [insight] = await reimbursementPaymentAgent.run({ modelProvider: provider });

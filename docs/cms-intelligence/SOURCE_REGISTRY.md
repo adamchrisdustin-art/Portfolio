@@ -22,7 +22,7 @@ unverified rather than filled in with a guessed dataset ID or URL.
 |---|---|---|---|---|
 | `cms:hospital-general-information` | Hospital General Information | `data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/0` | 2026-09-23 | Q001, Q004, Q006, Q036, Q037, Q038 |
 | `cms:home-health-care-agencies` | Home Health Care Agencies | `data.cms.gov/provider-data/api/1/datastore/query/6jpm-sxkc/0` | 2026-09-23 | Q011, Q012, Q021, Q036 |
-| `cms:medicare-physician-other-practitioners` | Medicare Physician & Other Practitioners - by Provider and Service | `data.cms.gov/data-api/v1/dataset/92396110-2aed-4d63-a6a2-5d6207d46a29/data` | 2026-09-23 | Q011, Q012, Q026, Q027, Q028, Q031, Q088 |
+| `cms:medicare-physician-by-provider` | Medicare Physician & Other Practitioners - by Provider (every provider, 2013 onward, summarized) | `data.cms.gov/data-api/v1/dataset/{per-year id}/data` | 2026-09-25 | Q011, Q012, Q013, Q014, Q026, Q027, Q031, Q088 |
 | `federal-register:cms-documents` | Federal Register - CMS documents | `federalregister.gov/api/v1/documents.json` | 2026-09-23 | Q073, Q074, Q075, Q076 |
 | `cms:ma-part-d-enrollment` | MA/Part D Monthly Enrollment by Plan | `cms.gov/.../medicare-advantagepart-d-contract-and-enrollment-data/monthly-enrollment-plan` | 2026-09-23 | Q049, Q053 |
 | `cms:marketplace-rate-puf` | Marketplace (Exchange) Rate PUF | `cms.gov/marketplace/resources/data/public-use-files` | 2026-09-23 | Q067, Q071 |
@@ -30,6 +30,37 @@ unverified rather than filled in with a guessed dataset ID or URL.
 | `openfda:drugsfda-novel-approvals` | openFDA drugsfda - novel (Type 1) drug approvals | `api.fda.gov/drug/drugsfda.json` | 2026-09-24 | Q117, Q118, Q119 |
 | `nih-reporter:project-awards` | NIH RePORTER - project award notices | `api.reporter.nih.gov/v2/projects/search` | 2026-09-24 | Q113, Q114, Q115, Q116, Q129 |
 | `clinicaltrials-gov:phase3-results` | ClinicalTrials.gov - Phase 3 results postings | `clinicaltrials.gov/api/v2/studies` | 2026-09-24 | Q123, Q124 |
+
+### Full-population summary tables (2026-09-25)
+
+Two sources used to keep a small slice of their records. Both now pull
+every record and summarize it at pull time, keeping only the tables
+agents need. None of the earlier limits were API cost: pulls are free,
+and the model only ever sees computed facts.
+
+**Medicare Physician & Other Practitioners** (`data/adapters/physicianByProviderSummary.ts`)
+replaces the 5-state "by Provider and Service" sample. That sample was
+the first 1,000 rows per state in API order: 560 providers in total, all
+with NPIs between 1003000639 and 1003432022, not a representative sample.
+The replacement reads CMS's "by Provider" file, one row per provider,
+about 1.3 million a year, for every data year CMS publishes (2013 onward,
+each year its own dataset id in CMS's catalog). Verified live 2026-09-25:
+5,000 rows per request, and `column=` returns only the named fields. It
+stores state × provider type and state × rurality totals per year, plus
+the top 100 providers by payment. Past years are pulled once and cached,
+and a new data year is picked up from the catalog automatically. The
+first backfill took about 18 minutes. One page request dropped its
+connection mid-backfill and succeeded on retry seconds later, so retries
+now back off for up to about 3 minutes.
+
+**NIH RePORTER** keeps its top-100 awards list and adds a `summary` of
+every award in the window by month, month × administering institute,
+state, activity code and funding mechanism. Verified live 2026-09-25:
+500 records per request at most, offsets of 15,000 or more are rejected,
+and sorting by `appl_id` (returned when requested as "ApplId") gives
+stable pages. The adapter pages one month at a time and halves any range
+over the cap. August 2025 had 15,138 awards and needed the split. The
+first pull captured 140,718 notices, $79.47B.
 
 ### The 4 newest sources (added 2026-09-24, for the 12th agent - Market/Catalyst Intelligence)
 
@@ -83,11 +114,11 @@ one. **Real correction vs. this project's original plan:** the real
 `agency_code` field is the sponsoring HHS operating division/agency
 (verified live values: "NIH", "FDA", "ALLCDC"), NOT NIH institute/
 center-level detail (NHLBI/NCI/NIA) as originally assumed - the agent's
-Q115 insight is honestly labeled "by funding agency" for this reason.
-Sampling bound: keeps only the top 100 awards by dollar amount out of a
-real ~49,000+ total awards in the window (a real, disclosed bound, same
-pattern as `physicianOtherPractitioners.ts`'s 5-state sample) - not the
-full award population.
+Q115 insight was labeled "by funding agency" for this reason until
+2026-09-25, when the full-population summary switched it to the
+administering-institute field `agency_ic_admin`, which does carry
+institute detail. The top-100 awards list is still kept for naming
+specific awards; totals come from the full summary (see above).
 
 **ClinicalTrials.gov Phase 3 results** (`data/adapters/clinicalTrialsResults.ts`)
 - `clinicaltrials.gov/api/v2/studies`, `AREA[Phase]PHASE3` +

@@ -19,8 +19,8 @@
  * Marketplace (FFM) states - inspection confirmed WA, CA, and NY (which
  * run their own State-Based Exchanges: Washington Healthplanfinder,
  * Covered California, NY State of Health) do NOT appear anywhere in
- * this file. This project's usual WA/CA/TX/NY/FL 5-state sample
- * (physicianOtherPractitioners.ts) could not be reused for that reason.
+ * this file. The WA/CA/TX/NY/FL 5-state sample this project's physician
+ * data used at the time could not be reused for that reason.
  * SAMPLED_STATES below is instead the 5 largest FFM states by real row
  * count in the actual 2026 file (FL, MI, OH, TX, SC) - an objective,
  * documented selection criterion, not an arbitrary pick.
@@ -30,8 +30,9 @@
  * most published ACA premium comparisons use to compare across
  * geography without age-curve noise) and tobacco-neutral rating
  * ("No Preference"). A full 5-state pull at every age/tobacco
- * combination is still ~770K rows - impractical to commit, same
- * rationale as physicianOtherPractitioners.ts's bounding decision. This
+ * combination is still ~770K rows - impractical to commit as raw rows.
+ * (Summarizing at pull time, as physicianByProviderSummary.ts does, would
+ * lift that limit - not yet done here.) This
  * combination yields 14,179 real rows nationally across the 5 sampled
  * states.
  *

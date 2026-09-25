@@ -2,9 +2,10 @@
  * Code-computed period comparisons handed to the executive analyst
  * alongside the agents' insights (added 2026-09-25). Covers the sources
  * whose snapshots hold every dated record across their 2-year window
- * (Federal Register, openFDA, SEC EDGAR, ClinicalTrials.gov). NIH
- * RePORTER is left out: its snapshot is a 100-award sample, so its counts
- * per period would describe the sample, not NIH's activity.
+ * (Federal Register, openFDA, SEC EDGAR, ClinicalTrials.gov), plus NIH
+ * RePORTER's full-population monthly award counts (summarized at pull
+ * time since 2026-09-25; before that NIH was a 100-award sample and was
+ * left out).
  *
  * The snapshot-level CMS sources (hospitals, home health, MA/Part D
  * enrollment...) aren't here yet: each pull is one point in time, so
@@ -48,6 +49,22 @@ const METRICS: MetricSpec[] = [
   { metric: "Phase 3 trial results first posted on ClinicalTrials.gov", dataset: "clinicaltrials-phase3-results", records: "trials", dateField: "resultsFirstPostDate", seasonal: false },
 ];
 
+/** NIH's monthly counts come pre-summarized, not as dated records. Seasonal: awards follow the federal fiscal year, peaking in the months before its September 30 close. */
+function nihMonthlyFacts(dataDir: string): MetricPeriodFacts | null {
+  const snapshot = latestSnapshot("nih-reporter-awards", dataDir);
+  const summary = snapshot?.summary as { byMonth?: { month: string; notices: number }[] } | undefined;
+  if (!snapshot || !summary?.byMonth || typeof snapshot.windowStart !== "string" || typeof snapshot.pulledAt !== "string") return null;
+  const comparisons = comparePeriods({
+    monthlyCounts: Object.fromEntries(summary.byMonth.map((m) => [m.month, m.notices])),
+    coverageStart: snapshot.windowStart.slice(0, 10),
+    asOf: snapshot.pulledAt.slice(0, 10),
+    seasonal: true,
+  });
+  return comparisons.length === 0
+    ? null
+    : { metric: "NIH award notices issued (all awards)", sourceId: SOURCE_ID_BY_DATASET["nih-reporter-awards"], seasonal: true, comparisons };
+}
+
 function latestSnapshot(dataset: string, dataDir: string): Row | null {
   const dir = path.join(dataDir, dataset, "snapshots");
   if (!fs.existsSync(dir)) return null;
@@ -75,5 +92,7 @@ export function buildPeriodFacts(dataDir: string = DATA_DIR): MetricPeriodFacts[
     if (comparisons.length === 0) continue;
     facts.push({ metric: spec.metric, sourceId: SOURCE_ID_BY_DATASET[spec.dataset] ?? spec.dataset, seasonal: spec.seasonal, comparisons });
   }
+  const nih = nihMonthlyFacts(dataDir);
+  if (nih) facts.push(nih);
   return facts;
 }

@@ -9,7 +9,7 @@ beforeAll(async () => {
 
 describe("captureSalienceCalls", () => {
   it("captures the real prompts production sends - one per ranked selection with more candidates than it shows", () => {
-    expect(calls).toHaveLength(16); // measured 2026-09-24 against the committed data (MANIFEST.md)
+    expect(calls).toHaveLength(19); // 16 measured 2026-09-24; +2 physician (provider types, states) and +1 NIH institutes on 2026-09-25
     for (const call of calls) {
       expect(call.topN).toBeGreaterThan(0);
       expect(Object.keys(call.candidates).length).toBeGreaterThan(call.topN);

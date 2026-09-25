@@ -59,7 +59,8 @@ describe("marketCatalystAgent", () => {
     expect(awardCount?.sourceIds).toContain("nih-reporter:project-awards");
     expect(awardCount?.headline).toMatch(/largest single award/i);
     expect(awardCount?.chart?.type).toBe("bar");
-    expect(awardCount?.limitations.join(" ")).toMatch(/sampling bound|sampled/i);
+    // The top-N list must say it isn't the whole population
+    expect(awardCount?.limitations.join(" ")).toMatch(/names the largest awards; totals and institute breakdowns cover every award/);
   });
 
   it("NIH total-dollars insight (Q114) is a distinct aggregate KPI from Q113", async () => {
@@ -69,12 +70,21 @@ describe("marketCatalystAgent", () => {
     expect(totalDollars?.magnitude.unit).toBe("usd");
   });
 
-  it("NIH by-agency insight (Q115) discloses the real agency_code correction vs. the original 'by NIH institute' plan", async () => {
+  it("NIH by-institute insight (Q115) splits every award's dollars by administering institute, not the all-'NIH' agency_code", async () => {
     const insights = await marketCatalystAgent.run({ modelProvider: null });
-    const byAgency = insights.find((i) => i.questionId === "Q115");
-    expect(byAgency).toBeDefined();
-    expect(byAgency?.chart?.type).toBe("donut");
-    expect(byAgency?.limitations.join(" ")).toMatch(/CORRECTION/i);
+    const byInstitute = insights.find((i) => i.questionId === "Q115");
+    expect(byInstitute).toBeDefined();
+    if (byInstitute?.chart?.type !== "donut") throw new Error("expected a donut");
+    // Real institutes (NCI, NIAID...), not the single "NIH" agency_code value
+    expect(byInstitute.chart.slices.length).toBeGreaterThan(3);
+    expect(byInstitute.chart.slices.map((s) => s.label)).toContain("NCI");
+  });
+
+  it("NIH total-dollars insight (Q114) covers every award notice, with a real monthly series", async () => {
+    const insights = await marketCatalystAgent.run({ modelProvider: null });
+    const total = insights.find((i) => i.questionId === "Q114")!;
+    expect(total.headline).not.toMatch(/sampled/);
+    expect(total.series?.points.length).toBeGreaterThan(12);
   });
 
   it("NIH top-recipient-orgs insight (Q116) names a real recipient organization", async () => {

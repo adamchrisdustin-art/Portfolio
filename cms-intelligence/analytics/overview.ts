@@ -21,7 +21,7 @@ import {
   loadLatestSnapshot as loadHospitalSnapshot,
 } from "../data/adapters/hospitalGeneralInformation";
 import { loadLatestSnapshot as loadHomeHealthSnapshot } from "../data/adapters/homeHealthCareAgencies";
-import { loadLatestSnapshot as loadPhysicianSnapshot } from "../data/adapters/physicianOtherPractitioners";
+import { loadAllYears as loadPhysicianYears } from "../data/adapters/physicianByProviderSummary";
 import { loadLatestSnapshot as loadFederalRegisterSnapshot } from "../data/adapters/federalRegisterDocuments";
 import { loadLatestSnapshot as loadMaPartDSnapshot } from "../data/adapters/maPartDEnrollment";
 import { loadLatestSnapshot as loadMarketplaceSnapshot } from "../data/adapters/marketplaceRatePuf";
@@ -99,7 +99,8 @@ function ratingBar(title: string, rows: { rating?: string }[]): ChartBar | null 
 export function buildAnalyticsOverview(): AnalyticsOverview {
   const hospital = loadHospitalSnapshot();
   const homeHealth = loadHomeHealthSnapshot();
-  const physician = loadPhysicianSnapshot();
+  const physicianYears = loadPhysicianYears();
+  const physician = physicianYears[physicianYears.length - 1];
   const federalRegister = loadFederalRegisterSnapshot();
   const maPartD = loadMaPartDSnapshot();
   const marketplace = loadMarketplaceSnapshot();
@@ -189,10 +190,10 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
     }
   }
 
-  if (physician && physician.rows.length > 0) {
-    kpis.push({ label: "Claims lines sampled", value: physician.rows.length.toLocaleString() });
+  if (physician) {
+    kpis.push({ label: `Medicare Part B providers (${physician.dataYear})`, value: physician.providerCount.toLocaleString() });
 
-    const stats: ProviderTypeStats[] = computeStatsByProviderType(physician.rows).slice(0, 8);
+    const stats: ProviderTypeStats[] = computeStatsByProviderType(physician).slice(0, 8);
     if (stats.length > 0) {
       paymentByProviderTypeBar = {
         type: "bar",

@@ -68,6 +68,12 @@ describe("comparePeriods", () => {
     expect(find(results, "year-over-year", "2026-Q2")).toBeDefined();
   });
 
+  it("accepts counts already bucketed by month, for sources summarized at pull time", () => {
+    const fromDates = comparePeriods({ ...base, dates: [...events("2026-07", 30), ...events("2026-08", 14)] });
+    const fromMonthly = comparePeriods({ ...base, monthlyCounts: { "2026-07": 30, "2026-08": 14 } });
+    expect(fromMonthly).toEqual(fromDates);
+  });
+
   it("reports a null percent change rather than dividing by a zero prior count", () => {
     const mom = comparePeriods({ ...base, dates: events("2026-08", 12) }).find((r) => r.view === "month-over-month")!;
     expect(mom.prior.count).toBe(0);

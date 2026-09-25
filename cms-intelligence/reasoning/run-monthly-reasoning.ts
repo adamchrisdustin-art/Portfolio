@@ -15,7 +15,7 @@ import { runMonthlyReasoning } from "./monthlyRun";
 
 /**
  * Chosen from the 2026-09-25 six-model live benchmark (MODEL_EVALUATION.md):
- * - Salience: ~16 narrow, grounding-checked picks per run with a
+ * - Salience: ~19 narrow, grounding-checked picks per run with a
  *   deterministic fallback. The cheap models all scored within noise of
  *   each other, so the cheapest one wins (Adam: OpenAI for cheap tasks).
  * - Analyst: one call per month, the step that decides what a healthcare
