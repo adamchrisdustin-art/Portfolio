@@ -15,9 +15,27 @@ repository secrets named per-project, `HEALTHCARE_INTEL_ANTH` and
 the standard `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` variables the code
 reads; if either secret is missing, reasoning skips at $0.
 
-**Resume here (end of 2026-09-25):** everything is pushed through
-`92c0b9a`, CI green and live. Every data source now uses full data, not
-a sample (steps 4-8). The live Executive Pulse shows the fixed ranking
+**Resume here (end of 2026-09-25):** everything is pushed and live. Every
+data source now uses full data, not a sample (steps 4-8). **Late
+2026-09-25, a UI pass from Adam's annotated PDF of the live page** (layout
+only, no agent or data changes):
+- **Layout:** a new section order and a "Meet the team" section
+  (`cms-intelligence/agents/teamRoster.ts`, whose test keeps it in sync
+  with `ALL_AGENTS`). Each finding now appears once, in collapsible
+  Category > Finding > Evidence menus.
+- **Confidence** shows only inside the evidence drawer until snapshot
+  history grows.
+- **Charts:** vertical columns for three Data Explorer charts, and MA
+  enrollment and Part B payment lines in place of the flat CR4 and
+  facility-count lines. Chart rules are in DASHBOARD_BLUEPRINT.md's
+  "Chart conventions".
+- **Case study:** its data facts are now computed
+  (`cms-intelligence/analytics/caseStudyFacts.ts`,
+  `data/sources/sourceLabels.ts`), not hard-coded, so the monthly refresh
+  keeps them true.
+- **Later:** Adam plans a design-agent reskin (theme, colors, chart
+  styling) near project completion. New UI uses existing tokens and
+  placeholder avatars so that pass can restyle without touching layout. The live Executive Pulse shows the fixed ranking
 because the data changed after the last reasoning run; per Adam, the
 rerun waits for the next live test, the Oct 1 cron, or project
 completion, whichever comes first. **Next, pick with Adam:**
