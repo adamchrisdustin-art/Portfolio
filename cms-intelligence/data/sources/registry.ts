@@ -443,7 +443,7 @@ const CANDIDATE_ENTRIES: SourceRegistryEntry[] = [
       "The public TAF-derived aggregates lag by years (monthly counts through December 2022 when checked 2026-09-25).",
       "Monthly state enrollment now comes from cms:medicaid-state-enrollment, which is state-reported, not T-MSIS.",
     ],
-    methodologyNotes: "Public TAF-derived aggregates found on data.medicaid.gov 2026-09-25 (e.g. Dual Status Information for Medicaid and CHIP Beneficiaries by Month). Not yet wired.",
+    methodologyNotes: "Public TAF-derived aggregates found on data.medicaid.gov 2026-09-25 (e.g. Dual Status Information for Medicaid and CHIP Beneficiaries by Month). Not wired: they end in December 2022, and only data comparable with current data is used. The dual-status dataset is on the monitor's watch list (data/sources/watchlist.ts) and gets flagged if it resumes.",
     lastVerified: null,
     lastSchemaCheck: null,
     changeStatus: "unknown",

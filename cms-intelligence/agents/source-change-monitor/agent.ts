@@ -14,6 +14,11 @@
  * executive findings, not internal source-freshness bookkeeping. run()
  * still satisfies the DomainAgent interface (returns []) for uniformity
  * with the other 11 agents; checkAllSources() is this agent's actual job.
+ *
+ * Since 2026-09-25 it also watches datasets deliberately left off the
+ * dashboard because they stopped updating (data/sources/watchlist.ts):
+ * check-watchlist.ts runs monthly in the workflow and flags any that
+ * resume, for a person to decide on.
  */
 import { hasMaterialChange, diffRows, type RowDiff } from "../../data/sources/diff";
 import { getSourceById, SOURCE_REGISTRY } from "../../data/sources/registry";

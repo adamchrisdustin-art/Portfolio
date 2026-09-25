@@ -97,10 +97,17 @@ completion, whichever comes first. **Next, pick with Adam:**
   - Adults fell 7.0% in expansion states and 2.4% in non-expansion states.
   - Indiana (-18.5%) and Louisiana (-14.0%) stand apart from the -3.8%
     median state; California lost the most people (1,650,639).
-  Next candidates, also public: managed care enrollment by plan and
-  parent organization (annual, through 2024; Q064), and TAF-derived
-  monthly dual-status counts (through December 2022; Q060). Churn (Q057)
-  has no current public source.
+  Churn (Q057) has no current public source.
+- **Rule (Adam, 2026-09-25): only data we can compare with current data.**
+  A dataset that stopped updating stays off the dashboard. The Data
+  Source & CMS Change Monitor watches it instead
+  (`data/sources/watchlist.ts`, run monthly by
+  `agents/source-change-monitor/check-watchlist.ts`). If one resumes, it
+  writes `data/healthcare-intelligence/watchlist/status.json` and posts a
+  warning on the Actions run; nothing is pulled automatically. Watched:
+  the T-MSIS-derived monthly dual-status counts (latest December 2022;
+  Q060). Still open, and still updated yearly: managed care enrollment by
+  plan and parent organization (2024 data published February 2026; Q064).
 **After Oct 1:** check the monthly run's log. New steps (physician by
 provider and by service, Marketplace rates and open enrollment) have
 only run locally; physician steps should take seconds, NIH about 6

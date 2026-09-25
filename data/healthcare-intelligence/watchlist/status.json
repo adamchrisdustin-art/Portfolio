@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-09-25T23:55:51.039Z",
+  "results": [
+    {
+      "id": "medicaid-gov:dual-status-by-month",
+      "title": "Dual Status Information for Medicaid and CHIP Beneficiaries by Month (T-MSIS Analytic Files)",
+      "latestSeen": "202212",
+      "latestNow": "202212",
+      "status": "no-new-data",
+      "message": "No new data: latest period is still 202212."
+    }
+  ]
+}

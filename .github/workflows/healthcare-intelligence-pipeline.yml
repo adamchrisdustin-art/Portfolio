@@ -72,6 +72,11 @@ jobs:
       - name: Pull ClinicalTrials.gov Phase 3 results postings
         run: npx tsx cms-intelligence/data/adapters/pull-clinicaltrials-results.ts
 
+      - name: Check watched datasets for new data (flags only, never pulls)
+        # A watch-list network failure must never block the data pull.
+        continue-on-error: true
+        run: npx tsx cms-intelligence/agents/source-change-monitor/check-watchlist.ts
+
       - name: Autonomous reasoning (skips at $0 if no source changed)
         # A model/API failure must never block committing the free data pull above.
         continue-on-error: true
