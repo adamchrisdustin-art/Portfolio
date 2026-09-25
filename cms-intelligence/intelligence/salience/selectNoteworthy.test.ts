@@ -52,6 +52,18 @@ describe("selectNoteworthy", () => {
     expect(result.source).toBe("deterministic");
   });
 
+  it("falls back to deterministic ranking when a rationale cites a number the candidates don't contain", async () => {
+    const provider = fakeProvider(JSON.stringify([{ candidateId: "OH", rationale: "Ohio grew 48% year over year." }]));
+    const result = await selectNoteworthy({ candidates: CANDIDATES, topN: 2, taskDescription: "test" }, { modelProvider: provider });
+    expect(result.source).toBe("deterministic");
+  });
+
+  it("falls back to deterministic ranking when a rationale names a carrier the candidates don't mention", async () => {
+    const provider = fakeProvider(JSON.stringify([{ candidateId: "OH", rationale: "Humana dominates this market." }]));
+    const result = await selectNoteworthy({ candidates: CANDIDATES, topN: 2, taskDescription: "test" }, { modelProvider: provider });
+    expect(result.source).toBe("deterministic");
+  });
+
   it("falls back to deterministic ranking on unparseable model output", async () => {
     const provider = fakeProvider("not json at all, just prose");
     const result = await selectNoteworthy({ candidates: CANDIDATES, topN: 2, taskDescription: "test" }, { modelProvider: provider });

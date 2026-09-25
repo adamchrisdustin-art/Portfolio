@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { LAYER_LABELS } from "@/cms-intelligence/agents/dashboardLayers";
 import { runFullSweep } from "@/cms-intelligence/agents/orchestrator/fullSweep";
 import { buildAnalyticsOverview } from "@/cms-intelligence/analytics/overview";
+import { currentReasonedRun } from "@/cms-intelligence/reasoning/monthlyRun";
 import AnalyticsExplorer from "@/components/AnalyticsExplorer";
 import InsightCard from "@/components/InsightCard";
 import EmptyLayerState from "@/components/EmptyLayerState";
@@ -23,11 +24,21 @@ const LAYER_EMPTY_REASONS: Record<string, string> = {
 };
 
 export default async function HealthcareIntelligencePage() {
-  const sweep = await runFullSweep();
+  // A saved autonomous run is used only while it describes exactly the committed data (see monthlyRun.ts); otherwise the zero-cost deterministic sweep.
+  const reasoned = currentReasonedRun();
+  const sweep = reasoned?.sweep ?? (await runFullSweep());
+  const analyst = reasoned?.analyst.source === "llm" ? reasoned.analyst : null;
   const analyticsOverview = buildAnalyticsOverview();
   const failedAgents = sweep.agentStatuses.filter((s) => !s.ok);
+  const insightById = new Map(sweep.allInsights.map((i) => [i.id, i]));
+  const reasonedOn = reasoned ? reasoned.generatedAt.slice(0, 10) : null;
 
+  // The analyst's ranking leads when there is one; everything else follows by confidence.
+  const analystRank = new Map((analyst?.topFindings ?? []).map((f, i) => [f.insightId, i]));
   const pulseInsights = [...sweep.allInsights].sort((a, b) => {
+    const ra = analystRank.get(a.id) ?? Infinity;
+    const rb = analystRank.get(b.id) ?? Infinity;
+    if (ra !== rb) return ra - rb;
     const weight = { high: 3, medium: 2, low: 1 } as const;
     return weight[b.confidence] - weight[a.confidence];
   });
@@ -118,13 +129,61 @@ export default async function HealthcareIntelligencePage() {
       <section className="container" style={{ padding: "32px 24px", borderTop: "1px solid var(--border)" }}>
         <h2 style={{ fontSize: "1.4rem", marginBottom: 6 }}>Executive Pulse</h2>
         <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: 20 }}>
-          The highest-confidence findings across every layer, ranked — not a wall of competing metrics.
+          {analyst
+            ? "Ranked by the executive-analyst agent's judgment of what matters most to a healthcare leader this cycle, then by confidence."
+            : "The highest-confidence findings across every layer, ranked — not a wall of competing metrics."}
         </p>
         <div data-testid="synthesis" className="card" style={{ padding: 18, marginBottom: 24, background: "var(--surface-2)" }}>
           <p className="eyebrow" style={{ marginBottom: 8 }}>
-            Synthesis this cycle
+            {analyst ? `Executive briefing · reasoned autonomously on ${reasonedOn}` : "Synthesis this cycle"}
           </p>
-          <p style={{ margin: 0, fontSize: "0.92rem", whiteSpace: "pre-line" }}>{sweep.synthesis}</p>
+          <p style={{ margin: 0, fontSize: "0.92rem", whiteSpace: "pre-line" }}>{analyst?.briefing ?? sweep.synthesis}</p>
+          {analyst && analyst.topFindings.length > 0 && (
+            <>
+              <p className="eyebrow" style={{ margin: "16px 0 8px" }}>
+                What matters most, and why
+              </p>
+              <ol style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8, fontSize: "0.9rem" }}>
+                {analyst.topFindings.map((f) => (
+                  <li key={f.insightId}>
+                    <a href={`#${f.insightId}`}>{insightById.get(f.insightId)?.headline ?? f.insightId}</a>
+                    <span style={{ color: "var(--text-muted)" }}> — {f.whyItMatters}</span>
+                  </li>
+                ))}
+              </ol>
+            </>
+          )}
+          {analyst && analyst.patterns.length > 0 && (
+            <>
+              <p className="eyebrow" style={{ margin: "16px 0 8px" }}>
+                Patterns across domains
+              </p>
+              <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8, fontSize: "0.9rem" }}>
+                {analyst.patterns.map((p) => (
+                  <li key={p.insightIds.join("+")}>
+                    {p.pattern}{" "}
+                    <span style={{ color: "var(--text-muted)" }}>
+                      (links{" "}
+                      {p.insightIds.map((id, i) => (
+                        <span key={id}>
+                          {i > 0 && ", "}
+                          <a href={`#${id}`}>{insightById.get(id)?.questionId ?? id}</a>
+                        </span>
+                      ))}
+                      )
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          {analyst && (
+            <p style={{ margin: "14px 0 0", fontSize: "0.78rem", color: "var(--text-muted)" }}>
+              Reasoned by {reasoned?.models.analyst}; per-agent selections by {reasoned?.models.salience ?? "fixed ranking"}.
+              Every number and company name above was checked against the agents&apos; real computed facts before
+              publishing{analyst.rejected.length > 0 ? `; ${analyst.rejected.length} statement(s) that failed that check were dropped` : ""}.
+            </p>
+          )}
         </div>
         {pulseInsights.length === 0 ? (
           <EmptyLayerState reason="No agent has produced a finding yet this cycle." />
@@ -214,7 +273,7 @@ export default async function HealthcareIntelligencePage() {
               &quot;Known limitations&quot; below). The first three CMS sources are public, no-registration CMS Provider
               Data Catalog / Datastore datasets; the rest are separate public federal/registry sources — chosen
               because each is directly fetchable and updates on a predictable cadence, which matters for a project
-              run on a fixed budget and a once-a-quarter refresh schedule rather than a live production feed. Two
+              run on a fixed budget and a monthly refresh schedule rather than a live production feed. Two
               independent CMS sources sharing the same states is also what makes the Emerging Signals cross-check
               below possible.
             </p>
@@ -227,19 +286,27 @@ export default async function HealthcareIntelligencePage() {
               Confidence levels aren&apos;t a vibe — they&apos;re computed from whether a finding has enough history,
               persists, and is corroborated by an independent source, and every card shows its reasoning, not just a
               label. Every number is still computed by deterministic code, never an LLM — but which of several real,
-              computed candidates is worth an executive&apos;s attention is a judgment call, so newer agents route that
+              computed candidates is worth an executive&apos;s attention is a judgment call, so agents route that
               specific decision through a reasoning layer that can only choose among and briefly explain real
-              candidates it&apos;s given, never invent one, and falls back to a fixed ranking automatically whenever
-              no model is configured (true for this deployment today).
+              candidates it&apos;s given, never invent one. Once a month, after the data refresh, the agents re-run
+              with a real model and an executive-analyst agent ranks what matters most across every domain and
+              looks for connections between them. Because that output publishes without a human review step,
+              every number and company name a model writes is checked against the real computed facts first,
+              and anything that doesn&apos;t trace back is dropped rather than published.{" "}
+              {reasoned
+                ? `The current briefing was reasoned on ${reasonedOn}.`
+                : "No reasoned run matches the currently committed data yet, so this page is showing the fixed-ranking fallback."}
             </p>
           </div>
           <div>
             <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Evaluation</h3>
             <p style={{ margin: 0, color: "var(--text-muted)" }}>
-              The agent-reasoning layer runs behind a provider-agnostic interface, with both Anthropic and OpenAI
-              implementations already built. A head-to-head evaluation across providers — accuracy, evidence
-              fidelity, cost, and reliability on the same task suite — is planned as a bounded, one-time comparison
-              rather than an ongoing cost line.
+              The agent-reasoning layer runs behind a provider-agnostic interface, with Anthropic and OpenAI
+              implementations. Each model is chosen from a live head-to-head evaluation, not a default: the same
+              12-task suite, scored for accuracy, evidence fidelity, refusal behavior, source citation, latency,
+              and cost, run through several Claude and GPT models. A cheaper model handles narrow per-agent picks;
+              a stronger one handles the cross-domain executive reasoning where the evaluation showed real
+              quality differences.
             </p>
           </div>
           <div>
@@ -263,14 +330,17 @@ export default async function HealthcareIntelligencePage() {
                 the most fragmented CMS source and was deprioritized on purpose.
               </li>
               <li>
-                The Phase 6 model-provider evaluation framework is built and tested, but has never run against a
-                real provider — no API key is configured anywhere for this project yet.
+                The model evaluation&apos;s own scorer was wrong on its first live runs. It counted &quot;not the full
+                national file&quot; as an overclaim and missed several correctly worded refusals, so every model looked
+                like it had fabricated. That was caught by reading the raw answers, then fixed and re-scored from
+                the saved outputs. Automated evaluation needs the same auditing as the models it grades.
               </li>
-              <li>
-                The salience/triage reasoning layer (choosing which real findings matter most) runs in 8 of the 9 real
-                agents, but with no model provider configured it always falls back to the same deterministic top-N
-                ranking — so every chart you see today is still a fixed ranking, not a model&apos;s judgment.
-              </li>
+              {!reasoned && (
+                <li>
+                  No autonomous reasoning run matches the currently committed data, so every ranking on this page is
+                  the fixed deterministic fallback, not a model&apos;s judgment.
+                </li>
+              )}
               <li>
                 The physician dataset is a 5-state sample, not the full national file; the Federal Register feed,
                 and the 4 corporate/regulatory/research sources behind the Market/Catalyst agent, are each a rolling

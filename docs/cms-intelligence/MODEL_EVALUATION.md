@@ -1,12 +1,12 @@
 # Model / Provider Evaluation Framework
 
 Phase 6 deliverable per `06_PHASE_6_MODEL_PROVIDER_EVALUATION.md`. Built
-2026-09-23. **The framework's first live run happened 2026-09-25**,
-through `openai:gpt-4o-mini` only (no `ANTHROPIC_API_KEY` was set for
-that run) — see "Live run results" below for the real numbers. No repo
-secret or committed `.env` was ever used for this; the key was set as a
-local, unstaged shell environment variable for the one command, per the
-safe handling this file already recommended.
+2026-09-23. **Run live 2026-09-25 across six models from two providers**
+(Claude Haiku 4.5, Sonnet 5 and Opus 5.5; gpt-4o-mini, GPT-6 Luna and
+GPT-6 Sol), which meets Phase 6's cross-provider acceptance criterion with
+real data. See "Live run results" for the numbers, the three measurement
+bugs found along the way, and the routing decision they led to. Keys were
+set as local shell environment variables for each run, never committed.
 
 ## What exists
 
@@ -60,6 +60,10 @@ pricing page fetched directly; OpenAI's cross-checked via search, since a
 direct fetch of `openai.com/api/pricing` returned 403) — re-verify before
 a real budget decision, same caveat every `SOURCE_REGISTRY.md` entry
 carries.
+
+*(As of 2026-09-25 there's a third call site: the executive analyst in
+`cms-intelligence/reasoning/`, one call per monthly run. See "Routing"
+below; the autonomous run costs roughly $1/year.)*
 
 Traced against this repo's actual code (not a hypothetical): **two
 places can call an LLM as of 2026-09-23** — `synthesis.ts`'s
@@ -130,57 +134,89 @@ traced inputs (`REAL_WORKLOAD_INPUTS`):
 
 ## Live run results (2026-09-25)
 
-Real, billed run through `openai:gpt-4o-mini` — full output in
-`data/healthcare-intelligence/evaluation-runs/2026-09-25-results.json`
-and `2026-09-25-comparison-report.md`. No `ANTHROPIC_API_KEY` was set for
-this run, so this is one provider's real measurement, not yet the
-cross-provider comparison Phase 6's acceptance criterion describes —
-that still needs a second live run through Anthropic.
+Three real, billed runs on 2026-09-25. The definitive one is the
+six-model run, `data/healthcare-intelligence/evaluation-runs/2026-09-25T06-17-06-*`:
+every model on the same 12 tasks, in one pass, with a 4,096-token output
+ceiling. Scores below are **after** the scorer fixes described next,
+re-scored from the saved answers with `rescore.ts` (no new API calls).
 
-| Metric | Result |
-|---|---|
-| Mean score | 0.59 / 1.0 |
-| Schema compliance | 100% (12/12) |
-| Forbidden-claim rate | 8% (1/12) |
-| Refusal accuracy | 67% |
-| Source citation | 33% |
-| Mean latency | 2,487ms |
-| Real measured cost | $0.00027/question (~$0.003 for the full 12-task suite) — confirms the Economics section's estimate above, not a guess anymore |
+| Model | Mean score | Forbidden claims | Refusal accuracy | Source citation | Mean latency | Est. cost/question |
+|---|---|---|---|---|---|---|
+| `anthropic:claude-opus-5-5` | **0.92** | 0% | 100% | **75%** | 7.0s | $0.0089 |
+| `anthropic:claude-sonnet-5` | 0.85 | 0% | 100% | 50% | 5.7s | $0.0044 |
+| `anthropic:claude-haiku-4-5-20251001` | 0.74 | 0% | 100% | 33% | 2.1s | $0.0022 |
+| `openai:gpt-6-sol` | 0.72 | 0% | 100% | 33% | 3.8s | $0.0044 |
+| `openai:gpt-4o-mini` | 0.70 | 0% | 100% | 33% | 2.8s | $0.0003 |
+| `openai:gpt-6-luna` | 0.68 | 0% | 100% | 33% | 2.3s | $0.0002 |
 
-Two real, non-mocked findings worth acting on if `gpt-4o-mini` is ever
-routed into a live agent path, not just noise in the aggregate score:
-- **`cms-eval-002-reimbursement-change` scored 0.00 and tripped a
-  forbidden-claim flag**: the model claimed "full national" coverage of
-  data that's actually a real 5-state sample — exactly the overclaim
-  `CLAUDE.md`'s guardrails exist to prevent, caught correctly by the
-  scorer.
-- **`cms-eval-006-site-of-care-change` also scored 0.00**: this task
-  expects a refusal/gap acknowledgment (the underlying data doesn't
-  support an answer) and the model appears to have fabricated one
-  instead of declining.
-- Source citation (33%) is the weakest dimension overall — the model
-  usually got the substance right without naming which real source
-  backed it.
+Reading it honestly:
+- **Every model behaved safely.** All six refused both unanswerable
+  questions and disclaimed the 5-state sample correctly. The differences
+  are fact recall and source citation, not honesty.
+- **Opus 5.5 and Sonnet 5 pull away on the synthesis tasks.** Both scored
+  1.00 on executive synthesis and geographic comparison, where every
+  other model scored 0.47-0.70. Only Opus scored 1.00 on emerging-signal
+  detection and provider concentration.
+- **The bottom four are within noise of each other.** Haiku scored 0.80
+  in an earlier run and 0.74 here; with 12 tasks, gaps under about 0.06
+  shouldn't decide anything.
+- GPT-6 Sol and Luna were released 2026-09-22; pricing was verified live
+  the day of this run (`costModel.ts`).
 
-## Routing strategy — still provisional pending a second provider
+### Three measurement bugs found and fixed along the way
 
-`router.ts` maps each benchmark category to a tier
-(`deterministic`/`efficient`/`strong`), and now has one real data point
-behind the `efficient` tier (`gpt-4o-mini`'s 0.59 mean score above) —
-still not a comparative routing decision, since no Anthropic run exists
-yet to compare it against. Revisit `recommendTier()` once a second live
-run through `createAnthropicProvider()` gives `comparisonReport.ts`
-something real to compare, not mocked, data.
+Each would have made the numbers above wrong. None was the models' fault.
+
+1. **Output cap truncation.** The first Opus run was cut off mid-answer at
+   the original 400-token cap before stating the facts the scorer checks,
+   scoring 0.66. Cap raised to 4,096 (`runner.ts`). Billing is per token
+   generated, so the headroom costs nothing, and both providers now log a
+   warning whenever a response is truncated.
+2. **Negated phrases counted as forbidden claims.** All six models wrote
+   "not the full national file" on the reimbursement task, which is the
+   correct caveat, and all six were penalized for the phrase "full
+   national." Forbidden claims now only count when asserted, not
+   negated (`scorer.ts`).
+3. **Correct refusals not recognized.** On the site-of-care task, all six
+   models said plainly that the data couldn't answer it, but phrasings like
+   "cannot answer" and curly apostrophes ("doesn’t") weren't in the
+   refusal detector, so every model was scored as "possible fabrication."
+
+Bugs 2 and 3 are why the earlier single-provider write-ups on this date
+reported a "full national" overclaim and a fabricated answer as shared
+model failures. Both claims were wrong; the models were right. `scorer.test.ts`
+now pins the real answers that were mis-scored, plus the opposite cases,
+so the fixes can't drift into leniency. A pricing-ID mismatch
+(`claude-opus-5.5` vs. the real `claude-opus-5-5`) also made Opus show as
+"unpriced" until fixed.
+
+## Routing — decided from the results above
+
+Used by the autonomous monthly run
+(`cms-intelligence/reasoning/run-monthly-reasoning.ts`, overridable via
+`SALIENCE_MODEL` / `ANALYST_MODEL`):
+
+| Job | Model | Why |
+|---|---|---|
+| Computing every number, trend, and diff | Deterministic code | $0 and more reliable than any model. This was never an LLM job. |
+| Per-agent salience picks (~16 calls/run) | `openai:gpt-6-luna` | Narrow choices among given candidates, grounding-checked with a deterministic fallback. The cheap models are within noise of each other, so the cheapest wins, per Adam's preference for OpenAI on cheap tasks. |
+| Executive analyst (1 call/run) | `anthropic:claude-opus-5-5` | The judgment a healthcare leader actually reads. Highest score, best source citation, top marks on synthesis, and about $1/year at one call a month. |
+
+This deliberately goes past `CLAUDE.md`'s earlier "Haiku default,
+escalate to Sonnet" wording. That guardrail was written before any
+measured data existed, and it's been updated to match.
 
 ## Running it for real
 
 ```
-ANTHROPIC_API_KEY=... npx tsx cms-intelligence/evaluation/run-live-evaluation.ts
+ANTHROPIC_API_KEY=... OPENAI_API_KEY=... \
+ANTHROPIC_MODEL=claude-haiku-4-5-20251001,claude-sonnet-5,claude-opus-5-5 \
+OPENAI_MODEL=gpt-4o-mini,gpt-6-luna,gpt-6-sol \
+npx tsx cms-intelligence/evaluation/run-live-evaluation.ts
 ```
 
-Writes `data/healthcare-intelligence/evaluation-runs/<date>-results.json`
-and `<date>-comparison-report.md`. Costs real money (see Economics above
-for the expected size — trivial) and is not wired into any scheduled
-workflow; it only runs when someone deliberately invokes it with a key
-set. Per `COST_AND_OPERATING_MODEL.md`, do this only after the Phase 4/5
-data-source backfill is safely complete.
+Writes timestamped `evaluation-runs/<timestamp>-results.json` and
+`-comparison-report.md`. Costs real money (well under $1 for all six
+models) and is not wired into any scheduled workflow. After changing the
+scorer, run `npx tsx cms-intelligence/evaluation/rescore.ts` to re-score
+every saved run for free.

@@ -8,8 +8,14 @@ name: Healthcare Intelligence Data Pipeline
 # independent of - pipeline/'s weekly cms-pipeline.yml (Track C v1), which
 # stays untouched per docs/cms-intelligence/PROJECT_BOUNDARY.md.
 #
-# This workflow never sets an API key and never triggers LLM reasoning,
-# only data collection.
+# After the pull, the autonomous reasoning step (added 2026-09-25) re-runs
+# every agent with a real model and an executive-analyst pass, then the
+# result is committed straight to main and Vercel deploys it - no human
+# review, per Adam's decision; cms-intelligence/reasoning/grounding.ts is
+# the safety net. It spends nothing when no source's content changed, and
+# nothing at all if the API-key secrets aren't set. Which model does
+# which job: repo variables SALIENCE_MODEL / ANALYST_MODEL (optional,
+# "provider:model"), else the defaults in run-monthly-reasoning.ts.
 on:
   schedule:
     - cron: "0 13 1 * *" # 13:00 UTC on the 1st of every month
@@ -57,10 +63,20 @@ jobs:
       - name: Pull ClinicalTrials.gov Phase 3 results postings
         run: npx tsx cms-intelligence/data/adapters/pull-clinicaltrials-results.ts
 
-      - name: Commit updated snapshot
+      - name: Autonomous reasoning (skips at $0 if no source changed)
+        # A model/API failure must never block committing the free data pull above.
+        continue-on-error: true
+        run: npx tsx cms-intelligence/reasoning/run-monthly-reasoning.ts
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SALIENCE_MODEL: ${{ vars.SALIENCE_MODEL }}
+          ANALYST_MODEL: ${{ vars.ANALYST_MODEL }}
+
+      - name: Commit updated snapshot and reasoned run
         run: |
           git config user.name "healthcare-intelligence-bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/healthcare-intelligence
-          git diff --cached --quiet || git commit -m "chore: quarterly healthcare-intelligence data pull $(date -u +%Y-%m-%d)"
+          git diff --cached --quiet || git commit -m "chore: monthly healthcare-intelligence pull and reasoning $(date -u +%Y-%m-%d)"
           git push

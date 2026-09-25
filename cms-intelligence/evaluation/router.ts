@@ -2,18 +2,9 @@
  * Task-specific model routing - docs/cms-intelligence/
  * 06_PHASE_6_MODEL_PROVIDER_EVALUATION.md's "Model router concept":
  * "Route by demonstrated task performance and economics [...] Do not
- * route by model prestige." Since no live evaluation run has happened
- * yet (no API key is configured anywhere in this project as of
- * 2026-09-23 - see MANIFEST.md), there is no measured performance data
- * to route on. This file therefore encodes the *default* tier mapping
- * this repo's providers already commit to in code (Haiku for Anthropic,
- * gpt-4o-mini for OpenAI - see providers/anthropic.ts and
- * providers/openai.ts's DEFAULT_MODEL, and CLAUDE.md's budget guardrail
- * requiring that default) plus the one escalation path Phase 6 asks for
- * (executive synthesis -> a stronger tier), rather than pretend a
- * measured routing decision exists before real evaluation data does.
- * `recommendTier` should be revisited once runSuite() has real results
- * across providers - see comparisonReport.ts's TODO note.
+ * route by model prestige." The category-to-tier mapping below predates
+ * any live run; TIER_PROVIDER_DEFAULTS is now set from real measured
+ * results (see its comment).
  */
 import type { TaskCategory } from "./types";
 
@@ -41,7 +32,17 @@ export function recommendTier(category: TaskCategory): ModelTier {
   return TASK_TIER[category];
 }
 
+/**
+ * Updated 2026-09-25 from the six-model live benchmark (re-scored after the
+ * scorer fixes - see MODEL_EVALUATION.md). Every model refused correctly
+ * and made no forbidden claim, so the tiers differ on fact recall and
+ * source citation: Opus 5.5 0.92, Sonnet 5 0.85, then Haiku 4.5, GPT-6 Sol,
+ * gpt-4o-mini and GPT-6 Luna within noise of each other (0.68-0.74).
+ * Efficient work goes to the cheapest model in that band (Adam's preference:
+ * OpenAI for cheap tasks); strong work goes to the top scorer, since it's
+ * one call a month. The live routing is run-monthly-reasoning.ts's defaults.
+ */
 export const TIER_PROVIDER_DEFAULTS: Record<Exclude<ModelTier, "deterministic">, { anthropic: string; openai: string }> = {
-  efficient: { anthropic: "anthropic:claude-haiku-4-5-20251001", openai: "openai:gpt-4o-mini" },
-  strong: { anthropic: "anthropic:claude-sonnet-5", openai: "openai:gpt-4.1-mini" },
+  efficient: { anthropic: "anthropic:claude-haiku-4-5-20251001", openai: "openai:gpt-6-luna" },
+  strong: { anthropic: "anthropic:claude-opus-5-5", openai: "openai:gpt-6-sol" },
 };

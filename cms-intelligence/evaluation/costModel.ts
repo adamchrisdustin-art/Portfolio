@@ -18,7 +18,6 @@
  * "LLM vs. code split" rule). The estimators below model that real
  * shape, not a hypothetical heavier one.
  */
-import { BENCHMARK_MAX_OUTPUT_TOKENS } from "./runner";
 import type { CostEstimate, ModelPricing } from "./types";
 
 export const MODEL_PRICING: ModelPricing[] = [
@@ -102,7 +101,13 @@ const OBSERVED_SYNTHESIS_INPUT_TOKENS = 1200;
 const OBSERVED_SYNTHESIS_OUTPUT_TOKENS = 300;
 /** Average observed input tokens for one benchmark-suite task (system + user + context) - see benchmarkSuite.ts. */
 const OBSERVED_TASK_INPUT_TOKENS = 220;
-const OBSERVED_TASK_OUTPUT_TOKENS_CAP = BENCHMARK_MAX_OUTPUT_TOKENS;
+/**
+ * Typical real answer length, not the benchmark's ceiling
+ * (BENCHMARK_MAX_OUTPUT_TOKENS) - pricing every answer at a 4,096-token
+ * ceiling would overstate cost roughly 10x, since billing is per token
+ * actually generated.
+ */
+const OBSERVED_TASK_OUTPUT_TOKENS_CAP = 400;
 
 export function estimateCost(providerName: string): CostEstimate | null {
   const pricing = getPricing(providerName);

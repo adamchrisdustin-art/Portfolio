@@ -5,6 +5,7 @@
  * cost-gate shape as pipeline/analystAgent.ts.
  */
 import type { Insight } from "../../intelligence/evidence/schema";
+import { checkGrounding } from "../../reasoning/grounding";
 import type { AgentContext } from "../types";
 
 export interface SynthesisResult {
@@ -25,12 +26,15 @@ export function ruleBasedSynthesis(insights: Insight[], context: string): string
 
 async function llmSynthesis(insights: Insight[], ctx: AgentContext): Promise<string | null> {
   if (!ctx.modelProvider || insights.length === 0) return null; // cost gate - see AGENT_ARCHITECTURE.md cross-cutting rules
-  return ctx.modelProvider.generate({
+  const facts = JSON.stringify(insights.map((i) => ({ headline: i.headline, magnitude: i.magnitude, confidence: i.confidence, businessRelevance: i.businessRelevance })));
+  const text = await ctx.modelProvider.generate({
     system:
-      "You synthesize structured healthcare-market insights into a short executive narrative. 2-4 sentences. Use only the facts given - never invent a number, source, or company name. Never name a specific real health insurer.",
-    user: `Synthesize these insights for an executive reader:\n${JSON.stringify(insights.map((i) => ({ headline: i.headline, magnitude: i.magnitude, confidence: i.confidence, businessRelevance: i.businessRelevance })))}`,
+      "You synthesize structured healthcare-market insights into a short executive narrative. 2-4 sentences. Use only the facts given - copy numbers exactly, never invent a number, source, or company name, and name a company only if that exact name appears in the facts.",
+    user: `Synthesize these insights for an executive reader:\n${facts}`,
     maxOutputTokens: 300,
   });
+  // Published without human review in autonomous runs - an ungrounded narrative falls back to the rule-based one rather than going live.
+  return text && checkGrounding(text, facts).grounded ? text : null;
 }
 
 export async function synthesize(insights: Insight[], context: string, ctx: AgentContext): Promise<SynthesisResult> {

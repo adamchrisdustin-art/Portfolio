@@ -27,6 +27,7 @@
  * posture as fullSweep.ts's per-agent isolation).
  */
 import type { AgentContext } from "../../agents/types";
+import { checkGrounding } from "../../reasoning/grounding";
 
 export interface Candidate {
   /** Stable id (e.g. a state code or provider-type name) - the only thing the model is allowed to reference back. */
@@ -78,7 +79,7 @@ function deterministicSelection(candidates: Candidate[], topN: number, direction
   };
 }
 
-function parseModelSelections(raw: string, candidates: Candidate[], topN: number): NoteworthySelection[] | null {
+function parseModelSelections(raw: string, candidates: Candidate[], topN: number, groundingSource: string): NoteworthySelection[] | null {
   const validIds = new Set(candidates.map((c) => c.id));
   try {
     // Models sometimes wrap JSON in a markdown fence despite instructions not to - strip it defensively rather than failing outright.
@@ -96,6 +97,8 @@ function parseModelSelections(raw: string, candidates: Candidate[], topN: number
       // A candidateId the model invented (not in the real list given to it) invalidates trust in the whole response - never surface a fact this system can't trace back to a real candidate.
       if (!validIds.has(candidateId)) return null;
       if (seen.has(candidateId)) continue;
+      // Rationales get published without human review in autonomous runs - one that cites a number or carrier name the candidates don't contain invalidates the whole response, same as an invented id.
+      if (!checkGrounding(rationale, groundingSource).grounded) return null;
       seen.add(candidateId);
       selections.push({ candidateId, rationale: rationale.trim().slice(0, 300) });
     }
@@ -132,7 +135,7 @@ export async function selectNoteworthy(options: SelectNoteworthyOptions, ctx: Ag
 
   if (!raw) return deterministicSelection(candidates, topN, direction);
 
-  const parsed = parseModelSelections(raw, candidates, topN);
+  const parsed = parseModelSelections(raw, candidates, topN, `${taskDescription}\n${candidateList}`);
   if (!parsed) return deterministicSelection(candidates, topN, direction);
 
   return { source: "llm", selections: parsed };

@@ -31,10 +31,57 @@ const REFUSAL_SIGNALS = [
   "no source",
   "not tracked",
   "stub",
+  // Added 2026-09-25: every model correctly refused cms-eval-006 in the first live runs, but these common
+  // phrasings weren't in the list, so all six were scored as "possible fabrication".
+  "cannot answer",
+  "can't answer",
+  "unable to answer",
+  "cannot show",
+  "can't show",
+  "cannot quantify",
+  "cannot be answered",
+  "does not provide",
+  "doesn't provide",
+  "does not track",
+  "doesn't track",
+  "do not track",
+  "not currently wired",
+  "not yet wired",
+  "no figure",
+  "would be invented",
 ];
 
+/** Negations that, just before a forbidden phrase, mean the model is disclaiming it ("not the full national file"), not claiming it. */
+const NEGATION_BEFORE = /(\bnot|n't|\bno|\bnever|\bwithout|rather than|instead of)\W+(\w+\W+){0,3}$/;
+
+/**
+ * Lowercases, straightens curly apostrophes (the GPT-6 models write
+ * "doesn’t", which never matched "doesn't"), and strips markdown emphasis
+ * so "**not the full national file**" reads as plain text.
+ */
+function normalize(text: string): string {
+  return text.toLowerCase().replace(/[‘’]/g, "'").replace(/[*_`]/g, "");
+}
+
 function containsCaseInsensitive(haystack: string, needle: string): boolean {
-  return haystack.toLowerCase().includes(needle.toLowerCase());
+  return normalize(haystack).includes(normalize(needle));
+}
+
+/**
+ * A forbidden phrase counts only where it's asserted. The first live runs
+ * flagged every model on cms-eval-002 for writing "not the full national
+ * file", which is the correct caveat, not the overclaim the check exists
+ * to catch.
+ */
+function assertsClaim(output: string, claim: string): boolean {
+  const text = normalize(output);
+  const phrase = normalize(claim);
+  let from = 0;
+  for (let i = text.indexOf(phrase, from); i !== -1; i = text.indexOf(phrase, from)) {
+    if (!NEGATION_BEFORE.test(text.slice(Math.max(0, i - 40), i))) return true;
+    from = i + phrase.length;
+  }
+  return false;
 }
 
 export function scoreResponse(task: BenchmarkTask, providerName: string, rawOutput: string | null, latencyMs: number): EvaluationResult {
@@ -43,7 +90,7 @@ export function scoreResponse(task: BenchmarkTask, providerName: string, rawOutp
 
   const factsFound = task.requiredFacts.filter((f) => containsCaseInsensitive(output, f));
   const factsMissing = task.requiredFacts.filter((f) => !containsCaseInsensitive(output, f));
-  const forbiddenClaimsTriggered = task.forbiddenClaims.filter((c) => containsCaseInsensitive(output, c));
+  const forbiddenClaimsTriggered = task.forbiddenClaims.filter((c) => assertsClaim(output, c));
   const citedExpectedSource = task.expectedSources.length === 0 ? true : task.expectedSources.some((s) => containsCaseInsensitive(output, s));
 
   let refusalCorrect: boolean | null = null;

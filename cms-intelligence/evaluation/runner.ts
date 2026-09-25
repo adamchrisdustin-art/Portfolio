@@ -16,10 +16,12 @@ import type { BenchmarkTask, EvaluationResult, ProviderAggregate, ProviderRunRes
  * Raised from 400 on 2026-09-25: the first Opus 5.5 run wrote long,
  * formatted markdown and got cut off mid-answer before stating the facts
  * the scorer checks for, so the benchmark was measuring verbosity against
- * a cap, not reasoning quality. 1024 leaves room for every model tested
- * so far to finish.
+ * a cap, not reasoning quality. Then raised again to 4096 before the first
+ * GPT-6 run: reasoning models spend hidden reasoning tokens from this same
+ * budget. The cap is a ceiling, not a charge - billing is for tokens
+ * actually generated - so headroom here costs nothing.
  */
-export const BENCHMARK_MAX_OUTPUT_TOKENS = 1024;
+export const BENCHMARK_MAX_OUTPUT_TOKENS = 4096;
 
 const SYSTEM_PROMPT =
   "You are a healthcare-market intelligence analyst. Answer using only the facts given in the context below - never invent a number, date, source, or company name. If the context doesn't contain enough information to answer, say so plainly rather than guessing. Never name a specific real health insurer.";

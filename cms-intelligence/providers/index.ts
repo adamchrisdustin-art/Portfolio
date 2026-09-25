@@ -23,4 +23,23 @@ export function getConfiguredProvider(): ModelProvider | null {
   return null;
 }
 
+/**
+ * Builds a provider from a "provider:model" spec (e.g. "openai:gpt-6-luna",
+ * "anthropic:claude-sonnet-5"), so autonomous runs can route each task to
+ * a different model through config alone. Returns null when the spec is
+ * malformed or that provider's key isn't set - the same "no provider is a
+ * normal state" contract as getConfiguredProvider().
+ */
+export function createProviderFromSpec(
+  spec: string | undefined,
+  env: Record<string, string | undefined> = process.env
+): ModelProvider | null {
+  const [provider, ...rest] = (spec ?? "").trim().split(":");
+  const model = rest.join(":");
+  if (!model) return null;
+  if (provider === "anthropic" && env.ANTHROPIC_API_KEY) return createAnthropicProvider(env.ANTHROPIC_API_KEY, model);
+  if (provider === "openai" && env.OPENAI_API_KEY) return createOpenAIProvider(env.OPENAI_API_KEY, model);
+  return null;
+}
+
 export type { GenerateOptions, ModelProvider } from "./types";

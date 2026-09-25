@@ -6,12 +6,15 @@
 Intelligence) and a full round of dashboard-review fixes, all shipped
 the same extended session.** The dashboard runs at
 `/healthcare-intelligence`, live in production at adamdustin.me
-(auto-deploys from `main` via Vercel — see `DEPLOYMENT.md`). No phase is
-"next" by default — the salience-layer retrofit is done, and Phase 6's
-live evaluation has now run once (2026-09-25, OpenAI only, see below);
-the one remaining piece is a matching live run through Anthropic so
-Phase 6's cross-provider comparison has both sides. Pick based on what's
-asked next.
+(auto-deploys from `main` via Vercel — see `DEPLOYMENT.md`). Phase 6's
+cross-provider evaluation is done (six models, 2026-09-25), and the
+**autonomous monthly reasoning pipeline is built**
+(`cms-intelligence/reasoning/`). It goes live once Adam adds
+`ANTHROPIC_API_KEY` and `OPENAI_API_KEY` as GitHub Actions secrets (with
+spend caps set in both consoles first); until then the monthly workflow
+pulls data and skips reasoning at $0. Natural next step after that: more
+code-computed candidate stats (month-over-month deltas, outliers) for the
+analyst to reason over as monthly history accumulates.
 
 **What's real:**
 - **10 data sources wired**: the original 6 CMS-focused sources (all 3
@@ -106,16 +109,28 @@ asked next.
   distinct issuers per state (Q071's competitive-intensity read), never
   surfaced or resolved to a company name - it's still an opaque numeric
   ID with no verified name crosswalk wired in (see `SOURCE_REGISTRY.md`).
-- **Phase 6 evaluation framework** (`cms-intelligence/evaluation/`) built,
-  tested, and **run live for the first time 2026-09-25** through
-  `openai:gpt-4o-mini` (real, measured mean score 0.59/1.0, real cost
-  $0.00027/question — confirmed, not estimated). No Anthropic run has
-  happened yet, so this is one provider's real numbers, not yet the
-  cross-provider comparison Phase 6's acceptance criterion asks for. See
-  `MODEL_EVALUATION.md`'s "Live run results" for the real findings
-  (including two genuine scoring failures the harness caught), the
-  framework's design, verified pricing, the resolved Claude Max/API
-  decision, and a real cadence-vs-cost table.
+- **Phase 6 evaluation: run live across six models, 2026-09-25**
+  (`cms-intelligence/evaluation/`). Corrected scores: Opus 5.5 0.92,
+  Sonnet 5 0.85, then Haiku 4.5, GPT-6 Sol, gpt-4o-mini and GPT-6 Luna
+  within noise at 0.68-0.74. Every model refused unanswerable questions
+  and disclaimed scope correctly. Three measurement bugs were found and
+  fixed on the way (output truncation, negated phrases counted as
+  forbidden claims, correct refusals not recognized); see
+  `MODEL_EVALUATION.md`.
+- **Autonomous monthly reasoning** (`cms-intelligence/reasoning/`, built
+  2026-09-25, live once API-key secrets are added):
+  1. Data pulls monthly (free).
+  2. A content-fingerprint gate skips all model calls if nothing changed.
+  3. Every agent re-runs with `gpt-6-luna` doing salience picks.
+  4. An executive analyst on `claude-opus-5-5` ranks what matters to a
+     healthcare leader and connects findings across domains.
+  5. Every model-written number and insurer name must trace to real
+     computed facts or it's dropped (`grounding.ts`).
+  6. The run commits straight to `main` (Adam's decision: no review
+     step), and the dashboard shows it only while it matches the
+     committed data.
+
+  About $1/year.
 - Confidence/trend detection is computed dynamically from real snapshot
   history (`cms-intelligence/data/sources/snapshotHistory.ts`), never
   hardcoded — currently low across the board because there's genuinely
@@ -352,7 +367,11 @@ test files; each retrofitted agent gained a model-path test and an
 invented-id fallback test via `intelligence/salience/testProviders.ts`),
 clean `tsc`/`lint`/build/e2e.
 
-**First live Phase 6 evaluation run** (2026-09-25): `run-live-evaluation.ts`
+**First live Phase 6 evaluation run** (2026-09-25). *Correction, same
+day: the two "real scoring failures" below were scorer bugs, not model
+behavior. Every model wrote "not the full national file" and every model
+refused the site-of-care question. See the six-model entry below.*
+`run-live-evaluation.ts`
 run for real, for the first time, with a fresh OpenAI key set as a local
 shell env var only (never committed, never a repo secret). Real result
 through `openai:gpt-4o-mini`: mean score 0.59/1.0, 100% schema
@@ -368,3 +387,41 @@ comparison Phase 6's acceptance criterion describes — see
 `MODEL_EVALUATION.md`'s "Live run results" section for full detail. Real
 output committed at
 `data/healthcare-intelligence/evaluation-runs/2026-09-25-*`.
+
+**Six-model evaluation and autonomous monthly reasoning** (2026-09-25,
+same session):
+
+*Evaluation.* Ran the benchmark live through Claude Haiku 4.5, Sonnet 5
+and Opus 5.5 and through gpt-4o-mini, GPT-6 Luna and GPT-6 Sol. Reading
+the raw answers turned up three measurement bugs:
+- The 400-token cap truncated Opus mid-answer.
+- Negated phrases ("not the full national file") were counted as
+  forbidden claims.
+- The refusal detector missed common phrasings and curly apostrophes.
+
+After fixing all three and re-scoring the saved answers for free
+(`rescore.ts`): Opus 0.92, Sonnet 0.85, the rest 0.68-0.74. Every model
+behaved safely. The scorer now has its first tests, built from the real
+mis-scored answers.
+
+*Autonomy.* Per Adam: data pulls went from quarterly to monthly, the
+monthly run now reasons autonomously, and it publishes straight to `main`.
+New `cms-intelligence/reasoning/`:
+- **Change gate:** content fingerprints, so a month with no new data
+  makes no model calls.
+- **Executive analyst:** ranks what matters, finds cross-domain patterns,
+  and writes a briefing.
+- **Grounding check:** also applied to the existing salience rationales
+  and synthesis, since all of it now publishes unreviewed.
+- **Monthly run and workflow step:** `continue-on-error`, so a model
+  failure can't block the free data commit.
+- **Dashboard:** shows a reasoned run only while its fingerprints match
+  the committed data.
+
+Routing is from measured results: `gpt-6-luna` for cheap picks,
+`claude-opus-5-5` for the one analyst call. `CLAUDE.md`'s model guardrail
+and `ROADMAP.md`'s confirm-before-write guardrail were updated to record
+both decisions. The "$100 credit / Nov 4 deadline" premise was also
+corrected: it's Claude Code cloud-session credit, not API credit.
+Not live until `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` are added as
+GitHub Actions secrets.

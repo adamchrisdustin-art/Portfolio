@@ -35,14 +35,11 @@
           "Diagnostic Radiology"
         ],
         "factsMissing": [],
-        "forbiddenClaimsTriggered": [
-          "full national"
-        ],
+        "forbiddenClaimsTriggered": [],
         "citedExpectedSource": false,
         "refusalCorrect": null,
-        "score": 0.19999999999999996,
+        "score": 0.7,
         "notes": [
-          "Triggered forbidden claim(s): full national.",
           "Did not cite any expected source."
         ]
       },
@@ -121,11 +118,9 @@
         "factsMissing": [],
         "forbiddenClaimsTriggered": [],
         "citedExpectedSource": true,
-        "refusalCorrect": false,
-        "score": 0,
-        "notes": [
-          "Expected a refusal/gap acknowledgment but none was detected - possible fabrication."
-        ]
+        "refusalCorrect": true,
+        "score": 1,
+        "notes": []
       },
       {
         "taskId": "cms-eval-007-ma-enrollment-summary",
@@ -232,10 +227,10 @@
       }
     ],
     "aggregate": {
-      "meanScore": 0.725,
+      "meanScore": 0.85,
       "schemaComplianceRate": 1,
-      "forbiddenClaimRate": 0.08333333333333333,
-      "refusalAccuracy": 0.6666666666666666,
+      "forbiddenClaimRate": 0,
+      "refusalAccuracy": 1,
       "sourceCitationRate": 0.5,
       "meanLatencyMs": 4202.916666666667,
       "totalRuns": 12,
@@ -278,15 +273,11 @@
           "Diagnostic Radiology"
         ],
         "factsMissing": [],
-        "forbiddenClaimsTriggered": [
-          "full national"
-        ],
+        "forbiddenClaimsTriggered": [],
         "citedExpectedSource": true,
         "refusalCorrect": null,
-        "score": 0.5,
-        "notes": [
-          "Triggered forbidden claim(s): full national."
-        ]
+        "score": 1,
+        "notes": []
       },
       {
         "taskId": "cms-eval-003-policy-interpretation",
@@ -359,11 +350,9 @@
         "factsMissing": [],
         "forbiddenClaimsTriggered": [],
         "citedExpectedSource": true,
-        "refusalCorrect": false,
-        "score": 0,
-        "notes": [
-          "Expected a refusal/gap acknowledgment but none was detected - possible fabrication."
-        ]
+        "refusalCorrect": true,
+        "score": 1,
+        "notes": []
       },
       {
         "taskId": "cms-eval-007-ma-enrollment-summary",
@@ -475,10 +464,10 @@
       }
     ],
     "aggregate": {
-      "meanScore": 0.6583333333333333,
+      "meanScore": 0.7833333333333332,
       "schemaComplianceRate": 1,
-      "forbiddenClaimRate": 0.08333333333333333,
-      "refusalAccuracy": 0.6666666666666666,
+      "forbiddenClaimRate": 0,
+      "refusalAccuracy": 1,
       "sourceCitationRate": 0.6666666666666666,
       "meanLatencyMs": 13968.5,
       "totalRuns": 12,
@@ -524,15 +513,12 @@
         "factsMissing": [
           "Diagnostic Radiology"
         ],
-        "forbiddenClaimsTriggered": [
-          "full national"
-        ],
+        "forbiddenClaimsTriggered": [],
         "citedExpectedSource": false,
         "refusalCorrect": null,
-        "score": 0,
+        "score": 0.35,
         "notes": [
           "Missing expected facts: Diagnostic Radiology.",
-          "Triggered forbidden claim(s): full national.",
           "Did not cite any expected source."
         ]
       },
@@ -613,11 +599,9 @@
         "factsMissing": [],
         "forbiddenClaimsTriggered": [],
         "citedExpectedSource": true,
-        "refusalCorrect": false,
-        "score": 0,
-        "notes": [
-          "Expected a refusal/gap acknowledgment but none was detected - possible fabrication."
-        ]
+        "refusalCorrect": true,
+        "score": 1,
+        "notes": []
       },
       {
         "taskId": "cms-eval-007-ma-enrollment-summary",
@@ -730,10 +714,10 @@
       }
     ],
     "aggregate": {
-      "meanScore": 0.5902777777777778,
+      "meanScore": 0.7027777777777778,
       "schemaComplianceRate": 1,
-      "forbiddenClaimRate": 0.08333333333333333,
-      "refusalAccuracy": 0.6666666666666666,
+      "forbiddenClaimRate": 0,
+      "refusalAccuracy": 1,
       "sourceCitationRate": 0.3333333333333333,
       "meanLatencyMs": 1752.3333333333333,
       "totalRuns": 12,

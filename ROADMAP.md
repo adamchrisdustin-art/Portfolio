@@ -65,6 +65,12 @@
 
 **Update 2026-09-25:** the live Phase 6 provider run happened, through `openai:gpt-4o-mini` (real mean score 0.59/1.0, real cost $0.00027/question). No Anthropic run yet, so the actual cross-provider comparison is still open — see `docs/cms-intelligence/MODEL_EVALUATION.md`'s "Live run results" for the real findings.
 
+**Update 2026-09-25 (later):**
+- **Evaluation:** Phase 6 is complete across six models (Opus 5.5 top at 0.92), after fixing three scorer and harness bugs.
+- **Monthly data:** the refresh moved from quarterly to monthly.
+- **Autonomous reasoning (built):** each month the agents re-run with a model, an executive-analyst agent ranks what matters and finds cross-domain patterns, and the result auto-publishes to `main` behind a code-level grounding check.
+- **To go live:** add `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` as GitHub Actions secrets, with spend caps set first.
+
 ---
 
 ## Track D — Snowflake Hands-On Essentials (credential layer, not a dependency)
@@ -106,6 +112,7 @@
 - No real employer/client data in any public repo or public app — synthetic/playground data only
 - Secrets (Salesforce connected app credentials, API keys) live in platform secrets managers, never committed to the repo
 - Confirm-before-write pattern for any agent action that modifies data or public-facing content
+  - **Exception, per Adam (2026-09-25):** the Healthcare Intelligence monthly reasoning run auto-publishes to `main` with no human review. The safeguard that replaces the review step is `cms-intelligence/reasoning/grounding.ts`: any model-written number or insurer name that doesn't trace to the agents' real computed facts is dropped before publishing, not "fixed." Every other agent action (Salesforce writes, project-card drafts) keeps confirm-before-write.
 
 ---
 

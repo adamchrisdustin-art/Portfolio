@@ -36,15 +36,12 @@
         "factsMissing": [
           "Diagnostic Radiology"
         ],
-        "forbiddenClaimsTriggered": [
-          "full national"
-        ],
+        "forbiddenClaimsTriggered": [],
         "citedExpectedSource": false,
         "refusalCorrect": null,
-        "score": 0,
+        "score": 0.35,
         "notes": [
           "Missing expected facts: Diagnostic Radiology.",
-          "Triggered forbidden claim(s): full national.",
           "Did not cite any expected source."
         ]
       },
@@ -123,11 +120,9 @@
         "factsMissing": [],
         "forbiddenClaimsTriggered": [],
         "citedExpectedSource": true,
-        "refusalCorrect": false,
-        "score": 0,
-        "notes": [
-          "Expected a refusal/gap acknowledgment but none was detected - possible fabrication."
-        ]
+        "refusalCorrect": true,
+        "score": 1,
+        "notes": []
       },
       {
         "taskId": "cms-eval-007-ma-enrollment-summary",
@@ -236,10 +231,10 @@
       }
     ],
     "aggregate": {
-      "meanScore": 0.6833333333333332,
+      "meanScore": 0.7958333333333333,
       "schemaComplianceRate": 1,
-      "forbiddenClaimRate": 0.08333333333333333,
-      "refusalAccuracy": 0.6666666666666666,
+      "forbiddenClaimRate": 0,
+      "refusalAccuracy": 1,
       "sourceCitationRate": 0.4166666666666667,
       "meanLatencyMs": 2206.3333333333335,
       "totalRuns": 12,
@@ -285,15 +280,12 @@
         "factsMissing": [
           "Diagnostic Radiology"
         ],
-        "forbiddenClaimsTriggered": [
-          "full national"
-        ],
+        "forbiddenClaimsTriggered": [],
         "citedExpectedSource": false,
         "refusalCorrect": null,
-        "score": 0,
+        "score": 0.35,
         "notes": [
           "Missing expected facts: Diagnostic Radiology.",
-          "Triggered forbidden claim(s): full national.",
           "Did not cite any expected source."
         ]
       },
@@ -491,9 +483,9 @@
       }
     ],
     "aggregate": {
-      "meanScore": 0.5902777777777778,
+      "meanScore": 0.6194444444444445,
       "schemaComplianceRate": 1,
-      "forbiddenClaimRate": 0.08333333333333333,
+      "forbiddenClaimRate": 0,
       "refusalAccuracy": 0.6666666666666666,
       "sourceCitationRate": 0.3333333333333333,
       "meanLatencyMs": 1721.25,

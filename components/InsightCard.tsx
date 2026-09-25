@@ -29,7 +29,7 @@ const populationLabel: Record<Insight["population"], string> = {
  */
 export default function InsightCard({ insight }: { insight: Insight }) {
   return (
-    <article className="card" style={{ padding: 22, display: "flex", flexDirection: "column", gap: 12 }}>
+    <article id={insight.id} className="card" style={{ padding: 22, display: "flex", flexDirection: "column", gap: 12, scrollMarginTop: 80 }}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
         <span
           className="mono"
