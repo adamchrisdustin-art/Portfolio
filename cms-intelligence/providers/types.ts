@@ -12,7 +12,14 @@
  */
 
 export interface GenerateOptions {
+  /** Ceiling on generated tokens. On thinking models, hidden thinking tokens count against this too. */
   maxOutputTokens?: number;
+  /**
+   * How hard a thinking model should think: "low" for simple picks,
+   * "high" for judgment-heavy work. Providers apply it only to models that
+   * accept it and ignore it otherwise (see anthropic.ts).
+   */
+  effort?: "low" | "medium" | "high";
   /** Short, task-specific instruction - each provider implementation maps this into its own request shape. */
   system: string;
   user: string;

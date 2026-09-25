@@ -30,28 +30,13 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { createAnthropicProvider } from "../providers/anthropic";
-import { createOpenAIProvider } from "../providers/openai";
-import type { ModelProvider } from "../providers/types";
 import { buildComparisonReport } from "./comparisonReport";
+import { configuredProviders } from "./configuredProviders";
 import { runSuite } from "./runner";
 import type { ProviderRunResult } from "./types";
 
 const RESULTS_DIR = path.resolve(process.cwd(), "data", "healthcare-intelligence", "evaluation-runs");
 
-/** undefined in the returned list means "use that provider's own default model". */
-function modelList(envValue: string | undefined): (string | undefined)[] {
-  return envValue ? envValue.split(",").map((m) => m.trim()).filter(Boolean) : [undefined];
-}
-
-function configuredProviders(): ModelProvider[] {
-  const providers: ModelProvider[] = [];
-  const anthropicKey = process.env.ANTHROPIC_API_KEY;
-  const openaiKey = process.env.OPENAI_API_KEY;
-  if (anthropicKey) for (const model of modelList(process.env.ANTHROPIC_MODEL)) providers.push(createAnthropicProvider(anthropicKey, model));
-  if (openaiKey) for (const model of modelList(process.env.OPENAI_MODEL)) providers.push(createOpenAIProvider(openaiKey, model));
-  return providers;
-}
 
 async function main() {
   const providers = configuredProviders();

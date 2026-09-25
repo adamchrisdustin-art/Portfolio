@@ -190,6 +190,42 @@ so the fixes can't drift into leniency. A pricing-ID mismatch
 (`claude-opus-5.5` vs. the real `claude-opus-5-5`) also made Opus show as
 "unpriced" until fixed.
 
+## Salience benchmark (2026-09-25)
+
+The 12-task suite asks open-ended questions; it never tested the narrow
+job salience does. So `salienceBenchmark.ts` captures the **16 real
+prompts production sends** (one per ranked selection with more candidates
+than it shows) and judges every answer with production's own acceptance
+rule. Answers that production would reject fall back to the fixed ranking,
+which is safe but means the model added nothing. Runs:
+`evaluation-runs/2026-09-25T16-58-47-salience-*` for all six models, and
+`2026-09-25T17-09-19-salience-*` for Sonnet and Opus rerun at low effort.
+
+| Model | Accepted | Est. cost per monthly run | Notes |
+|---|---|---|---|
+| `openai:gpt-6-luna` | **100%** | **$0.006** | **Chosen.** Reasons describe each item's substance. |
+| `openai:gpt-6-sol` | 100% | $0.11 | Reasons as useful as Luna's, at about 20× the cost. |
+| `anthropic:claude-sonnet-5` (low effort) | 94% | $0.11 | At default effort, 3 of 16 calls failed: it thought through the whole output budget before answering. |
+| `anthropic:claude-haiku-4-5-20251001` | 88% | $0.06 | Rejections were numbers it calculated ("61 days"). |
+| `anthropic:claude-opus-5-5` (low effort) | 81% | $0.24 | Same calculated-number rejections ("all 46 candidates"). |
+| `openai:gpt-4o-mini` | 81% | $0.008 | Invented candidate IDs 3 times, including a nonexistent document number. |
+
+What this changed in production code:
+- **Thinking effort per call.** Sonnet 5 and Opus 5.5 think by default,
+  and thinking tokens count against the output cap. Salience and
+  synthesis now send `effort: "low"`, and the executive analyst sends
+  `effort: "high"` with a 16,000-token cap. Haiku 4.5 rejects the field,
+  so the provider never sends it there.
+- **Output caps.** Salience 500 → 4,096 tokens, synthesis 300 → 1,024.
+  These are ceilings, not charges.
+- **Grounding accepts abbreviations.** "$109.4M" now counts as grounded
+  by $109,438,442. Numbers a model calculates itself (day spans, sums,
+  counts) are still rejected, by design.
+
+Known weakness of the benchmark: its "specific reason" metric misses
+single-digit facts ("7 days out") and paraphrased titles. When the metric
+disagreed with the rankings, the raw answers were read directly.
+
 ## Routing — decided from the results above
 
 Used by the autonomous monthly run
@@ -199,7 +235,7 @@ Used by the autonomous monthly run
 | Job | Model | Why |
 |---|---|---|
 | Computing every number, trend, and diff | Deterministic code | $0 and more reliable than any model. This was never an LLM job. |
-| Per-agent salience picks (~16 calls/run) | `openai:gpt-6-luna` | Narrow choices among given candidates, grounding-checked with a deterministic fallback. The cheap models are within noise of each other, so the cheapest wins, per Adam's preference for OpenAI on cheap tasks. |
+| Per-agent salience picks (16 calls/run) | `openai:gpt-6-luna` | Measured on the real salience prompts: 100% accepted by production's rule, and the cheapest model tested ($0.006/run). Matches Adam's preference for OpenAI on cheap tasks. |
 | Executive analyst (1 call/run) | `anthropic:claude-opus-5-5` | The judgment a healthcare leader actually reads. Highest score, best source citation, top marks on synthesis, and about $1/year at one call a month. |
 
 This deliberately goes past `CLAUDE.md`'s earlier "Haiku default,

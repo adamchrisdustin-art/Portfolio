@@ -79,34 +79,56 @@ function deterministicSelection(candidates: Candidate[], topN: number, direction
   };
 }
 
-function parseModelSelections(raw: string, candidates: Candidate[], topN: number, groundingSource: string): NoteworthySelection[] | null {
-  const validIds = new Set(candidates.map((c) => c.id));
+export const SALIENCE_SYSTEM_PROMPT =
+  "You select and briefly explain which of a given set of real candidates is most noteworthy - you never invent a candidate, number, or fact. You only choose among and explain what's given to you.";
+/**
+ * Raised from 500 on 2026-09-25: thinking models spend hidden thinking
+ * tokens from this same budget, and in the salience benchmark Sonnet 5 at
+ * its default effort thought through all 2,048 tokens before writing a
+ * word. A ceiling, not a charge - billing is per token actually generated.
+ */
+export const SALIENCE_MAX_OUTPUT_TOKENS = 4096;
+/** Picking among given candidates is a simple task - Anthropic's guidance is low effort for this kind of work. */
+export const SALIENCE_EFFORT = "low" as const;
+
+export type SelectionCheck = { ok: true; selections: NoteworthySelection[] } | { ok: false; reason: string };
+
+/**
+ * Production's acceptance test for a model's salience response - exported
+ * so evaluation/salienceBenchmark.ts measures models against exactly the
+ * rule they'd face live, not a copy of it.
+ */
+export function checkModelSelections(raw: string, validIds: Set<string>, topN: number, groundingSource: string): SelectionCheck {
+  let parsed: unknown;
   try {
     // Models sometimes wrap JSON in a markdown fence despite instructions not to - strip it defensively rather than failing outright.
     const cleaned = raw.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "");
-    const parsed = JSON.parse(cleaned);
-    if (!Array.isArray(parsed)) return null;
-
-    const seen = new Set<string>();
-    const selections: NoteworthySelection[] = [];
-    for (const entry of parsed) {
-      if (typeof entry !== "object" || entry === null) continue;
-      const candidateId = (entry as Record<string, unknown>).candidateId;
-      const rationale = (entry as Record<string, unknown>).rationale;
-      if (typeof candidateId !== "string" || typeof rationale !== "string") continue;
-      // A candidateId the model invented (not in the real list given to it) invalidates trust in the whole response - never surface a fact this system can't trace back to a real candidate.
-      if (!validIds.has(candidateId)) return null;
-      if (seen.has(candidateId)) continue;
-      // Rationales get published without human review in autonomous runs - one that cites a number or carrier name the candidates don't contain invalidates the whole response, same as an invented id.
-      if (!checkGrounding(rationale, groundingSource).grounded) return null;
-      seen.add(candidateId);
-      selections.push({ candidateId, rationale: rationale.trim().slice(0, 300) });
-    }
-    if (selections.length === 0) return null;
-    return selections.slice(0, topN);
+    parsed = JSON.parse(cleaned);
   } catch {
-    return null;
+    return { ok: false, reason: "not valid JSON" };
   }
+  if (!Array.isArray(parsed)) return { ok: false, reason: "not a JSON array" };
+
+  const seen = new Set<string>();
+  const selections: NoteworthySelection[] = [];
+  for (const entry of parsed) {
+    if (typeof entry !== "object" || entry === null) continue;
+    const candidateId = (entry as Record<string, unknown>).candidateId;
+    const rationale = (entry as Record<string, unknown>).rationale;
+    if (typeof candidateId !== "string" || typeof rationale !== "string") continue;
+    // A candidateId the model invented (not in the real list given to it) invalidates trust in the whole response - never surface a fact this system can't trace back to a real candidate.
+    if (!validIds.has(candidateId)) return { ok: false, reason: `invented candidate id "${candidateId}"` };
+    if (seen.has(candidateId)) continue;
+    // Rationales get published without human review in autonomous runs - one that cites a number or carrier name the candidates don't contain invalidates the whole response, same as an invented id.
+    const grounding = checkGrounding(rationale, groundingSource);
+    if (!grounding.grounded) {
+      return { ok: false, reason: `ungrounded rationale (${[...grounding.ungroundedNumbers, ...grounding.ungroundedCarriers].join(", ")})` };
+    }
+    seen.add(candidateId);
+    selections.push({ candidateId, rationale: rationale.trim().slice(0, 300) });
+  }
+  if (selections.length === 0) return { ok: false, reason: "no usable selections" };
+  return { ok: true, selections: selections.slice(0, topN) };
 }
 
 export async function selectNoteworthy(options: SelectNoteworthyOptions, ctx: AgentContext): Promise<SelectNoteworthyResult> {
@@ -124,10 +146,10 @@ export async function selectNoteworthy(options: SelectNoteworthyOptions, ctx: Ag
   let raw: string | null = null;
   try {
     raw = await ctx.modelProvider.generate({
-      system:
-        "You select and briefly explain which of a given set of real candidates is most noteworthy - you never invent a candidate, number, or fact. You only choose among and explain what's given to you.",
+      system: SALIENCE_SYSTEM_PROMPT,
       user: prompt,
-      maxOutputTokens: 500,
+      maxOutputTokens: SALIENCE_MAX_OUTPUT_TOKENS,
+      effort: SALIENCE_EFFORT,
     });
   } catch {
     raw = null;
@@ -135,8 +157,8 @@ export async function selectNoteworthy(options: SelectNoteworthyOptions, ctx: Ag
 
   if (!raw) return deterministicSelection(candidates, topN, direction);
 
-  const parsed = parseModelSelections(raw, candidates, topN, `${taskDescription}\n${candidateList}`);
-  if (!parsed) return deterministicSelection(candidates, topN, direction);
+  const check = checkModelSelections(raw, new Set(candidates.map((c) => c.id)), topN, `${taskDescription}\n${candidateList}`);
+  if (!check.ok) return deterministicSelection(candidates, topN, direction);
 
-  return { source: "llm", selections: parsed };
+  return { source: "llm", selections: check.selections };
 }

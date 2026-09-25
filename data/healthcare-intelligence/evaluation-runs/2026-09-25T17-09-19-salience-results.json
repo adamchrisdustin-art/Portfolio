@@ -1,0 +1,1126 @@
+[
+  {
+    "providerName": "anthropic:claude-sonnet-5",
+    "results": [
+      {
+        "taskDescription": "hospital facility count by state this cycle",
+        "rawOutput": "[{\"candidateId\":\"TX\",\"rationale\":\"Leads the nation with 467 hospitals, 8.6% of all US facilities.\"},{\"candidateId\":\"CA\",\"rationale\":\"Second highest with 377 hospitals, 7.0% of the national total.\"},{\"candidateId\":\"FL\",\"rationale\":\"Third largest with 221 hospitals, 4.1% of national facilities.\"},{\"candidateId\":\"IL\",\"rationale\":\"Tied for fourth with 193 hospitals, 3.6% of the national total.\"},{\"candidateId\":\"OH\",\"rationale\":\"Also has 193 hospitals, tying IL for fourth at 3.6% nationally.\"},{\"candidateId\":\"NY\",\"rationale\":\"Close behind with 192 hospitals, 3.5% of national facilities.\"},{\"candidateId\":\"PA\",\"rationale\":\"Rounds out the top tier with 186 hospitals, 3.4% of the national total.\"},{\"candidateId\":\"LA\",\"rationale\":\"Notably high at 161 hospitals, 3.0% nationally, ahead of many larger-population states.\"}]",
+        "latencyMs": 4041,
+        "topN": 8,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "TX",
+            "rationale": "Leads the nation with 467 hospitals, 8.6% of all US facilities."
+          },
+          {
+            "candidateId": "CA",
+            "rationale": "Second highest with 377 hospitals, 7.0% of the national total."
+          },
+          {
+            "candidateId": "FL",
+            "rationale": "Third largest with 221 hospitals, 4.1% of national facilities."
+          },
+          {
+            "candidateId": "IL",
+            "rationale": "Tied for fourth with 193 hospitals, 3.6% of the national total."
+          },
+          {
+            "candidateId": "OH",
+            "rationale": "Also has 193 hospitals, tying IL for fourth at 3.6% nationally."
+          },
+          {
+            "candidateId": "NY",
+            "rationale": "Close behind with 192 hospitals, 3.5% of national facilities."
+          },
+          {
+            "candidateId": "PA",
+            "rationale": "Rounds out the top tier with 186 hospitals, 3.4% of the national total."
+          },
+          {
+            "candidateId": "LA",
+            "rationale": "Notably high at 161 hospitals, 3.0% nationally, ahead of many larger-population states."
+          }
+        ],
+        "specificRationales": 8
+      },
+      {
+        "taskDescription": "home health capacity-pressure signals by state this cycle",
+        "rawOutput": "[{\"candidateId\": \"AL\", \"rationale\": \"High caseload of 330 episodes/agency across 116 agencies with strong 3.8★ quality and near-balanced 0.99 spending ratio signals significant capacity strain despite good quality.\"},\n{\"candidateId\": \"KY\", \"rationale\": \"325 episodes/agency across only 88 agencies with a 1.02 spending ratio suggests concentrated demand pressure on fewer providers.\"},\n{\"candidateId\": \"LA\", \"rationale\": \"329 episodes/agency spread across 176 agencies with a 1.01 spending ratio and 74% full-service-line agencies indicates broad, high-volume capacity pressure statewide.\"},\n{\"candidateId\": \"FL\", \"rationale\": \"With 1146 agencies but only 148 episodes/agency and 50% full-service-line agencies, FL shows a fragmented, thinly-stretched capacity structure at scale.\"},\n{\"candidateId\": \"SD\", \"rationale\": \"262 episodes/agency across just 23 agencies with a 1.03 spending ratio points to high per-agency load and limited provider capacity.\"}]",
+        "latencyMs": 4410,
+        "topN": 5,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "AL",
+            "rationale": "High caseload of 330 episodes/agency across 116 agencies with strong 3.8★ quality and near-balanced 0.99 spending ratio signals significant capacity strain despite good quality."
+          },
+          {
+            "candidateId": "KY",
+            "rationale": "325 episodes/agency across only 88 agencies with a 1.02 spending ratio suggests concentrated demand pressure on fewer providers."
+          },
+          {
+            "candidateId": "LA",
+            "rationale": "329 episodes/agency spread across 176 agencies with a 1.01 spending ratio and 74% full-service-line agencies indicates broad, high-volume capacity pressure statewide."
+          },
+          {
+            "candidateId": "FL",
+            "rationale": "With 1146 agencies but only 148 episodes/agency and 50% full-service-line agencies, FL shows a fragmented, thinly-stretched capacity structure at scale."
+          },
+          {
+            "candidateId": "SD",
+            "rationale": "262 episodes/agency across just 23 agencies with a 1.03 spending ratio points to high per-agency load and limited provider capacity."
+          }
+        ],
+        "specificRationales": 5
+      },
+      {
+        "taskDescription": "home health risk-adjusted spending-ratio distribution by state this cycle",
+        "rawOutput": "[{\"candidateId\": \"PR\", \"rationale\": \"PR is a stark outlier with a median spending ratio of just 0.68 (IQR 0.63-0.74), far below all other states, warranting executive attention.\"},\n{\"candidateId\": \"CA\", \"rationale\": \"CA has the largest agency count (2113) with a low median of 0.93 and the highest outlier count (79), signaling material scale risk.\"},\n{\"candidateId\": \"TX\", \"rationale\": \"TX's 1275 agencies show a wide IQR (0.87-1.06) and 32 outliers, indicating substantial dispersion in a high-volume state.\"},\n{\"candidateId\": \"OR\", \"rationale\": \"OR shows a notably low median of 0.87 with a tight IQR (0.84-0.91), suggesting systematically under-spending agencies statewide.\"},\n{\"candidateId\": \"FL\", \"rationale\": \"FL has 766 agencies with an elevated median of 1.03 and a wide IQR (0.95-1.11), plus 20 outliers, indicating overspending risk at scale.\"},\n{\"candidateId\": \"KS\", \"rationale\": \"KS shows a high median of 1.05 and a relatively high outlier count (9) among smaller states, flagging potential overspending concentration.\"}]",
+        "latencyMs": 4894,
+        "topN": 6,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "PR",
+            "rationale": "PR is a stark outlier with a median spending ratio of just 0.68 (IQR 0.63-0.74), far below all other states, warranting executive attention."
+          },
+          {
+            "candidateId": "CA",
+            "rationale": "CA has the largest agency count (2113) with a low median of 0.93 and the highest outlier count (79), signaling material scale risk."
+          },
+          {
+            "candidateId": "TX",
+            "rationale": "TX's 1275 agencies show a wide IQR (0.87-1.06) and 32 outliers, indicating substantial dispersion in a high-volume state."
+          },
+          {
+            "candidateId": "OR",
+            "rationale": "OR shows a notably low median of 0.87 with a tight IQR (0.84-0.91), suggesting systematically under-spending agencies statewide."
+          },
+          {
+            "candidateId": "FL",
+            "rationale": "FL has 766 agencies with an elevated median of 1.03 and a wide IQR (0.95-1.11), plus 20 outliers, indicating overspending risk at scale."
+          },
+          {
+            "candidateId": "KS",
+            "rationale": "KS shows a high median of 1.05 and a relatively high outlier count (9) among smaller states, flagging potential overspending concentration."
+          }
+        ],
+        "specificRationales": 6
+      },
+      {
+        "taskDescription": "Medicare payment-to-charge ratio by provider type this cycle",
+        "rawOutput": "[{\"candidateId\": \"Pain Management\", \"rationale\": \"Highest submitted charges ($2640) but paid only 5% of charge, the lowest ratio among high-sample specialties, highlighting extreme charge-to-payment disparity.\"},\n{\"candidateId\": \"Ambulatory Surgical Center\", \"rationale\": \"Largest submitted charge overall ($4503) with only 16% paid, representing a major dollar gap despite a sizable payment ($729).\"},\n{\"candidateId\": \"Independent Diagnostic Testing Facility (IDTF)\", \"rationale\": \"Paid only 4% of charge, the lowest ratio of any category, indicating extreme charge inflation relative to reimbursement.\"},\n{\"candidateId\": \"Diagnostic Radiology\", \"rationale\": \"Largest sample size (1097 claim lines) with a low 13% payment ratio, making it a statistically robust and high-impact case.\"},\n{\"candidateId\": \"Vascular Surgery\", \"rationale\": \"Highest payment ratio (41%) among high-charge specialties, with a very large paid amount ($1752) relative to submitted charges ($4253).\"}]",
+        "latencyMs": 4911,
+        "topN": 5,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "Pain Management",
+            "rationale": "Highest submitted charges ($2640) but paid only 5% of charge, the lowest ratio among high-sample specialties, highlighting extreme charge-to-payment disparity."
+          },
+          {
+            "candidateId": "Ambulatory Surgical Center",
+            "rationale": "Largest submitted charge overall ($4503) with only 16% paid, representing a major dollar gap despite a sizable payment ($729)."
+          },
+          {
+            "candidateId": "Independent Diagnostic Testing Facility (IDTF)",
+            "rationale": "Paid only 4% of charge, the lowest ratio of any category, indicating extreme charge inflation relative to reimbursement."
+          },
+          {
+            "candidateId": "Diagnostic Radiology",
+            "rationale": "Largest sample size (1097 claim lines) with a low 13% payment ratio, making it a statistically robust and high-impact case."
+          },
+          {
+            "candidateId": "Vascular Surgery",
+            "rationale": "Highest payment ratio (41%) among high-charge specialties, with a very large paid amount ($1752) relative to submitted charges ($4253)."
+          }
+        ],
+        "specificRationales": 4
+      },
+      {
+        "taskDescription": "hospital ownership types to break out in a share-of-facilities chart this cycle",
+        "rawOutput": "[{\"candidateId\":\"Voluntary non-profit - Private\",\"rationale\":\"Largest ownership category, accounting for 42.8% of all 5419 facilities nationally.\"},{\"candidateId\":\"Proprietary\",\"rationale\":\"Second-largest segment at 19.6%, representing for-profit hospital ownership.\"},{\"candidateId\":\"Government - Hospital District or Authority\",\"rationale\":\"Largest government category at 9.4%, highlighting local public hospital infrastructure.\"},{\"candidateId\":\"Government - Local\",\"rationale\":\"Notable public ownership segment at 7.3% of facilities.\"},{\"candidateId\":\"Voluntary non-profit - Other\",\"rationale\":\"Sizable non-profit subgroup at 6.5%, distinct from private and church-affiliated categories.\"}]",
+        "latencyMs": 3306,
+        "topN": 5,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "Voluntary non-profit - Private",
+            "rationale": "Largest ownership category, accounting for 42.8% of all 5419 facilities nationally."
+          },
+          {
+            "candidateId": "Proprietary",
+            "rationale": "Second-largest segment at 19.6%, representing for-profit hospital ownership."
+          },
+          {
+            "candidateId": "Government - Hospital District or Authority",
+            "rationale": "Largest government category at 9.4%, highlighting local public hospital infrastructure."
+          },
+          {
+            "candidateId": "Government - Local",
+            "rationale": "Notable public ownership segment at 7.3% of facilities."
+          },
+          {
+            "candidateId": "Voluntary non-profit - Other",
+            "rationale": "Sizable non-profit subgroup at 6.5%, distinct from private and church-affiliated categories."
+          }
+        ],
+        "specificRationales": 5
+      },
+      {
+        "taskDescription": "hospital overall star rating distribution by state this cycle",
+        "rawOutput": "[{\"candidateId\": \"CA\", \"rationale\": \"Largest state by hospital count (272) with median 3.0★, a bellwether for national trends.\"},\n{\"candidateId\": \"TX\", \"rationale\": \"Second-largest hospital count (205) with a solid median of 3.0★ and tighter IQR of 3.0-4.0★.\"},\n{\"candidateId\": \"FL\", \"rationale\": \"163 hospitals with median 3.0★, representing a major population state's quality distribution.\"},\n{\"candidateId\": \"UT\", \"rationale\": \"Highest median rating nationally at 5.0★ (IQR 4.0-5.0★), a standout top performer.\"},\n{\"candidateId\": \"MS\", \"rationale\": \"Lowest median rating at 2.0★, flagging a potential quality concern area.\"},\n{\"candidateId\": \"OH\", \"rationale\": \"Large state (125 hospitals) with a strong median of 4.0★, indicating high overall performance.\"},\n{\"candidateId\": \"NM\", \"rationale\": \"Tied for lowest median at 2.0★, another notable underperforming state.\"},\n{\"candidateId\": \"PA\", \"rationale\": \"128 hospitals with median 4.0★, a large state demonstrating consistently high ratings.\"}]",
+        "latencyMs": 4692,
+        "topN": 8,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "CA",
+            "rationale": "Largest state by hospital count (272) with median 3.0★, a bellwether for national trends."
+          },
+          {
+            "candidateId": "TX",
+            "rationale": "Second-largest hospital count (205) with a solid median of 3.0★ and tighter IQR of 3.0-4.0★."
+          },
+          {
+            "candidateId": "FL",
+            "rationale": "163 hospitals with median 3.0★, representing a major population state's quality distribution."
+          },
+          {
+            "candidateId": "UT",
+            "rationale": "Highest median rating nationally at 5.0★ (IQR 4.0-5.0★), a standout top performer."
+          },
+          {
+            "candidateId": "MS",
+            "rationale": "Lowest median rating at 2.0★, flagging a potential quality concern area."
+          },
+          {
+            "candidateId": "OH",
+            "rationale": "Large state (125 hospitals) with a strong median of 4.0★, indicating high overall performance."
+          },
+          {
+            "candidateId": "NM",
+            "rationale": "Tied for lowest median at 2.0★, another notable underperforming state."
+          },
+          {
+            "candidateId": "PA",
+            "rationale": "128 hospitals with median 4.0★, a large state demonstrating consistently high ratings."
+          }
+        ],
+        "specificRationales": 8
+      },
+      {
+        "taskDescription": "hospital net quality-outcome score distribution by state this cycle",
+        "rawOutput": "[{\"candidateId\": \"UT\", \"rationale\": \"Highest median score (16.7%) with an entirely positive IQR (13.3% to 20.8%), indicating consistently strong performance across hospitals.\"},\n{\"candidateId\": \"MS\", \"rationale\": \"Lowest median score (-7.7%) with an IQR entirely at or below zero (-13.0% to 0.0%), signaling widespread quality concerns.\"},\n{\"candidateId\": \"CA\", \"rationale\": \"Largest hospital count (272) with a wide IQR (-3.8% to 12.0%), reflecting major scale and high variability in outcomes.\"},\n{\"candidateId\": \"TX\", \"rationale\": \"Second-largest hospital count (205) with a broad IQR (0.0% to 13.3%), showing significant spread in a large state system.\"},\n{\"candidateId\": \"WV\", \"rationale\": \"Second-lowest median (-4.6%) with IQR (-10.4% to 0.0%), another state skewing toward negative outcomes.\"},\n{\"candidateId\": \"CO\", \"rationale\": \"Strong positive median (10.0%) with IQR (3.9% to 15.0%) entirely above zero, indicating solid overall performance.\"},\n{\"candidateId\": \"FL\", \"rationale\": \"Large hospital count (163) with a wide IQR (-4.0% to 9.5%), representing a sizable state with mixed outcomes.\"},\n{\"candidateId\": \"MD\", \"rationale\": \"Median of 0.0% but widest upper IQR bound (15.4%) among near-zero median states, showing high upside variability.\"}]",
+        "latencyMs": 5405,
+        "topN": 8,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "UT",
+            "rationale": "Highest median score (16.7%) with an entirely positive IQR (13.3% to 20.8%), indicating consistently strong performance across hospitals."
+          },
+          {
+            "candidateId": "MS",
+            "rationale": "Lowest median score (-7.7%) with an IQR entirely at or below zero (-13.0% to 0.0%), signaling widespread quality concerns."
+          },
+          {
+            "candidateId": "CA",
+            "rationale": "Largest hospital count (272) with a wide IQR (-3.8% to 12.0%), reflecting major scale and high variability in outcomes."
+          },
+          {
+            "candidateId": "TX",
+            "rationale": "Second-largest hospital count (205) with a broad IQR (0.0% to 13.3%), showing significant spread in a large state system."
+          },
+          {
+            "candidateId": "WV",
+            "rationale": "Second-lowest median (-4.6%) with IQR (-10.4% to 0.0%), another state skewing toward negative outcomes."
+          },
+          {
+            "candidateId": "CO",
+            "rationale": "Strong positive median (10.0%) with IQR (3.9% to 15.0%) entirely above zero, indicating solid overall performance."
+          },
+          {
+            "candidateId": "FL",
+            "rationale": "Large hospital count (163) with a wide IQR (-4.0% to 9.5%), representing a sizable state with mixed outcomes."
+          },
+          {
+            "candidateId": "MD",
+            "rationale": "Median of 0.0% but widest upper IQR bound (15.4%) among near-zero median states, showing high upside variability."
+          }
+        ],
+        "specificRationales": 8
+      },
+      {
+        "taskDescription": "state-level hospital quality outcomes (current level and change across pulls) this cycle",
+        "rawOutput": "[{\"candidateId\": \"UT\", \"rationale\": \"Highest median net quality-outcome score at 16.7%, stable across all three pulls.\"},\n{\"candidateId\": \"CO\", \"rationale\": \"Second-highest score at 10.0%, consistently stable across all three pulls.\"},\n{\"candidateId\": \"MS\", \"rationale\": \"Lowest score in the set at -7.7%, flagging a significant quality-outcome concern.\"},\n{\"candidateId\": \"WV\", \"rationale\": \"Second-lowest score at -3.8%, the only other state with a negative outcome score.\"},\n{\"candidateId\": \"AZ\", \"rationale\": \"Tied for third-highest score at 6.3%, stable across all three pulls.\"}]",
+        "latencyMs": 2579,
+        "topN": 5,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "UT",
+            "rationale": "Highest median net quality-outcome score at 16.7%, stable across all three pulls."
+          },
+          {
+            "candidateId": "CO",
+            "rationale": "Second-highest score at 10.0%, consistently stable across all three pulls."
+          },
+          {
+            "candidateId": "MS",
+            "rationale": "Lowest score in the set at -7.7%, flagging a significant quality-outcome concern."
+          },
+          {
+            "candidateId": "WV",
+            "rationale": "Second-lowest score at -3.8%, the only other state with a negative outcome score."
+          },
+          {
+            "candidateId": "AZ",
+            "rationale": "Tied for third-highest score at 6.3%, stable across all three pulls."
+          }
+        ],
+        "specificRationales": 5
+      },
+      {
+        "taskDescription": "Medicare Advantage & Part D plan-type enrollment mix this cycle",
+        "rawOutput": "[{\"candidateId\":\"Medicare Prescription Drug Plan\",\"rationale\":\"Largest single category with 25,325,542 enrollees, 41.0% of total.\"},{\"candidateId\":\"Local PPO\",\"rationale\":\"Largest MA plan type with 14,803,470 enrollees, 24.0% of total.\"},{\"candidateId\":\"HMO\",\"rationale\":\"Second-largest MA plan type with 12,609,941 enrollees, 20.4% of total.\"},{\"candidateId\":\"HMOPOS\",\"rationale\":\"Significant MA segment with 8,368,710 enrollees, 13.6% of total.\"},{\"candidateId\":\"1876 Cost\",\"rationale\":\"Notable smaller plan type with 196,797 enrollees, 0.3% of total.\"}]",
+        "latencyMs": 2847,
+        "topN": 5,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "Medicare Prescription Drug Plan",
+            "rationale": "Largest single category with 25,325,542 enrollees, 41.0% of total."
+          },
+          {
+            "candidateId": "Local PPO",
+            "rationale": "Largest MA plan type with 14,803,470 enrollees, 24.0% of total."
+          },
+          {
+            "candidateId": "HMO",
+            "rationale": "Second-largest MA plan type with 12,609,941 enrollees, 20.4% of total."
+          },
+          {
+            "candidateId": "HMOPOS",
+            "rationale": "Significant MA segment with 8,368,710 enrollees, 13.6% of total."
+          },
+          {
+            "candidateId": "1876 Cost",
+            "rationale": "Notable smaller plan type with 196,797 enrollees, 0.3% of total."
+          }
+        ],
+        "specificRationales": 5
+      },
+      {
+        "taskDescription": "Medicare Advantage & Part D enrollment by parent organization this cycle",
+        "rawOutput": "[{\"candidateId\":\"UnitedHealth Group, Inc.\",\"rationale\":\"Largest parent organization with 13,067,487 enrollees, 21.2% of total enrollment.\"},{\"candidateId\":\"Humana Inc.\",\"rationale\":\"Second-largest parent organization with 11,066,732 enrollees, 17.9% of total.\"},{\"candidateId\":\"Centene Corporation\",\"rationale\":\"Third-largest with 9,870,314 enrollees, 16.0% of total enrollment.\"},{\"candidateId\":\"CVS Health Corporation\",\"rationale\":\"Major national player with 8,034,415 enrollees, 13.0% of total.\"},{\"candidateId\":\"Health Care Service Corporation\",\"rationale\":\"Significant regional Blue plan parent with 3,673,965 enrollees, 6.0% of total.\"},{\"candidateId\":\"Kaiser Foundation Health Plan, Inc.\",\"rationale\":\"Large integrated system with 2,119,062 enrollees, 3.4% of total.\"},{\"candidateId\":\"Elevance Health, Inc.\",\"rationale\":\"Major national payer with 1,974,677 enrollees, 3.2% of total.\"},{\"candidateId\":\"BlueCross BlueShield Association, Federal Employee\",\"rationale\":\"Notable enrollment of 885,150, 1.4% of total, reflecting federal employee program scale.\"},{\"candidateId\":\"Blue Cross Blue Shield of Michigan Mutual Ins. Co.\",\"rationale\":\"Large single-state Blue plan with 698,946 enrollees, 1.1% of total.\"},{\"candidateId\":\"Devoted Health, Inc.\",\"rationale\":\"Notable growth-stage insurer with 532,675 enrollees, 0.9% of total.\"}]",
+        "latencyMs": 5485,
+        "topN": 10,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "UnitedHealth Group, Inc.",
+            "rationale": "Largest parent organization with 13,067,487 enrollees, 21.2% of total enrollment."
+          },
+          {
+            "candidateId": "Humana Inc.",
+            "rationale": "Second-largest parent organization with 11,066,732 enrollees, 17.9% of total."
+          },
+          {
+            "candidateId": "Centene Corporation",
+            "rationale": "Third-largest with 9,870,314 enrollees, 16.0% of total enrollment."
+          },
+          {
+            "candidateId": "CVS Health Corporation",
+            "rationale": "Major national player with 8,034,415 enrollees, 13.0% of total."
+          },
+          {
+            "candidateId": "Health Care Service Corporation",
+            "rationale": "Significant regional Blue plan parent with 3,673,965 enrollees, 6.0% of total."
+          },
+          {
+            "candidateId": "Kaiser Foundation Health Plan, Inc.",
+            "rationale": "Large integrated system with 2,119,062 enrollees, 3.4% of total."
+          },
+          {
+            "candidateId": "Elevance Health, Inc.",
+            "rationale": "Major national payer with 1,974,677 enrollees, 3.2% of total."
+          },
+          {
+            "candidateId": "BlueCross BlueShield Association, Federal Employee",
+            "rationale": "Notable enrollment of 885,150, 1.4% of total, reflecting federal employee program scale."
+          },
+          {
+            "candidateId": "Blue Cross Blue Shield of Michigan Mutual Ins. Co.",
+            "rationale": "Large single-state Blue plan with 698,946 enrollees, 1.1% of total."
+          },
+          {
+            "candidateId": "Devoted Health, Inc.",
+            "rationale": "Notable growth-stage insurer with 532,675 enrollees, 0.9% of total."
+          }
+        ],
+        "specificRationales": 10
+      },
+      {
+        "taskDescription": "recently finalized CMS rules this cycle",
+        "rawOutput": "[{\"candidateId\":\"2026-15833\",\"rationale\":\"Finalizes the FY2027 IPPS/LTCH payment rates and major hospital quality program requirements, effective 2026-10-01.\"},{\"candidateId\":\"2026-16508\",\"rationale\":\"A significant policy rule prohibiting federal Medicaid/CHIP funding for sex-rejecting procedures for children, effective 2026-10-13.\"},{\"candidateId\":\"2026-12069\",\"rationale\":\"Strengthens CMS oversight of accrediting organizations and addresses conflicts of interest, effective 2027-06-16.\"},{\"candidateId\":\"2026-11094\",\"rationale\":\"Establishes new Medicaid community engagement (work) requirements for certain individuals, effective 2026-07-31.\"},{\"candidateId\":\"2026-14709\",\"rationale\":\"Finalizes the 2027 ACA Notice of Benefit and Payment Parameters, a foundational annual marketplace rule.\"},{\"candidateId\":\"2026-06600\",\"rationale\":\"Sets Contract Year 2027 policy and technical changes across Medicare Advantage and Part D programs, effective 2026-06-01.\"}]",
+        "latencyMs": 9747,
+        "topN": 6,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "2026-15833",
+            "rationale": "Finalizes the FY2027 IPPS/LTCH payment rates and major hospital quality program requirements, effective 2026-10-01."
+          },
+          {
+            "candidateId": "2026-16508",
+            "rationale": "A significant policy rule prohibiting federal Medicaid/CHIP funding for sex-rejecting procedures for children, effective 2026-10-13."
+          },
+          {
+            "candidateId": "2026-12069",
+            "rationale": "Strengthens CMS oversight of accrediting organizations and addresses conflicts of interest, effective 2027-06-16."
+          },
+          {
+            "candidateId": "2026-11094",
+            "rationale": "Establishes new Medicaid community engagement (work) requirements for certain individuals, effective 2026-07-31."
+          },
+          {
+            "candidateId": "2026-14709",
+            "rationale": "Finalizes the 2027 ACA Notice of Benefit and Payment Parameters, a foundational annual marketplace rule."
+          },
+          {
+            "candidateId": "2026-06600",
+            "rationale": "Sets Contract Year 2027 policy and technical changes across Medicare Advantage and Part D programs, effective 2026-06-01."
+          }
+        ],
+        "specificRationales": 6
+      },
+      {
+        "taskDescription": "proposed (not yet final) CMS rules this cycle",
+        "rawOutput": "[{\"candidateId\":\"2026-07203\",\"rationale\":\"This rule's comment period closed 2026-04-10, before its published date of 2026-04-14, indicating an unusually truncated or anomalous comment window.\"},{\"candidateId\":\"2026-12344\",\"rationale\":\"This RFI had a comment period of about one month (2026-06-18 to 2026-07-20), one of the shortest windows among the listed rules.\"},{\"candidateId\":\"2025-23464\",\"rationale\":\"This rule's comment period ran only about two months (2025-12-19 to 2026-02-17), a relatively short window for a substantive rule.\"},{\"candidateId\":\"2025-23465\",\"rationale\":\"This rule also had a short roughly two-month comment period (2025-12-19 to 2026-02-17).\"},{\"candidateId\":\"2026-03968\",\"rationale\":\"This RFI had one of the shortest comment periods, closing just about one month after publication (2026-02-27 to 2026-03-30).\"},{\"candidateId\":\"2026-01730\",\"rationale\":\"This rule's comment period was about two months (2026-01-29 to 2026-03-30), among the shorter windows listed.\"}]",
+        "latencyMs": 6002,
+        "topN": 6,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "2026-07203",
+            "rationale": "This rule's comment period closed 2026-04-10, before its published date of 2026-04-14, indicating an unusually truncated or anomalous comment window."
+          },
+          {
+            "candidateId": "2026-12344",
+            "rationale": "This RFI had a comment period of about one month (2026-06-18 to 2026-07-20), one of the shortest windows among the listed rules."
+          },
+          {
+            "candidateId": "2025-23464",
+            "rationale": "This rule's comment period ran only about two months (2025-12-19 to 2026-02-17), a relatively short window for a substantive rule."
+          },
+          {
+            "candidateId": "2025-23465",
+            "rationale": "This rule also had a short roughly two-month comment period (2025-12-19 to 2026-02-17)."
+          },
+          {
+            "candidateId": "2026-03968",
+            "rationale": "This RFI had one of the shortest comment periods, closing just about one month after publication (2026-02-27 to 2026-03-30)."
+          },
+          {
+            "candidateId": "2026-01730",
+            "rationale": "This rule's comment period was about two months (2026-01-29 to 2026-03-30), among the shorter windows listed."
+          }
+        ],
+        "specificRationales": 6
+      },
+      {
+        "taskDescription": "proposed (not yet final) CMS rules this cycle, by comment-period status",
+        "rawOutput": "[{\"candidateId\":\"2026-07203\",\"rationale\":\"Its comment period closed 2026-04-10, before the rule was even published on 2026-04-14, making it the shortest (effectively negative) comment window.\"},{\"candidateId\":\"2026-03968\",\"rationale\":\"Published 2026-02-27 with comment period closing 2026-03-30, only about 31 days—one of the shortest windows.\"},{\"candidateId\":\"2026-12344\",\"rationale\":\"Published 2026-06-18 with comment period closing 2026-07-20, roughly 32 days, an unusually brief comment period.\"},{\"candidateId\":\"2024-27939\",\"rationale\":\"Published 2024-12-10 with comment period closing 2025-01-27, about 48 days, shorter than most other rules listed.\"},{\"candidateId\":\"2025-21456\",\"rationale\":\"Published 2025-11-28 with comment period closing 2026-01-26, roughly 59 days, notably short given the rule's scope.\"},{\"candidateId\":\"2025-23464\",\"rationale\":\"Published 2025-12-19 with comment period closing 2026-02-17, about 60 days, one of the shorter comment windows among major rules.\"}]",
+        "latencyMs": 8042,
+        "topN": 6,
+        "accepted": false,
+        "rejectionReason": "ungrounded rationale (32)",
+        "selections": [],
+        "specificRationales": 0
+      },
+      {
+        "taskDescription": "upcoming CMS rule effective dates (operational-readiness calendar) this cycle",
+        "rawOutput": "[{\"candidateId\":\"2026-19061\",\"rationale\":\"Effective in just 2 days, the closest deadline requiring immediate operational readiness for DNV hospital accreditation continuation.\"},{\"candidateId\":\"2026-15833\",\"rationale\":\"Effective in 7 days, this major IPPS/LTCH FY2027 rate and quality program rule affects nearly all acute care hospitals.\"},{\"candidateId\":\"2026-15686\",\"rationale\":\"Effective in 7 days, updating hospice wage index and payment rates for FY2027 hospice quality reporting.\"},{\"candidateId\":\"2026-15652\",\"rationale\":\"Effective in 7 days, establishing the FY2027 Inpatient Rehabilitation Facility payment system and quality reporting updates.\"},{\"candidateId\":\"2026-15588\",\"rationale\":\"Effective in 7 days, setting the FY2027 rate update for Inpatient Psychiatric Facilities.\"},{\"candidateId\":\"2026-15562\",\"rationale\":\"Effective in 7 days, updating the Skilled Nursing Facility payment system and quality reporting requirements for FY2027.\"}]",
+        "latencyMs": 4092,
+        "topN": 6,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "2026-19061",
+            "rationale": "Effective in just 2 days, the closest deadline requiring immediate operational readiness for DNV hospital accreditation continuation."
+          },
+          {
+            "candidateId": "2026-15833",
+            "rationale": "Effective in 7 days, this major IPPS/LTCH FY2027 rate and quality program rule affects nearly all acute care hospitals."
+          },
+          {
+            "candidateId": "2026-15686",
+            "rationale": "Effective in 7 days, updating hospice wage index and payment rates for FY2027 hospice quality reporting."
+          },
+          {
+            "candidateId": "2026-15652",
+            "rationale": "Effective in 7 days, establishing the FY2027 Inpatient Rehabilitation Facility payment system and quality reporting updates."
+          },
+          {
+            "candidateId": "2026-15588",
+            "rationale": "Effective in 7 days, setting the FY2027 rate update for Inpatient Psychiatric Facilities."
+          },
+          {
+            "candidateId": "2026-15562",
+            "rationale": "Effective in 7 days, updating the Skilled Nursing Facility payment system and quality reporting requirements for FY2027."
+          }
+        ],
+        "specificRationales": 5
+      },
+      {
+        "taskDescription": "NIH award notices by dollar amount this cycle",
+        "rawOutput": "[{\"candidateId\":\"3OT2HL161847-01S3\",\"rationale\":\"Largest award this cycle at $109.4M, funding NYU Langone's role in the NIH's Post-Acute Sequelae of SARS-CoV-2 Infection Initiative.\"},{\"candidateId\":\"3OT2HL158287-01SE\",\"rationale\":\"Second-largest award at $52.7M to Westat for the NHLBI Community Engagement Technical Assistance Center.\"},{\"candidateId\":\"3OT2OD036464-01S5\",\"rationale\":\"$43.1M to NORC for the All of Us Program's Collaborative Services Center, a major precision medicine initiative.\"},{\"candidateId\":\"3OT2OD035404-01SA\",\"rationale\":\"$40.7M to Vanderbilt University Medical Center for the All of Us Research Program Data and Research Center.\"},{\"candidateId\":\"1OT2HL180049-01\",\"rationale\":\"$40M new award to Westat launching the TOPMed Artificial Intelligence Coordinating Center.\"},{\"candidateId\":\"5UM1AI068619-20\",\"rationale\":\"$39.6M to Family Health International for leadership of the HIV Prevention Trials Network.\"},{\"candidateId\":\"5UM1AI068636-19\",\"rationale\":\"$36.4M to UCLA for the ACTG global HIV/AIDS clinical therapeutics consortium.\"},{\"candidateId\":\"5UM1AI068635-20\",\"rationale\":\"$35.8M to Fred Hutchinson Cancer Center as the statistical/data center for the HIV Vaccine Trials Network.\"},{\"candidateId\":\"7UM1AI068636-20\",\"rationale\":\"$34.7M to UNC Chapel Hill for leadership of the AIDS Clinical Trials Group, a core national HIV research network.\"},{\"candidateId\":\"5U19AG078109-05\",\"rationale\":\"$33.0M to UNT Health Science Center for the Health & Aging Brain Study addressing health disparities.\"}]",
+        "latencyMs": 7480,
+        "topN": 10,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "3OT2HL161847-01S3",
+            "rationale": "Largest award this cycle at $109.4M, funding NYU Langone's role in the NIH's Post-Acute Sequelae of SARS-CoV-2 Infection Initiative."
+          },
+          {
+            "candidateId": "3OT2HL158287-01SE",
+            "rationale": "Second-largest award at $52.7M to Westat for the NHLBI Community Engagement Technical Assistance Center."
+          },
+          {
+            "candidateId": "3OT2OD036464-01S5",
+            "rationale": "$43.1M to NORC for the All of Us Program's Collaborative Services Center, a major precision medicine initiative."
+          },
+          {
+            "candidateId": "3OT2OD035404-01SA",
+            "rationale": "$40.7M to Vanderbilt University Medical Center for the All of Us Research Program Data and Research Center."
+          },
+          {
+            "candidateId": "1OT2HL180049-01",
+            "rationale": "$40M new award to Westat launching the TOPMed Artificial Intelligence Coordinating Center."
+          },
+          {
+            "candidateId": "5UM1AI068619-20",
+            "rationale": "$39.6M to Family Health International for leadership of the HIV Prevention Trials Network."
+          },
+          {
+            "candidateId": "5UM1AI068636-19",
+            "rationale": "$36.4M to UCLA for the ACTG global HIV/AIDS clinical therapeutics consortium."
+          },
+          {
+            "candidateId": "5UM1AI068635-20",
+            "rationale": "$35.8M to Fred Hutchinson Cancer Center as the statistical/data center for the HIV Vaccine Trials Network."
+          },
+          {
+            "candidateId": "7UM1AI068636-20",
+            "rationale": "$34.7M to UNC Chapel Hill for leadership of the AIDS Clinical Trials Group, a core national HIV research network."
+          },
+          {
+            "candidateId": "5U19AG078109-05",
+            "rationale": "$33.0M to UNT Health Science Center for the Health & Aging Brain Study addressing health disparities."
+          }
+        ],
+        "specificRationales": 3
+      },
+      {
+        "taskDescription": "NIH award dollars by recipient organization this cycle",
+        "rawOutput": "[{\"candidateId\": \"FRED HUTCHINSON CANCER CENTER\", \"rationale\": \"Largest total among all recipients, at $225,892,177 across sampled awards.\"},\n{\"candidateId\": \"WESTAT, INC.\", \"rationale\": \"Second-highest total, receiving $217,190,119 across sampled awards.\"},\n{\"candidateId\": \"NEW YORK UNIVERSITY SCHOOL OF MEDICINE\", \"rationale\": \"A top-tier academic medical center recipient at $126,287,296 across sampled awards.\"},\n{\"candidateId\": \"UNIVERSITY OF MICHIGAN AT ANN ARBOR\", \"rationale\": \"Major public university recipient with $112,172,085 across sampled awards.\"},\n{\"candidateId\": \"UNIVERSITY OF NORTH TEXAS HLTH SCI CTR\", \"rationale\": \"Notably high total of $97,719,133 across sampled awards.\"},\n{\"candidateId\": \"NATIONAL OPINION RESEARCH CENTER\", \"rationale\": \"Significant non-university recipient at $97,459,171 across sampled awards.\"},\n{\"candidateId\": \"WASHINGTON UNIVERSITY\", \"rationale\": \"Leading research university recipient with $95,572,246 across sampled awards.\"},\n{\"candidateId\": \"FOUR POINTS TECHNOLOGY, LLC\", \"rationale\": \"Large contractor-type recipient with $78,351,172 across sampled awards.\"},\n{\"candidateId\": \"UNIVERSITY OF SOUTHERN CALIFORNIA\", \"rationale\": \"Major research university with $76,388,075 across sampled awards.\"},\n{\"candidateId\": \"VANDERBILT UNIVERSITY MEDICAL CENTER\", \"rationale\": \"Prominent academic medical center recipient at $65,678,454 across sampled awards.\"}]",
+        "latencyMs": 6634,
+        "topN": 10,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "FRED HUTCHINSON CANCER CENTER",
+            "rationale": "Largest total among all recipients, at $225,892,177 across sampled awards."
+          },
+          {
+            "candidateId": "WESTAT, INC.",
+            "rationale": "Second-highest total, receiving $217,190,119 across sampled awards."
+          },
+          {
+            "candidateId": "NEW YORK UNIVERSITY SCHOOL OF MEDICINE",
+            "rationale": "A top-tier academic medical center recipient at $126,287,296 across sampled awards."
+          },
+          {
+            "candidateId": "UNIVERSITY OF MICHIGAN AT ANN ARBOR",
+            "rationale": "Major public university recipient with $112,172,085 across sampled awards."
+          },
+          {
+            "candidateId": "UNIVERSITY OF NORTH TEXAS HLTH SCI CTR",
+            "rationale": "Notably high total of $97,719,133 across sampled awards."
+          },
+          {
+            "candidateId": "NATIONAL OPINION RESEARCH CENTER",
+            "rationale": "Significant non-university recipient at $97,459,171 across sampled awards."
+          },
+          {
+            "candidateId": "WASHINGTON UNIVERSITY",
+            "rationale": "Leading research university recipient with $95,572,246 across sampled awards."
+          },
+          {
+            "candidateId": "FOUR POINTS TECHNOLOGY, LLC",
+            "rationale": "Large contractor-type recipient with $78,351,172 across sampled awards."
+          },
+          {
+            "candidateId": "UNIVERSITY OF SOUTHERN CALIFORNIA",
+            "rationale": "Major research university with $76,388,075 across sampled awards."
+          },
+          {
+            "candidateId": "VANDERBILT UNIVERSITY MEDICAL CENTER",
+            "rationale": "Prominent academic medical center recipient at $65,678,454 across sampled awards."
+          }
+        ],
+        "specificRationales": 10
+      }
+    ],
+    "aggregate": {
+      "calls": 16,
+      "acceptanceRate": 0.9375,
+      "rejectionReasons": {
+        "ungrounded rationale (…)": 1
+      },
+      "specificityRate": 0.912621359223301,
+      "fillRate": 1,
+      "meanLatencyMs": 5285.4375,
+      "estimatedCostUsd": 0.1116485
+    }
+  },
+  {
+    "providerName": "anthropic:claude-opus-5-5",
+    "results": [
+      {
+        "taskDescription": "hospital facility count by state this cycle",
+        "rawOutput": "[{\"candidateId\": \"TX\", \"rationale\": \"TX leads the nation with 467 hospitals, 8.6% of the 5419 total.\"}, {\"candidateId\": \"CA\", \"rationale\": \"CA ranks second with 377 hospitals, 7.0% of the national total.\"}, {\"candidateId\": \"FL\", \"rationale\": \"FL is third with 221 hospitals (4.1%), well behind the top two states.\"}, {\"candidateId\": \"IL\", \"rationale\": \"IL is tied with OH for fourth place at 193 hospitals (3.6% nationally).\"}, {\"candidateId\": \"OH\", \"rationale\": \"OH matches IL at 193 hospitals, 3.6% of the national count.\"}, {\"candidateId\": \"NY\", \"rationale\": \"NY has 192 hospitals (3.5%), just one behind the tied IL and OH.\"}, {\"candidateId\": \"LA\", \"rationale\": \"LA has 161 hospitals (3.0%), placing it among the top eight states.\"}, {\"candidateId\": \"DC\", \"rationale\": \"DC has the fewest hospitals of any state-level entity at 10 (0.2% nationally), excluding the territories.\"}]",
+        "latencyMs": 4038,
+        "topN": 8,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "TX",
+            "rationale": "TX leads the nation with 467 hospitals, 8.6% of the 5419 total."
+          },
+          {
+            "candidateId": "CA",
+            "rationale": "CA ranks second with 377 hospitals, 7.0% of the national total."
+          },
+          {
+            "candidateId": "FL",
+            "rationale": "FL is third with 221 hospitals (4.1%), well behind the top two states."
+          },
+          {
+            "candidateId": "IL",
+            "rationale": "IL is tied with OH for fourth place at 193 hospitals (3.6% nationally)."
+          },
+          {
+            "candidateId": "OH",
+            "rationale": "OH matches IL at 193 hospitals, 3.6% of the national count."
+          },
+          {
+            "candidateId": "NY",
+            "rationale": "NY has 192 hospitals (3.5%), just one behind the tied IL and OH."
+          },
+          {
+            "candidateId": "LA",
+            "rationale": "LA has 161 hospitals (3.0%), placing it among the top eight states."
+          },
+          {
+            "candidateId": "DC",
+            "rationale": "DC has the fewest hospitals of any state-level entity at 10 (0.2% nationally), excluding the territories."
+          }
+        ],
+        "specificRationales": 8
+      },
+      {
+        "taskDescription": "home health capacity-pressure signals by state this cycle",
+        "rawOutput": "[{\"candidateId\": \"AL\", \"rationale\": \"AL carries the highest load at 330 episodes/agency across 116 agencies, signaling strong per-agency capacity pressure despite solid 3.8★ quality.\"}, {\"candidateId\": \"LA\", \"rationale\": \"LA shows near-top volume at 329 episodes/agency across a large base of 176 agencies, with a 1.01 spending ratio.\"}, {\"candidateId\": \"KY\", \"rationale\": \"KY runs 325 episodes/agency across just 88 agencies, concentrating heavy demand on a relatively small provider base.\"}, {\"candidateId\": \"AR\", \"rationale\": \"AR combines high load (311 episodes/agency) with the lowest full-service-line share among high-volume states (36%), a 3.4★ rating, and an elevated 1.05 spending ratio.\"}, {\"candidateId\": \"SD\", \"rationale\": \"SD has 262 episodes/agency spread across only 23 agencies, making its thin provider network notably exposed to capacity strain.\"}]",
+        "latencyMs": 5150,
+        "topN": 5,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "AL",
+            "rationale": "AL carries the highest load at 330 episodes/agency across 116 agencies, signaling strong per-agency capacity pressure despite solid 3.8★ quality."
+          },
+          {
+            "candidateId": "LA",
+            "rationale": "LA shows near-top volume at 329 episodes/agency across a large base of 176 agencies, with a 1.01 spending ratio."
+          },
+          {
+            "candidateId": "KY",
+            "rationale": "KY runs 325 episodes/agency across just 88 agencies, concentrating heavy demand on a relatively small provider base."
+          },
+          {
+            "candidateId": "AR",
+            "rationale": "AR combines high load (311 episodes/agency) with the lowest full-service-line share among high-volume states (36%), a 3.4★ rating, and an elevated 1.05 spending ratio."
+          },
+          {
+            "candidateId": "SD",
+            "rationale": "SD has 262 episodes/agency spread across only 23 agencies, making its thin provider network notably exposed to capacity strain."
+          }
+        ],
+        "specificRationales": 5
+      },
+      {
+        "taskDescription": "home health risk-adjusted spending-ratio distribution by state this cycle",
+        "rawOutput": "[{\"candidateId\": \"PR\", \"rationale\": \"PR has by far the lowest median spending ratio at 0.68 (IQR 0.63-0.74), a striking outlier relative to every other state.\"}, {\"candidateId\": \"OR\", \"rationale\": \"OR has the lowest median among states at 0.87, with a tight IQR of 0.84-0.91 indicating consistently low spending across its 45 agencies.\"}, {\"candidateId\": \"AR\", \"rationale\": \"AR has the highest median spending ratio at 1.06 (IQR 1.00-1.12), meaning most of its 90 agencies spend at or above expected levels.\"}, {\"candidateId\": \"CA\", \"rationale\": \"CA is the largest reporting state with 2113 agencies and the most outlier agencies (79), with a below-par median of 0.93.\"}, {\"candidateId\": \"TX\", \"rationale\": \"TX, with 1275 agencies, has one of the widest IQRs (0.87-1.06) and 32 outlier agencies, signaling high variation in a large market.\"}, {\"candidateId\": \"KS\", \"rationale\": \"KS combines a high median of 1.05 with 9 outlier agencies out of 90, a notable concentration of outliers for its size.\"}]",
+        "latencyMs": 4403,
+        "topN": 6,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "PR",
+            "rationale": "PR has by far the lowest median spending ratio at 0.68 (IQR 0.63-0.74), a striking outlier relative to every other state."
+          },
+          {
+            "candidateId": "OR",
+            "rationale": "OR has the lowest median among states at 0.87, with a tight IQR of 0.84-0.91 indicating consistently low spending across its 45 agencies."
+          },
+          {
+            "candidateId": "AR",
+            "rationale": "AR has the highest median spending ratio at 1.06 (IQR 1.00-1.12), meaning most of its 90 agencies spend at or above expected levels."
+          },
+          {
+            "candidateId": "CA",
+            "rationale": "CA is the largest reporting state with 2113 agencies and the most outlier agencies (79), with a below-par median of 0.93."
+          },
+          {
+            "candidateId": "TX",
+            "rationale": "TX, with 1275 agencies, has one of the widest IQRs (0.87-1.06) and 32 outlier agencies, signaling high variation in a large market."
+          },
+          {
+            "candidateId": "KS",
+            "rationale": "KS combines a high median of 1.05 with 9 outlier agencies out of 90, a notable concentration of outliers for its size."
+          }
+        ],
+        "specificRationales": 6
+      },
+      {
+        "taskDescription": "Medicare payment-to-charge ratio by provider type this cycle",
+        "rawOutput": "[{\"candidateId\": \"Independent Diagnostic Testing Facility (IDTF)\", \"rationale\": \"The lowest payment-to-charge ratio in the set: $557 submitted and only $20 paid (4% of charge), though based on just 23 sampled claims lines.\"}, {\"candidateId\": \"Pain Management\", \"rationale\": \"The highest average submitted charge among physician specialties ($2640), with only $125 paid (5% of charge) across 42 sampled claims lines.\"}, {\"candidateId\": \"Anesthesiology\", \"rationale\": \"Charges of $1405 were paid at just $105 (7% of charge), a very low ratio backed by a substantial 142 sampled claims lines.\"}, {\"candidateId\": \"Diagnostic Radiology\", \"rationale\": \"The largest sample in the set (1097 claims lines) shows $529 submitted and $67 paid (13% of charge), making it a well-supported low-ratio finding.\"}, {\"candidateId\": \"Mass Immunizer Roster Biller\", \"rationale\": \"The highest ratio in the set, with $79 submitted and $76 paid (97% of charge), in sharp contrast to most provider types, though based on only 14 sampled claims lines.\"}]",
+        "latencyMs": 4453,
+        "topN": 5,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "Independent Diagnostic Testing Facility (IDTF)",
+            "rationale": "The lowest payment-to-charge ratio in the set: $557 submitted and only $20 paid (4% of charge), though based on just 23 sampled claims lines."
+          },
+          {
+            "candidateId": "Pain Management",
+            "rationale": "The highest average submitted charge among physician specialties ($2640), with only $125 paid (5% of charge) across 42 sampled claims lines."
+          },
+          {
+            "candidateId": "Anesthesiology",
+            "rationale": "Charges of $1405 were paid at just $105 (7% of charge), a very low ratio backed by a substantial 142 sampled claims lines."
+          },
+          {
+            "candidateId": "Diagnostic Radiology",
+            "rationale": "The largest sample in the set (1097 claims lines) shows $529 submitted and $67 paid (13% of charge), making it a well-supported low-ratio finding."
+          },
+          {
+            "candidateId": "Mass Immunizer Roster Biller",
+            "rationale": "The highest ratio in the set, with $79 submitted and $76 paid (97% of charge), in sharp contrast to most provider types, though based on only 14 sampled claims lines."
+          }
+        ],
+        "specificRationales": 5
+      },
+      {
+        "taskDescription": "hospital ownership types to break out in a share-of-facilities chart this cycle",
+        "rawOutput": "[{\"candidateId\": \"Voluntary non-profit - Private\", \"rationale\": \"The largest ownership type by far, with 2322 facilities, or 42.8% of the 5419 hospitals nationally.\"}, {\"candidateId\": \"Proprietary\", \"rationale\": \"The second-largest category, with 1063 facilities (19.6% of the national total), roughly one in five hospitals.\"}, {\"candidateId\": \"Government - Hospital District or Authority\", \"rationale\": \"The largest government ownership type, with 512 facilities (9.4% nationally).\"}, {\"candidateId\": \"Government - Local\", \"rationale\": \"Adds 393 facilities (7.3% nationally), making it the fourth-largest ownership type.\"}, {\"candidateId\": \"Voluntary non-profit - Other\", \"rationale\": \"Accounts for 353 facilities (6.5% nationally); together the top five cover most of the 5419 hospitals, so the remaining types can be grouped as 'Other'.\"}]",
+        "latencyMs": 4804,
+        "topN": 5,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "Voluntary non-profit - Private",
+            "rationale": "The largest ownership type by far, with 2322 facilities, or 42.8% of the 5419 hospitals nationally."
+          },
+          {
+            "candidateId": "Proprietary",
+            "rationale": "The second-largest category, with 1063 facilities (19.6% of the national total), roughly one in five hospitals."
+          },
+          {
+            "candidateId": "Government - Hospital District or Authority",
+            "rationale": "The largest government ownership type, with 512 facilities (9.4% nationally)."
+          },
+          {
+            "candidateId": "Government - Local",
+            "rationale": "Adds 393 facilities (7.3% nationally), making it the fourth-largest ownership type."
+          },
+          {
+            "candidateId": "Voluntary non-profit - Other",
+            "rationale": "Accounts for 353 facilities (6.5% nationally); together the top five cover most of the 5419 hospitals, so the remaining types can be grouped as 'Other'."
+          }
+        ],
+        "specificRationales": 5
+      },
+      {
+        "taskDescription": "hospital overall star rating distribution by state this cycle",
+        "rawOutput": "[{\"candidateId\": \"UT\", \"rationale\": \"UT has the highest median in the set at 5.0★ (IQR 4.0★ to 5.0★) across 29 hospitals, making it the clear top performer.\"}, {\"candidateId\": \"CO\", \"rationale\": \"CO has a 4.0★ median and is one of only two states whose IQR reaches 5.0★ (3.0★ to 5.0★), across 47 hospitals.\"}, {\"candidateId\": \"MS\", \"rationale\": \"MS has one of the lowest medians at 2.0★ (IQR 2.0★ to 3.0★) across 49 hospitals.\"}, {\"candidateId\": \"NM\", \"rationale\": \"NM shares the lowest median of 2.0★ (IQR 2.0★ to 3.0★) across 23 hospitals.\"}, {\"candidateId\": \"WV\", \"rationale\": \"WV has a below-typical 2.5★ median (IQR 2.0★ to 3.3★) across 32 hospitals.\"}, {\"candidateId\": \"PA\", \"rationale\": \"PA pairs a large base of 128 hospitals with a 4.0★ median (IQR 3.0★ to 4.0★), making it a strong performer at scale.\"}, {\"candidateId\": \"OH\", \"rationale\": \"OH has 125 hospitals with a 4.0★ median (IQR 3.0★ to 4.0★), placing another large state in the top tier.\"}, {\"candidateId\": \"CA\", \"rationale\": \"CA is the largest state at 272 hospitals, with a middling 3.0★ median and a wide IQR of 2.0★ to 4.0★.\"}]",
+        "latencyMs": 5027,
+        "topN": 8,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "UT",
+            "rationale": "UT has the highest median in the set at 5.0★ (IQR 4.0★ to 5.0★) across 29 hospitals, making it the clear top performer."
+          },
+          {
+            "candidateId": "CO",
+            "rationale": "CO has a 4.0★ median and is one of only two states whose IQR reaches 5.0★ (3.0★ to 5.0★), across 47 hospitals."
+          },
+          {
+            "candidateId": "MS",
+            "rationale": "MS has one of the lowest medians at 2.0★ (IQR 2.0★ to 3.0★) across 49 hospitals."
+          },
+          {
+            "candidateId": "NM",
+            "rationale": "NM shares the lowest median of 2.0★ (IQR 2.0★ to 3.0★) across 23 hospitals."
+          },
+          {
+            "candidateId": "WV",
+            "rationale": "WV has a below-typical 2.5★ median (IQR 2.0★ to 3.3★) across 32 hospitals."
+          },
+          {
+            "candidateId": "PA",
+            "rationale": "PA pairs a large base of 128 hospitals with a 4.0★ median (IQR 3.0★ to 4.0★), making it a strong performer at scale."
+          },
+          {
+            "candidateId": "OH",
+            "rationale": "OH has 125 hospitals with a 4.0★ median (IQR 3.0★ to 4.0★), placing another large state in the top tier."
+          },
+          {
+            "candidateId": "CA",
+            "rationale": "CA is the largest state at 272 hospitals, with a middling 3.0★ median and a wide IQR of 2.0★ to 4.0★."
+          }
+        ],
+        "specificRationales": 8
+      },
+      {
+        "taskDescription": "hospital net quality-outcome score distribution by state this cycle",
+        "rawOutput": "[{\"candidateId\": \"UT\", \"rationale\": \"UT has the highest median at 16.7% across 29 hospitals, and even its lower quartile (13.3%) sits above every other state's median.\"}, {\"candidateId\": \"MS\", \"rationale\": \"MS has the lowest median at -7.7% across 49 hospitals, with its upper quartile capped at 0.0%.\"}, {\"candidateId\": \"CO\", \"rationale\": \"CO posts the second-highest median at 10.0% across 47 hospitals, with a positive lower quartile of 3.9%.\"}, {\"candidateId\": \"WV\", \"rationale\": \"WV is one of only two states with a negative median (-4.6%), with an IQR of -10.4% to 0.0% across 32 hospitals.\"}, {\"candidateId\": \"CA\", \"rationale\": \"CA is the largest state by volume at 272 hospitals, with a median of 4.9% and a wide IQR of -3.8% to 12.0%.\"}, {\"candidateId\": \"TX\", \"rationale\": \"TX, the second-largest state at 205 hospitals, has a median of 4.5% and a relatively strong upper quartile of 13.3%.\"}, {\"candidateId\": \"AR\", \"rationale\": \"AR has the widest spread in the lower tail, with an IQR of -11.0% to 8.0% around a 0.0% median across 38 hospitals.\"}, {\"candidateId\": \"MD\", \"rationale\": \"MD has a 0.0% median, but its upper quartile of 15.4% is the highest outside UT, indicating a strong top tier among its 41 hospitals.\"}]",
+        "latencyMs": 5207,
+        "topN": 8,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "UT",
+            "rationale": "UT has the highest median at 16.7% across 29 hospitals, and even its lower quartile (13.3%) sits above every other state's median."
+          },
+          {
+            "candidateId": "MS",
+            "rationale": "MS has the lowest median at -7.7% across 49 hospitals, with its upper quartile capped at 0.0%."
+          },
+          {
+            "candidateId": "CO",
+            "rationale": "CO posts the second-highest median at 10.0% across 47 hospitals, with a positive lower quartile of 3.9%."
+          },
+          {
+            "candidateId": "WV",
+            "rationale": "WV is one of only two states with a negative median (-4.6%), with an IQR of -10.4% to 0.0% across 32 hospitals."
+          },
+          {
+            "candidateId": "CA",
+            "rationale": "CA is the largest state by volume at 272 hospitals, with a median of 4.9% and a wide IQR of -3.8% to 12.0%."
+          },
+          {
+            "candidateId": "TX",
+            "rationale": "TX, the second-largest state at 205 hospitals, has a median of 4.5% and a relatively strong upper quartile of 13.3%."
+          },
+          {
+            "candidateId": "AR",
+            "rationale": "AR has the widest spread in the lower tail, with an IQR of -11.0% to 8.0% around a 0.0% median across 38 hospitals."
+          },
+          {
+            "candidateId": "MD",
+            "rationale": "MD has a 0.0% median, but its upper quartile of 15.4% is the highest outside UT, indicating a strong top tier among its 41 hospitals."
+          }
+        ],
+        "specificRationales": 8
+      },
+      {
+        "taskDescription": "state-level hospital quality outcomes (current level and change across pulls) this cycle",
+        "rawOutput": "[{\"candidateId\": \"UT\", \"rationale\": \"UT has the highest current median net quality-outcome score at 16.7%, well above every other state, and held flat across all 3 pulls.\"}, {\"candidateId\": \"MS\", \"rationale\": \"MS has the lowest current median net quality-outcome score at -7.7%, unchanged across all 3 pulls.\"}, {\"candidateId\": \"CO\", \"rationale\": \"CO ranks second-highest with a current median net quality-outcome score of 10.0%, stable across all 3 pulls.\"}, {\"candidateId\": \"WV\", \"rationale\": \"WV is one of only two states with a negative current median net quality-outcome score, at -3.8%, flat across all 3 pulls.\"}, {\"candidateId\": \"AZ\", \"rationale\": \"AZ ties WI for third-highest with a current median net quality-outcome score of 6.3%, unchanged across 3 pulls; like every listed state, it showed no change between pulls this cycle.\"}]",
+        "latencyMs": 4427,
+        "topN": 5,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "UT",
+            "rationale": "UT has the highest current median net quality-outcome score at 16.7%, well above every other state, and held flat across all 3 pulls."
+          },
+          {
+            "candidateId": "MS",
+            "rationale": "MS has the lowest current median net quality-outcome score at -7.7%, unchanged across all 3 pulls."
+          },
+          {
+            "candidateId": "CO",
+            "rationale": "CO ranks second-highest with a current median net quality-outcome score of 10.0%, stable across all 3 pulls."
+          },
+          {
+            "candidateId": "WV",
+            "rationale": "WV is one of only two states with a negative current median net quality-outcome score, at -3.8%, flat across all 3 pulls."
+          },
+          {
+            "candidateId": "AZ",
+            "rationale": "AZ ties WI for third-highest with a current median net quality-outcome score of 6.3%, unchanged across 3 pulls; like every listed state, it showed no change between pulls this cycle."
+          }
+        ],
+        "specificRationales": 5
+      },
+      {
+        "taskDescription": "Medicare Advantage & Part D plan-type enrollment mix this cycle",
+        "rawOutput": "[{\"candidateId\": \"Medicare Prescription Drug Plan\", \"rationale\": \"Medicare Prescription Drug Plan is the largest plan type at 25,325,542 enrollees, representing 41.0% of the 61,715,324 total.\"}, {\"candidateId\": \"Local PPO\", \"rationale\": \"Local PPO is the second-largest plan type with 14,803,470 enrollees, or 24.0% of the total.\"}, {\"candidateId\": \"HMO\", \"rationale\": \"HMO holds 12,609,941 enrollees, accounting for 20.4% of the total.\"}, {\"candidateId\": \"HMOPOS\", \"rationale\": \"HMOPOS has 8,368,710 enrollees, a 13.6% share, making it the fourth-largest plan type.\"}, {\"candidateId\": \"1876 Cost\", \"rationale\": \"1876 Cost is the largest of the remaining smaller plan types at 196,797 enrollees, though it represents only 0.3% of the total.\"}]",
+        "latencyMs": 4190,
+        "topN": 5,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "Medicare Prescription Drug Plan",
+            "rationale": "Medicare Prescription Drug Plan is the largest plan type at 25,325,542 enrollees, representing 41.0% of the 61,715,324 total."
+          },
+          {
+            "candidateId": "Local PPO",
+            "rationale": "Local PPO is the second-largest plan type with 14,803,470 enrollees, or 24.0% of the total."
+          },
+          {
+            "candidateId": "HMO",
+            "rationale": "HMO holds 12,609,941 enrollees, accounting for 20.4% of the total."
+          },
+          {
+            "candidateId": "HMOPOS",
+            "rationale": "HMOPOS has 8,368,710 enrollees, a 13.6% share, making it the fourth-largest plan type."
+          },
+          {
+            "candidateId": "1876 Cost",
+            "rationale": "1876 Cost is the largest of the remaining smaller plan types at 196,797 enrollees, though it represents only 0.3% of the total."
+          }
+        ],
+        "specificRationales": 5
+      },
+      {
+        "taskDescription": "Medicare Advantage & Part D enrollment by parent organization this cycle",
+        "rawOutput": "[{\"candidateId\": \"UnitedHealth Group, Inc.\", \"rationale\": \"UnitedHealth Group is the largest parent organization with 13,067,487 enrollees, 21.2% of the 61,715,324 total.\"},\n{\"candidateId\": \"Humana Inc.\", \"rationale\": \"Humana ranks second with 11,066,732 enrollees, 17.9% of the total.\"},\n{\"candidateId\": \"Centene Corporation\", \"rationale\": \"Centene holds 9,870,314 enrollees, 16.0% of the total, placing it third.\"},\n{\"candidateId\": \"CVS Health Corporation\", \"rationale\": \"CVS Health has 8,034,415 enrollees, 13.0% of the total, completing a top four that together holds 68.1% of enrollment.\"},\n{\"candidateId\": \"Health Care Service Corporation\", \"rationale\": \"Health Care Service Corporation is fifth with 3,673,965 enrollees, 6.0% of the total.\"},\n{\"candidateId\": \"Kaiser Foundation Health Plan, Inc.\", \"rationale\": \"Kaiser Foundation Health Plan has 2,119,062 enrollees, 3.4% of the total.\"},\n{\"candidateId\": \"Elevance Health, Inc.\", \"rationale\": \"Elevance Health has 1,974,677 enrollees, 3.2% of the total, a share that excludes the separately listed Elevance joint entity.\"},\n{\"candidateId\": \"BlueCross BlueShield Association, Federal Employee\", \"rationale\": \"The BlueCross BlueShield Association Federal Employee program has 885,150 enrollees, 1.4% of the total.\"},\n{\"candidateId\": \"Blue Cross Blue Shield of Michigan Mutual Ins. Co.\", \"rationale\": \"Blue Cross Blue Shield of Michigan has 698,946 enrollees, 1.1% of the total, the largest single-state Blue plan listed.\"},\n{\"candidateId\": \"Devoted Health, Inc.\", \"rationale\": \"Devoted Health has 532,675 enrollees, 0.9% of the total, the most of any candidate identified as a Health, Inc. company outside the largest insurers.\"}]",
+        "latencyMs": 7465,
+        "topN": 10,
+        "accepted": false,
+        "rejectionReason": "ungrounded rationale (68.1%)",
+        "selections": [],
+        "specificRationales": 0
+      },
+      {
+        "taskDescription": "recently finalized CMS rules this cycle",
+        "rawOutput": "[{\"candidateId\": \"2026-10890\", \"rationale\": \"No numeric metric was provided, so this ranking uses the shortest gap from publication to effective date. By that measure, this Alternative Payment Model and IOTA rule was published 2026-06-01 and took effect 2026-07-01, the shortest lead time among this cycle's substantive final rules.\"}, {\"candidateId\": \"2026-06600\", \"rationale\": \"The Contract Year 2027 Medicare Advantage and Part D policy rule was published 2026-04-06 and took effect 2026-06-01, a short runway for plan operations.\"}, {\"candidateId\": \"2026-11094\", \"rationale\": \"The Medicaid Community Engagement Requirement rule was published 2026-06-03 and took effect 2026-07-31, leaving little time for states to implement it.\"}, {\"candidateId\": \"2026-15833\", \"rationale\": \"The FY 2027 IPPS and LTCH payment and policy rule was published 2026-08-04 and takes effect 2026-10-01, a brief window before hospital rates change.\"}, {\"candidateId\": \"2026-15562\", \"rationale\": \"The FY 2027 Skilled Nursing Facility PPS and Quality Reporting rule was published 2026-07-31 and takes effect 2026-10-01, a compressed implementation window.\"}, {\"candidateId\": \"2026-15588\", \"rationale\": \"The FY 2027 Inpatient Psychiatric Facilities PPS rate update was published 2026-07-31 and takes effect 2026-10-01, another short lead time this cycle.\"}]",
+        "latencyMs": 10447,
+        "topN": 6,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "2026-10890",
+            "rationale": "No numeric metric was provided, so this ranking uses the shortest gap from publication to effective date. By that measure, this Alternative Payment Model and IOTA rule was published 2026-06-01 and took effect 2026-07-01, the shortest lead time among this cycle's substantive final rules."
+          },
+          {
+            "candidateId": "2026-06600",
+            "rationale": "The Contract Year 2027 Medicare Advantage and Part D policy rule was published 2026-04-06 and took effect 2026-06-01, a short runway for plan operations."
+          },
+          {
+            "candidateId": "2026-11094",
+            "rationale": "The Medicaid Community Engagement Requirement rule was published 2026-06-03 and took effect 2026-07-31, leaving little time for states to implement it."
+          },
+          {
+            "candidateId": "2026-15833",
+            "rationale": "The FY 2027 IPPS and LTCH payment and policy rule was published 2026-08-04 and takes effect 2026-10-01, a brief window before hospital rates change."
+          },
+          {
+            "candidateId": "2026-15562",
+            "rationale": "The FY 2027 Skilled Nursing Facility PPS and Quality Reporting rule was published 2026-07-31 and takes effect 2026-10-01, a compressed implementation window."
+          },
+          {
+            "candidateId": "2026-15588",
+            "rationale": "The FY 2027 Inpatient Psychiatric Facilities PPS rate update was published 2026-07-31 and takes effect 2026-10-01, another short lead time this cycle."
+          }
+        ],
+        "specificRationales": 6
+      },
+      {
+        "taskDescription": "proposed (not yet final) CMS rules this cycle",
+        "rawOutput": "[{\"candidateId\": \"2026-07203\", \"rationale\": \"The FY 2027 IPPS/LTCH proposed rule has a listed comment close date (2026-04-10) that falls before its publication date (2026-04-14), so the comment window is effectively negative and the dates should be verified.\"}, {\"candidateId\": \"2025-15492\", \"rationale\": \"This correction to the CY 2026 Physician Fee Schedule proposed rule was published 2025-08-14 with comments closing 2025-09-12, one of the shortest windows listed at about 29 days.\"}, {\"candidateId\": \"2026-02769\", \"rationale\": \"The HHS Notice of Benefit and Payment Parameters for 2027 was published 2026-02-11 with comments closing 2026-03-13, a short window of about 30 days for a major marketplace rule.\"}, {\"candidateId\": \"2026-03968\", \"rationale\": \"The CRUSH Request for Information on suspicious healthcare activity was published 2026-02-27 with comments closing 2026-03-30, a short window of about 31 days.\"}, {\"candidateId\": \"2026-12344\", \"rationale\": \"The Request for Information on Pharmacy Benefit Manager Compensation and Data Collection was published 2026-06-18 with comments closing 2026-07-20, a short window of about 32 days.\"}, {\"candidateId\": \"2024-23103\", \"rationale\": \"The HHS Notice of Benefit and Payment Parameters for 2026 was published 2024-10-10 with comments closing 2024-11-12, a short window of about 33 days, though it belongs to an earlier cycle.\"}]",
+        "latencyMs": 11479,
+        "topN": 6,
+        "accepted": false,
+        "rejectionReason": "ungrounded rationale (32)",
+        "selections": [],
+        "specificRationales": 0
+      },
+      {
+        "taskDescription": "proposed (not yet final) CMS rules this cycle, by comment-period status",
+        "rawOutput": "[{\"candidateId\": \"2026-07203\", \"rationale\": \"The FY 2027 IPPS/LTCH proposed rule shows a comment close date (2026-04-10) earlier than its publication date (2026-04-14), a negative comment window that warrants a data check.\"}, {\"candidateId\": \"2025-15492\", \"rationale\": \"This CY 2026 Physician Fee Schedule correction had one of the shortest comment windows listed, running from its 2025-08-14 publication to its 2025-09-12 close.\"}, {\"candidateId\": \"2026-02769\", \"rationale\": \"The 2027 ACA Notice of Benefit and Payment Parameters had a short comment window, running from its 2026-02-11 publication to its 2026-03-13 close.\"}, {\"candidateId\": \"2026-03968\", \"rationale\": \"The CRUSH request for information on suspicious healthcare had a short comment window, published 2026-02-27 and closed 2026-03-30.\"}, {\"candidateId\": \"2026-12344\", \"rationale\": \"The Pharmacy Benefit Manager Compensation and Data Collection RFI had a short comment window, published 2026-06-18 and closed 2026-07-20.\"}, {\"candidateId\": \"2026-19535\", \"rationale\": \"The Medicare Part D pharmacy contracting standards RFI is the only listed item with a comment period still open, running through 2026-11-23.\"}]",
+        "latencyMs": 7670,
+        "topN": 6,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "2026-07203",
+            "rationale": "The FY 2027 IPPS/LTCH proposed rule shows a comment close date (2026-04-10) earlier than its publication date (2026-04-14), a negative comment window that warrants a data check."
+          },
+          {
+            "candidateId": "2025-15492",
+            "rationale": "This CY 2026 Physician Fee Schedule correction had one of the shortest comment windows listed, running from its 2025-08-14 publication to its 2025-09-12 close."
+          },
+          {
+            "candidateId": "2026-02769",
+            "rationale": "The 2027 ACA Notice of Benefit and Payment Parameters had a short comment window, running from its 2026-02-11 publication to its 2026-03-13 close."
+          },
+          {
+            "candidateId": "2026-03968",
+            "rationale": "The CRUSH request for information on suspicious healthcare had a short comment window, published 2026-02-27 and closed 2026-03-30."
+          },
+          {
+            "candidateId": "2026-12344",
+            "rationale": "The Pharmacy Benefit Manager Compensation and Data Collection RFI had a short comment window, published 2026-06-18 and closed 2026-07-20."
+          },
+          {
+            "candidateId": "2026-19535",
+            "rationale": "The Medicare Part D pharmacy contracting standards RFI is the only listed item with a comment period still open, running through 2026-11-23."
+          }
+        ],
+        "specificRationales": 6
+      },
+      {
+        "taskDescription": "upcoming CMS rule effective dates (operational-readiness calendar) this cycle",
+        "rawOutput": "[{\"candidateId\": \"2026-19061\", \"rationale\": \"Nearest effective date on the calendar at 2026-09-26, only 2 days out, for DNV's application for continued CMS approval of its Hospital Accreditation Program.\"}, {\"candidateId\": \"2026-15833\", \"rationale\": \"The FY 2027 IPPS and LTCH PPS rule, which also covers quality program requirements and updated health IT standards, takes effect 2026-10-01, just 7 days out.\"}, {\"candidateId\": \"2026-15686\", \"rationale\": \"The FY 2027 Hospice Wage Index, payment rate update and Hospice Quality Reporting Program requirements take effect 2026-10-01, 7 days out.\"}, {\"candidateId\": \"2026-15652\", \"rationale\": \"The FY 2027 Inpatient Rehabilitation Facility PPS and IRF Quality Reporting Program updates take effect 2026-10-01, 7 days out.\"}, {\"candidateId\": \"2026-15588\", \"rationale\": \"The FY 2027 Inpatient Psychiatric Facilities PPS rate update takes effect 2026-10-01, 7 days out.\"}, {\"candidateId\": \"2026-15562\", \"rationale\": \"The FY 2027 Skilled Nursing Facility PPS, consolidated billing and Quality Reporting Program updates take effect 2026-10-01, 7 days out.\"}]",
+        "latencyMs": 5661,
+        "topN": 6,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "2026-19061",
+            "rationale": "Nearest effective date on the calendar at 2026-09-26, only 2 days out, for DNV's application for continued CMS approval of its Hospital Accreditation Program."
+          },
+          {
+            "candidateId": "2026-15833",
+            "rationale": "The FY 2027 IPPS and LTCH PPS rule, which also covers quality program requirements and updated health IT standards, takes effect 2026-10-01, just 7 days out."
+          },
+          {
+            "candidateId": "2026-15686",
+            "rationale": "The FY 2027 Hospice Wage Index, payment rate update and Hospice Quality Reporting Program requirements take effect 2026-10-01, 7 days out."
+          },
+          {
+            "candidateId": "2026-15652",
+            "rationale": "The FY 2027 Inpatient Rehabilitation Facility PPS and IRF Quality Reporting Program updates take effect 2026-10-01, 7 days out."
+          },
+          {
+            "candidateId": "2026-15588",
+            "rationale": "The FY 2027 Inpatient Psychiatric Facilities PPS rate update takes effect 2026-10-01, 7 days out."
+          },
+          {
+            "candidateId": "2026-15562",
+            "rationale": "The FY 2027 Skilled Nursing Facility PPS, consolidated billing and Quality Reporting Program updates take effect 2026-10-01, 7 days out."
+          }
+        ],
+        "specificRationales": 6
+      },
+      {
+        "taskDescription": "NIH award notices by dollar amount this cycle",
+        "rawOutput": "[{\"candidateId\": \"3OT2HL161847-01S3\", \"rationale\": \"At $109,438,442, NYU's award for the Post-Acute Sequelae of SARS-CoV-2 Infection Initiative cores is the largest notice on the list, roughly double the next-largest.\"}, {\"candidateId\": \"3OT2HL158287-01SE\", \"rationale\": \"Westat received $52,660,898 for the NHLBI Community Engagement Technical Assistance Center (CETAC), the second-largest single notice.\"}, {\"candidateId\": \"3OT2OD036464-01S5\", \"rationale\": \"NORC received $43,055,956 for the All of Us Collaborative Services Center, one of several large All of Us precision-medicine awards.\"}, {\"candidateId\": \"3OT2OD035404-01SA\", \"rationale\": \"Vanderbilt University Medical Center received $40,678,454 for the All of Us Research Program Data and Research Center.\"}, {\"candidateId\": \"1OT2HL180049-01\", \"rationale\": \"Westat received a new $40,000,000 award for the TOPMed Artificial Intelligence Coordinating Center, a major new AI-focused investment.\"}, {\"candidateId\": \"5UM1AI068619-20\", \"rationale\": \"Family Health International received $39,569,992 for the HIV Prevention Trials Network Leadership and Operations Center, the largest of the many HIV network awards.\"}, {\"candidateId\": \"5UM1AI068636-19\", \"rationale\": \"UCLA received $36,436,959 for Advancing Clinical Therapeutics Globally for HIV/AIDS and Other Infections.\"}, {\"candidateId\": \"5U19AG078109-05\", \"rationale\": \"The University of North Texas Health Science Center received $32,984,606 for the Health & Aging Brain Study - Health Disparities, the largest aging and brain-health award listed.\"}, {\"candidateId\": \"5U01AG009740-37\", \"rationale\": \"The University of Michigan received $32,538,512 for the long-running Health and Retirement Study (Years 35-40).\"}, {\"candidateId\": \"1OT2OD043072-01\", \"rationale\": \"Research Triangle Institute received a new $32,500,000 award for the DEPEND nutrition Coordinating Center.\"}]",
+        "latencyMs": 6824,
+        "topN": 10,
+        "accepted": true,
+        "rejectionReason": null,
+        "selections": [
+          {
+            "candidateId": "3OT2HL161847-01S3",
+            "rationale": "At $109,438,442, NYU's award for the Post-Acute Sequelae of SARS-CoV-2 Infection Initiative cores is the largest notice on the list, roughly double the next-largest."
+          },
+          {
+            "candidateId": "3OT2HL158287-01SE",
+            "rationale": "Westat received $52,660,898 for the NHLBI Community Engagement Technical Assistance Center (CETAC), the second-largest single notice."
+          },
+          {
+            "candidateId": "3OT2OD036464-01S5",
+            "rationale": "NORC received $43,055,956 for the All of Us Collaborative Services Center, one of several large All of Us precision-medicine awards."
+          },
+          {
+            "candidateId": "3OT2OD035404-01SA",
+            "rationale": "Vanderbilt University Medical Center received $40,678,454 for the All of Us Research Program Data and Research Center."
+          },
+          {
+            "candidateId": "1OT2HL180049-01",
+            "rationale": "Westat received a new $40,000,000 award for the TOPMed Artificial Intelligence Coordinating Center, a major new AI-focused investment."
+          },
+          {
+            "candidateId": "5UM1AI068619-20",
+            "rationale": "Family Health International received $39,569,992 for the HIV Prevention Trials Network Leadership and Operations Center, the largest of the many HIV network awards."
+          },
+          {
+            "candidateId": "5UM1AI068636-19",
+            "rationale": "UCLA received $36,436,959 for Advancing Clinical Therapeutics Globally for HIV/AIDS and Other Infections."
+          },
+          {
+            "candidateId": "5U19AG078109-05",
+            "rationale": "The University of North Texas Health Science Center received $32,984,606 for the Health & Aging Brain Study - Health Disparities, the largest aging and brain-health award listed."
+          },
+          {
+            "candidateId": "5U01AG009740-37",
+            "rationale": "The University of Michigan received $32,538,512 for the long-running Health and Retirement Study (Years 35-40)."
+          },
+          {
+            "candidateId": "1OT2OD043072-01",
+            "rationale": "Research Triangle Institute received a new $32,500,000 award for the DEPEND nutrition Coordinating Center."
+          }
+        ],
+        "specificRationales": 9
+      },
+      {
+        "taskDescription": "NIH award dollars by recipient organization this cycle",
+        "rawOutput": "[{\"candidateId\": \"FRED HUTCHINSON CANCER CENTER\", \"rationale\": \"Fred Hutchinson Cancer Center leads all 46 candidates at $225,892,177 total across sampled awards.\"}, {\"candidateId\": \"WESTAT, INC.\", \"rationale\": \"Westat, Inc. ranks second at $217,190,119, the largest total for a non-academic organization among the candidates.\"}, {\"candidateId\": \"NEW YORK UNIVERSITY SCHOOL OF MEDICINE\", \"rationale\": \"NYU School of Medicine has the highest total of any university in the list at $126,287,296.\"}, {\"candidateId\": \"UNIVERSITY OF MICHIGAN AT ANN ARBOR\", \"rationale\": \"The University of Michigan at Ann Arbor is among the top recipients at $112,172,085 across sampled awards.\"}, {\"candidateId\": \"UNIVERSITY OF NORTH TEXAS HLTH SCI CTR\", \"rationale\": \"The University of North Texas Health Science Center totals $97,719,133, ahead of many larger-profile research universities in this list.\"}, {\"candidateId\": \"NATIONAL OPINION RESEARCH CENTER\", \"rationale\": \"The National Opinion Research Center received $97,459,171, another large total going to a non-university organization.\"}, {\"candidateId\": \"WASHINGTON UNIVERSITY\", \"rationale\": \"Washington University totals $95,572,246, placing it among the leading academic recipients.\"}, {\"candidateId\": \"FOUR POINTS TECHNOLOGY, LLC\", \"rationale\": \"Four Points Technology, LLC received $78,351,172, a notably large total for a technology company in a list dominated by research institutions.\"}, {\"candidateId\": \"UNIVERSITY OF SOUTHERN CALIFORNIA\", \"rationale\": \"The University of Southern California totals $76,388,075, ranking just above Mayo Clinic Rochester's $76,046,194.\"}, {\"candidateId\": \"VANDERBILT UNIVERSITY MEDICAL CENTER\", \"rationale\": \"Vanderbilt University Medical Center received $65,678,454 across sampled awards, just above Family Health International's $64,999,665.\"}]",
+        "latencyMs": 7263,
+        "topN": 10,
+        "accepted": false,
+        "rejectionReason": "ungrounded rationale (46)",
+        "selections": [],
+        "specificRationales": 0
+      }
+    ],
+    "aggregate": {
+      "calls": 16,
+      "acceptanceRate": 0.8125,
+      "rejectionReasons": {
+        "ungrounded rationale (…)": 3
+      },
+      "specificityRate": 0.9879518072289156,
+      "fillRate": 1,
+      "meanLatencyMs": 6156.75,
+      "estimatedCostUsd": 0.23767699999999997
+    }
+  }
+]

@@ -31,7 +31,8 @@ async function llmSynthesis(insights: Insight[], ctx: AgentContext): Promise<str
     system:
       "You synthesize structured healthcare-market insights into a short executive narrative. 2-4 sentences. Use only the facts given - copy numbers exactly, never invent a number, source, or company name, and name a company only if that exact name appears in the facts.",
     user: `Synthesize these insights for an executive reader:\n${facts}`,
-    maxOutputTokens: 300,
+    maxOutputTokens: 1024, // was 300; headroom for reasoning models' hidden tokens (billing is per token generated)
+    effort: "low", // a 2-4 sentence summary of given facts; only the fallback narrative once the analyst runs
   });
   // Published without human review in autonomous runs - an ungrounded narrative falls back to the rule-based one rather than going live.
   return text && checkGrounding(text, facts).grounded ? text : null;

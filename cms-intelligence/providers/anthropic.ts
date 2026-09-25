@@ -13,6 +13,16 @@ const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
 const DEFAULT_MAX_OUTPUT_TOKENS = 400;
 const ANTHROPIC_VERSION = "2023-06-01";
 
+/**
+ * Sonnet 5 and Opus 5.5 think by default (adaptive thinking) and their
+ * thinking tokens count against max_tokens; `output_config.effort` is how
+ * to dial that down or up. Haiku 4.5 and older models don't think by
+ * default and reject the effort field with a 400, so it's never sent to them.
+ */
+function acceptsEffort(model: string): boolean {
+  return !/haiku-4-5|sonnet-4-5|claude-3/.test(model);
+}
+
 export function createAnthropicProvider(apiKey: string, model: string = DEFAULT_MODEL): ModelProvider {
   return {
     name: `anthropic:${model}`,
@@ -29,6 +39,7 @@ export function createAnthropicProvider(apiKey: string, model: string = DEFAULT_
           max_tokens: options.maxOutputTokens ?? DEFAULT_MAX_OUTPUT_TOKENS,
           system: options.system,
           messages: [{ role: "user", content: options.user }],
+          ...(options.effort && acceptsEffort(model) ? { output_config: { effort: options.effort } } : {}),
         }),
       });
 

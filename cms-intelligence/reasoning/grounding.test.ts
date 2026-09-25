@@ -20,8 +20,20 @@ describe("ungroundedNumbers", () => {
     expect(ungroundedNumbers("The top 3 findings across 2 agents.", SOURCE)).toEqual([]);
   });
 
-  it("rejects unit conversions rather than guessing they're equivalent", () => {
-    expect(ungroundedNumbers("About 8.6 thousand agencies.", SOURCE)).toEqual(["8.6"]);
+  it("accepts an abbreviated form of a real number (real Haiku answers from the 2026-09-25 salience run)", () => {
+    const source = "award $109,438,442 to NYU; FRED HUTCHINSON $225,892,177 total; 13,067,487 enrollees";
+    expect(ungroundedNumbers("Largest single award at $109.4M to NYU.", source)).toEqual([]);
+    expect(ungroundedNumbers("Highest award recipient at $225.9M.", source)).toEqual([]);
+    expect(ungroundedNumbers("About 13.1 million enrollees.", source)).toEqual([]);
+    expect(ungroundedNumbers("About 8.6 thousand agencies.", SOURCE)).toEqual([]);
+  });
+
+  it("still rejects an abbreviation that doesn't round to any real number", () => {
+    expect(ungroundedNumbers("An award of $142.7M.", "award $109,438,442")).toEqual(["$142.7M"]);
+  });
+
+  it("doesn't mistake an ordinary word after a number for an abbreviation", () => {
+    expect(ungroundedNumbers("Serves 330 Medicare agencies.", SOURCE)).toEqual([]);
   });
 });
 

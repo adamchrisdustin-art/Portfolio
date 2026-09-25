@@ -13,6 +13,14 @@ import path from "node:path";
 import { BENCHMARK_SUITE } from "./benchmarkSuite";
 import { buildComparisonReport } from "./comparisonReport";
 import { aggregate } from "./runner";
+import {
+  aggregateSalience,
+  buildSalienceReport,
+  captureSalienceCalls,
+  scoreSalienceResponse,
+  type SalienceCall,
+  type SalienceRun,
+} from "./salienceBenchmark";
 import { scoreResponse } from "./scorer";
 import type { ProviderRunResult } from "./types";
 
@@ -29,8 +37,28 @@ export function rescoreRuns(runs: ProviderRunResult[]): ProviderRunResult[] {
   });
 }
 
-function main() {
-  for (const file of fs.readdirSync(RESULTS_DIR).filter((f) => f.endsWith("-results.json"))) {
+/** Salience runs re-score against freshly captured prompts - capture is deterministic over the committed data, so call i is the same prompt the saved answer i responded to. */
+async function rescoreSalienceFile(resultsPath: string, calls: SalienceCall[]) {
+  const runs = JSON.parse(fs.readFileSync(resultsPath, "utf-8")) as SalienceRun[];
+  const rescored = runs.map((run) => {
+    const results = run.results.map((r, i) => {
+      if (calls[i]?.taskDescription !== r.taskDescription) throw new Error(`${resultsPath}: prompt ${i} no longer matches - data changed since this run`);
+      return scoreSalienceResponse(calls[i], r.rawOutput, r.latencyMs);
+    });
+    return { ...run, results, aggregate: aggregateSalience(run.providerName, results, calls) };
+  });
+  fs.writeFileSync(resultsPath, JSON.stringify(rescored, null, 2));
+  fs.writeFileSync(resultsPath.replace(/-results\.json$/, "-report.md"), buildSalienceReport(rescored));
+  console.log(`[rescore] ${path.basename(resultsPath)}: ${rescored.map((r) => `${r.providerName} ${Math.round(r.aggregate.acceptanceRate * 100)}%`).join(", ")}`);
+}
+
+async function main() {
+  const salienceFiles = fs.readdirSync(RESULTS_DIR).filter((f) => f.endsWith("-salience-results.json"));
+  if (salienceFiles.length > 0) {
+    const calls = await captureSalienceCalls();
+    for (const file of salienceFiles) await rescoreSalienceFile(path.join(RESULTS_DIR, file), calls);
+  }
+  for (const file of fs.readdirSync(RESULTS_DIR).filter((f) => f.endsWith("-results.json") && !f.endsWith("-salience-results.json"))) {
     const resultsPath = path.join(RESULTS_DIR, file);
     const runs = rescoreRuns(JSON.parse(fs.readFileSync(resultsPath, "utf-8")) as ProviderRunResult[]);
     fs.writeFileSync(resultsPath, JSON.stringify(runs, null, 2));
@@ -39,4 +67,9 @@ function main() {
   }
 }
 
-if (process.argv[1]?.endsWith("rescore.ts")) main();
+if (process.argv[1]?.endsWith("rescore.ts")) {
+  main().catch((err) => {
+    console.error("[rescore] failed:", err);
+    process.exitCode = 1;
+  });
+}

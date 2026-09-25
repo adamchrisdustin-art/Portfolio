@@ -123,7 +123,13 @@ export async function runExecutiveAnalyst(
   const facts = factsPayload(insights, changedSourceIds);
   let raw: string | null = null;
   try {
-    raw = await provider.generate({ system: SYSTEM_PROMPT, user: userPrompt(facts, changedSourceIds), maxOutputTokens: 4096 });
+    raw = await provider.generate({
+      system: SYSTEM_PROMPT,
+      user: userPrompt(facts, changedSourceIds),
+      // The one judgment call a leader actually reads: think hard (Opus 5.5 defaults to medium), with room so thinking can't crowd out the answer.
+      effort: "high",
+      maxOutputTokens: 16000,
+    });
   } catch {
     raw = null;
   }

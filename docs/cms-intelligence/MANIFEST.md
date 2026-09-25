@@ -428,3 +428,18 @@ corrected: it's Claude Code cloud-session credit, not API credit.
 API keys are repository secrets `HEALTHCARE_INTEL_ANTH` and
 `HEALTHCARE_INTEL_OAI`, mapped in the workflow onto the standard variable
 names.
+
+**Salience benchmark** (2026-09-25, same session): tested all six models
+on the 16 real salience prompts production sends, judged by production's
+own acceptance rule (`salienceBenchmark.ts`, `run-salience-evaluation.ts`).
+GPT-6 Luna was accepted 100% of the time at about $0.006 per monthly run,
+which confirms it as the salience model by measurement rather than
+inference.
+
+Fixes the benchmark prompted:
+- **Thinking effort per call.** Sonnet 5 and Opus 5.5 think by default and
+  had exhausted the output cap: low for salience and synthesis, high for
+  the analyst, and never sent to Haiku, which rejects it.
+- **Larger output caps.**
+- **Grounding accepts abbreviations** such as "$109.4M".
+- **Re-scoring:** `rescore.ts` now also re-scores salience runs for free.
