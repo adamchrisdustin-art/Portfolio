@@ -50,7 +50,7 @@ const DATASET_NAME = "fda-drug-approvals";
 // comfortably under the raised LIMIT below (openFDA's documented max
 // per-request limit is 1000), so this stays a single real request with
 // no pagination needed and no silent truncation.
-const WINDOW_DAYS = 730;
+export const WINDOW_DAYS = 730;
 const BASE_URL = "https://api.fda.gov/drug/drugsfda.json";
 const LIMIT = 1000;
 

@@ -57,7 +57,7 @@ const DATASET_NAME = "nih-reporter-awards";
 // by-dollar sampling is already a deliberate, disclosed bound (see this
 // file's own header), so widening the window just draws that same real
 // sample from a larger real population, no truncation risk introduced.
-const WINDOW_DAYS = 730;
+export const WINDOW_DAYS = 730;
 const BASE_URL = "https://api.reporter.nih.gov/v2/projects/search";
 const LIMIT = 100;
 

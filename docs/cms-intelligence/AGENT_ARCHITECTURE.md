@@ -148,7 +148,7 @@ to Policy/Regulation/CMS Programs).
 utilization aggregates from the Claims/Utilization/Cost agent's processed
 output (not raw claims — this agent doesn't re-derive utilization itself).
 **Second Phase 5 addendum (2026-09-23):** also reads CMS Home Health Care
-Agencies directly (all states, not the 5-state physician sample) for a
+Agencies directly (all states) for a
 state-level capacity/investment signal — episodes-per-agency (a real
 utilization/demand proxy derived from the dataset itself, since no
 external population/eligible-beneficiary source is wired) ranked among

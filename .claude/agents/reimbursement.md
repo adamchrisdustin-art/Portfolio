@@ -19,7 +19,7 @@ Proposed/final rule tracking with explicit status; fee-schedule/rate-change moni
 Confirming whether a payment change actually showed up in claims/utilization data yet — that's `claims-utilization-intelligence`'s job (Q035's lagging-indicator half).
 
 ## Primary sources
-Medicare Physician Fee Schedule; IPPS/OPPS final rules; Federal Register; regulations.gov. **Real as of the Phase 5 addendum (2026-09-23):** CMS Medicare Physician & Other Practitioners by Provider and Service (`cms-intelligence/data/adapters/physicianOtherPractitioners.ts`, 5-state sample) — a live "external reimbursement benchmark" (submitted charge vs. actual Medicare payment by provider type), the agent's first real output, tagged Q031.
+Medicare Physician Fee Schedule; IPPS/OPPS final rules; Federal Register; regulations.gov. **Real as of the Phase 5 addendum (2026-09-23):** CMS Medicare Physician & Other Practitioners by Provider (`cms-intelligence/data/adapters/physicianByProviderSummary.ts`, every Part B provider nationally, each data year from 2013; replaced the original 5-state sample on 2026-09-25) — a live "external reimbursement benchmark" (submitted charge vs. actual Medicare payment by provider type), the agent's first real output, tagged Q031.
 
 ## Secondary sources
 `cms-policy-intelligence`'s broader program-tracking output, for the payment-mechanics subset specifically.

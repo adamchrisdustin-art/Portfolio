@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { LAYER_LABELS } from "@/cms-intelligence/agents/dashboardLayers";
+import { SPECIALISTS } from "@/cms-intelligence/agents/teamRoster";
+import { buildCaseStudyFacts, describeDuration } from "@/cms-intelligence/analytics/caseStudyFacts";
+import { SOURCE_LABELS } from "@/cms-intelligence/data/sources/sourceLabels";
 import { runFullSweep } from "@/cms-intelligence/agents/orchestrator/fullSweep";
 import { buildAnalyticsOverview } from "@/cms-intelligence/analytics/overview";
 import { currentReasonedRun } from "@/cms-intelligence/reasoning/monthlyRun";
@@ -14,6 +17,13 @@ export const metadata: Metadata = {
   title: "Healthcare Intelligence Dashboard",
   description:
     "A multi-agent executive intelligence system built on public CMS data - evidence-backed insights, traceable to source, never fabricated.",
+};
+
+// Semicolons when an item has its own comma ("Claims, Utilization & Cost"), so the item count stays readable.
+const listOf = (items: string[]) => {
+  if (items.length <= 2) return items.join(" and ");
+  const sep = items.some((i) => i.includes(",")) ? "; " : ", ";
+  return `${items.slice(0, -1).join(sep)}${sep}and ${items[items.length - 1]}`;
 };
 
 const LAYER_EMPTY_REASONS: Record<string, string> = {
@@ -57,6 +67,23 @@ export default async function HealthcareIntelligencePage() {
     { key: "policy-program-watch", label: LAYER_LABELS["policy-program-watch"] },
     { key: "emerging-signals", label: LAYER_LABELS["emerging-signals"] },
   ];
+
+  // Case-study copy is computed from the data so each monthly refresh keeps it true.
+  const facts = buildCaseStudyFacts();
+  const liveSources = Array.from(new Set(sweep.allInsights.flatMap((i) => i.sourceIds))).map((id) => SOURCE_LABELS[id] ?? { name: id, group: "other-federal" as const });
+  const cmsSources = liveSources.filter((s) => s.group === "cms").map((s) => s.name);
+  const otherSources = liveSources.filter((s) => s.group === "other-federal").map((s) => s.name);
+  const domainAgents = SPECIALISTS.filter((m) => m.status !== "infrastructure");
+  const infrastructureAgents = SPECIALISTS.filter((m) => m.status === "infrastructure");
+  const snapshotHistory = describeDuration(facts.snapshotHistoryDays);
+  const rollingWindow = facts.rollingWindowDays.map((d) => `${d}-day`).join(" / ");
+  const layersWithFindings = dashboardLayers.filter(({ key }) => sweep.insightsByLayer[key].length > 0).length;
+  const elevatedFindings = sweep.allInsights.filter((i) => i.confidence !== "low").length;
+  const backfilled = [
+    facts.physician && `physician payments ${facts.physician.firstYear}–${facts.physician.lastYear}`,
+    facts.maMonths && `${facts.maMonths.count} monthly Medicare Advantage reports since ${facts.maMonths.first}`,
+    facts.marketplacePlanYears && `Marketplace plan years ${facts.marketplacePlanYears.first}–${facts.marketplacePlanYears.last}`,
+  ].filter((x): x is string => Boolean(x));
 
   return (
     <>
@@ -115,11 +142,8 @@ export default async function HealthcareIntelligencePage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 14 }}>
           <StatTile label="Specialist agents run this cycle" value={String(sweep.agentStatuses.length)} />
           <StatTile label="Evidence-backed insights" value={String(sweep.allInsights.length)} />
-          <StatTile label="Real data sources wired" value="10" />
-          <StatTile
-            label="Layers with real findings"
-            value={`${Object.values(sweep.insightsByLayer).filter((l) => l.length > 0).length} / 6`}
-          />
+          <StatTile label="Real data sources in use" value={String(liveSources.length)} />
+          <StatTile label="Layers with real findings" value={`${layersWithFindings} / ${dashboardLayers.length}`} />
         </div>
       </section>
 
@@ -253,11 +277,9 @@ export default async function HealthcareIntelligencePage() {
           <div>
             <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Architecture</h3>
             <p style={{ margin: 0, color: "var(--text-muted)", marginBottom: 10 }}>
-              Dashboard → Executive Orchestrator → 12 agents: 10 domain specialists (market growth, claims and
-              cost, reimbursement, provider network, Medicare Advantage/Part D, Medicaid, Marketplace, policy,
-              emerging trends, market catalysts) and two infrastructure agents (data-source monitoring and the
-              shared semantic model) → data adapters → public sources (CMS program data plus SEC EDGAR, openFDA,
-              NIH RePORTER, and ClinicalTrials.gov). A model-provider interface sits behind every agent&apos;s
+              Dashboard → Executive Orchestrator → {SPECIALISTS.length} agents: {domainAgents.length} domain
+              specialists ({listOf(domainAgents.map((m) => m.domain))}) and {infrastructureAgents.length} infrastructure
+              agents ({listOf(infrastructureAgents.map((m) => m.domain))}) → data adapters → public sources. A model-provider interface sits behind every agent&apos;s
               reasoning step, so the same system can run on different language models without changing any
               business logic.
             </p>
@@ -270,24 +292,20 @@ export default async function HealthcareIntelligencePage() {
           <div>
             <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Data</h3>
             <p style={{ margin: 0, color: "var(--text-muted)" }}>
-              Currently live: 6 CMS-focused sources — Hospital General Information, Home Health Care Agencies,
-              Medicare Physician &amp; Other Practitioners (a 5-state sample, not the full national file), the
-              Federal Register API filtered to CMS as the publishing agency, CMS&apos;s Medicare Advantage/Part D
-              Monthly Enrollment by Plan file, and CMS&apos;s ACA Marketplace Rate PUF — plus 4 non-CMS sources behind
-              the Market/Catalyst agent: SEC EDGAR 8-K filings for a fixed 6-company health-insurer watchlist,
-              openFDA novel drug approvals, NIH RePORTER award notices, and ClinicalTrials.gov Phase 3 results
-              postings. The Federal Register feed and the 4 Market/Catalyst sources each use a rolling 730-day
-              (2-year) window, not full history — a real, live-verified choice: those sources&apos; own APIs support
-              historical date-range queries, unlike CMS&apos;s Provider Data Catalog API, which exposes only the
-              current dataset vintage (no historical-vintage parameter exists), so the CMS-program sources can only
-              accumulate real history forward from each future pull. The Marketplace file exposes only category
-              fields and an opaque issuer/plan identifier used solely as a count, never a carrier name; the MA/Part D
-              file does name a real parent organization on every row, and this project surfaces that name only for a
-              genuine, sourced finding (an enrollment ranking), never a fabricated or implied-proprietary claim (see
-              &quot;Known limitations&quot; below). The first three CMS sources are public, no-registration CMS Provider
-              Data Catalog / Datastore datasets; the rest are separate public federal/registry sources — chosen
-              because each is directly fetchable and updates on a predictable cadence, which matters for a project
-              run on a fixed budget and a monthly refresh schedule rather than a live production feed. Two
+              Currently live: {liveSources.length} public sources, counted from what the agents actually cited this
+              cycle. From CMS: {listOf(cmsSources)}. Beyond CMS, behind the Market/Catalyst agent: {listOf(otherSources)}.
+              The physician data counts every Part B provider nationally
+              {facts.physician ? ` (${facts.physician.latestProviderCount.toLocaleString()} in ${facts.physician.lastYear})` : ""}, not a sample.
+              The Federal Register feed and the Market/Catalyst sources each use a rolling {rollingWindow} window, not full
+              history. Files CMS publishes one year or month at a time are backfilled: {listOf(backfilled)}. Hospital and
+              home health data come from CMS&apos;s Provider Data Catalog API, which exposes only the current dataset
+              vintage (no historical-vintage parameter exists), so those two can only accumulate real history forward
+              from each pull. The Marketplace file exposes only category fields and an opaque issuer/plan identifier
+              used solely as a count, never a carrier name; the MA/Part D file does name a real parent organization on
+              every row, and this project surfaces that name only for a genuine, sourced finding (an enrollment
+              ranking), never a fabricated or implied-proprietary claim (see &quot;Known limitations&quot; below). Every
+              source is public and directly fetchable, and updates on a predictable cadence, which matters for a
+              project run on a fixed budget and a monthly refresh schedule rather than a live production feed. Two
               independent CMS sources sharing the same states is also what makes the Emerging Signals cross-check
               above possible.
             </p>
@@ -300,7 +318,9 @@ export default async function HealthcareIntelligencePage() {
               Confidence levels aren&apos;t a vibe — they&apos;re computed from whether a finding has enough history,
               persists, and is corroborated by an independent source, and each finding&apos;s evidence drawer shows the
               level with its reasoning, not just a label. The level stays inside that drawer rather than on the
-              finding itself, since with only days of snapshot history nearly everything reads low for now. Every number is still computed by deterministic code, never an LLM — but which of several real,
+              finding itself, since with only {snapshotHistory} of hospital and home health snapshot history most
+              findings read low for now. Every
+              number is still computed by deterministic code, never an LLM — but which of several real,
               computed candidates is worth an executive&apos;s attention is a judgment call, so agents route that
               specific decision through a reasoning layer that can only choose among and briefly explain real
               candidates it&apos;s given, never invent one. Once a month, after the data refresh, the agents re-run
@@ -357,16 +377,15 @@ export default async function HealthcareIntelligencePage() {
                 </li>
               )}
               <li>
-                The physician dataset is a 5-state sample, not the full national file; the Federal Register feed,
-                and the 4 corporate/regulatory/research sources behind the Market/Catalyst agent, are each a rolling
-                730-day (2-year) window, not full history — CMS&apos;s own program datasets (hospital counts,
-                MA/Part D enrollment, Marketplace rates), by contrast, can only accumulate real history forward from
-                each future pull, since CMS&apos;s own live API exposes no historical-vintage parameter to backfill
-                from.
+                The Federal Register feed and the {otherSources.length} corporate/regulatory/research sources behind the
+                Market/Catalyst agent are each a rolling {rollingWindow} window, not full history. Hospital and home
+                health data have only {snapshotHistory} of history so far and can only build it forward from each pull,
+                since CMS&apos;s Provider Data Catalog API exposes no historical-vintage parameter to backfill from.
               </li>
               <li>
-                Confidence scores read low across the board — genuinely, not a bug — because there&apos;s only about
-                a week of real snapshot history behind them so far.
+                {sweep.allInsights.length - elevatedFindings} of {sweep.allInsights.length} findings read low confidence —
+                genuinely, not a bug. Confidence needs a pattern that persists across periods, and most findings rest
+                on {snapshotHistory} of snapshot history; {elevatedFindings === 0 ? "none has" : `the ${elevatedFindings} that reach medium or higher have`} enough history to check.
               </li>
               <li>
                 No proprietary insurer data is used anywhere — every number on this page is public data. A real

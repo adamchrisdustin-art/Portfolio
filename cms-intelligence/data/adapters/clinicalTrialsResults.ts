@@ -53,7 +53,7 @@ import path from "node:path";
 
 export const SOURCE_ID = "clinicaltrials-gov:phase3-results";
 const DATASET_NAME = "clinicaltrials-phase3-results";
-const WINDOW_DAYS = 730;
+export const WINDOW_DAYS = 730;
 const BASE_URL = "https://clinicaltrials.gov/api/v2/studies";
 const PAGE_SIZE = 1000; // ClinicalTrials.gov v2's documented real max page size
 const MAX_PAGES = 10; // real, disclosed safety cap - up to 10,000 raw studies per pull before this adapter would undercount

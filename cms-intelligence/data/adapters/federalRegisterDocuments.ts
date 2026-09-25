@@ -46,7 +46,7 @@ import path from "node:path";
 export const SOURCE_ID = "federal-register:cms-documents";
 const AGENCY_SLUG = "centers-for-medicare-medicaid-services";
 const BASE_URL = "https://www.federalregister.gov/api/v1/documents.json";
-const WINDOW_DAYS = 730;
+export const WINDOW_DAYS = 730;
 const PER_PAGE = 1000;
 const DATASET_NAME = "federal-register-documents";
 

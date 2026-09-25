@@ -50,7 +50,7 @@ const DATASET_NAME = "sec-edgar-healthcare-filings";
 // real older-filings pagination this endpoint also exposes (the
 // `filings.files` array) for any of this project's 6 actively-filing
 // tracked companies.
-const WINDOW_DAYS = 730;
+export const WINDOW_DAYS = 730;
 const REQUEST_DELAY_MS = 150; // SEC's documented rate-limit courtesy ask (~10 req/s ceiling; this is far under that)
 const USER_AGENT = "healthcare-intelligence-dashboard adamdustin.me (adam.chris.dustin@gmail.com)";
 
