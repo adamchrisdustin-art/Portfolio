@@ -26,6 +26,7 @@ import { loadLatestSnapshot as loadFederalRegisterSnapshot } from "../data/adapt
 import { loadLatestSnapshot as loadMaPartDSnapshot } from "../data/adapters/maPartDEnrollment";
 import { loadAllPlanYears as loadMarketplaceYears } from "../data/adapters/marketplaceRatePuf";
 import { panelStates } from "../intelligence/metrics/marketplaceTrends";
+import { loadAllOepYears, totalRow as oepTotalRow, valueOf as oepValue } from "../data/adapters/marketplaceEnrollment";
 import { tukeyBox } from "../intelligence/metrics/metrics";
 import { dateFromSnapshotFilename } from "../data/sources/snapshotHistory";
 import { boxplotByState } from "../agents/claims-utilization-cost/agent";
@@ -277,6 +278,14 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
         .slice(0, 8)
         .map(([label, value]) => ({ label, value })),
     };
+  }
+
+  const oepYears = loadAllOepYears();
+  const oep = oepYears[oepYears.length - 1];
+  const oepTotal = oep ? oepTotalRow(oep, "All") : null;
+  const selections = oep && oepTotal ? oepValue(oep, oepTotal, "Cnsmr") : null;
+  if (oep && selections !== null) {
+    kpis.push({ label: `Marketplace plan selections, all states and DC (${oep.planYear} open enrollment)`, value: selections.toLocaleString() });
   }
 
   if (marketplace && marketplace.states.length > 0) {

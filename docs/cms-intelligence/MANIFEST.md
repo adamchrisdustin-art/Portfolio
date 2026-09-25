@@ -136,7 +136,7 @@ reads; if either secret is missing, reasoning skips at $0.
    - Part B drug share: 10.7% of payment in 2013, 24.5% in 2024. This is
      also why the 2024 ophthalmology and ASC service counts jumped: drugs
      are counted in dose units (for example, aflibercept HD, new in 2024).
-7. **Marketplace, every HealthCare.gov state, 2014-2026: built 2026-09-25, not yet pushed.**
+7. **Marketplace, every HealthCare.gov state, 2014-2026: built and pushed 2026-09-25.**
    The Rate PUF is now joined to the Plan Attributes PUF and summarized
    per plan year (about 55KB a year). The 5-state sample it replaced was
    wrong in three ways:
@@ -164,10 +164,26 @@ reads; if either secret is missing, reasoning skips at $0.
      in 2018.
    The federal files only cover HealthCare.gov states (30 for 2026); 20
    states and DC run their own exchanges. Every comparison uses only
-   states present in the years compared. CMS's Open Enrollment
-   state-level PUF covers all 50 states and DC and would also answer
-   Q066 (enrollment) - a candidate next source.
-8. **Salience benchmark note.** Every rejected salience answer
+   states present in the years compared. The Data Explorer shows the 5
+   fastest-rising states' benchmark since 2014 as a line chart.
+8. **Marketplace enrollment, every state and DC, 2020-2026: built
+   2026-09-25, not yet pushed.** CMS's Open Enrollment state-level files
+   (`cms:marketplace-oep-state`) cover state-run exchanges too, and
+   answer Q066. 2017-2019 exist only as Excel report workbooks and are
+   skipped. CMS labels state-run exchanges "SBM" in 2021-2024 and "SBE"
+   otherwise; both are stored as SBE. What the data shows:
+   - Plan selections doubled from 11.41M (2020) to 24.32M (2025), then
+     fell 4.9% to 23.13M for 2026, breaking from the pattern, and fell
+     in 41 of 51 states. New consumers fell 12.7%.
+   - The enrollment-weighted average premium after subsidy rose from
+     $113 to $178 a month (+58%), consistent with the enhanced premium
+     tax credits expiring.
+   - North Carolina fell most (-21.9%, 213,653 fewer), then Ohio
+     (-19.5%); New Mexico rose 18.1% and Texas 5.2%.
+   - Across states, larger after-subsidy increases went weakly with
+     larger enrollment losses (r = -0.29, just past the 0.27 threshold
+     for 51 states).
+9. **Salience benchmark note.** Every rejected salience answer
    in the benchmark was a model calculating a number itself (day spans,
    counts, sums). Telling the salience prompt "copy numbers exactly, never
    calculate new ones", as the analyst prompt already does, would likely

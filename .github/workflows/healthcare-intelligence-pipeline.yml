@@ -55,6 +55,9 @@ jobs:
       - name: Summarize CMS Marketplace Rate + Plan Attributes PUFs (every HealthCare.gov state; newest plan year re-checked, older years kept)
         run: npx tsx cms-intelligence/data/adapters/pull-marketplace-rate-puf.ts
 
+      - name: Pull CMS Marketplace Open Enrollment state-level PUFs (every state and DC)
+        run: npx tsx cms-intelligence/data/adapters/pull-marketplace-enrollment.ts
+
       - name: Pull SEC EDGAR 8-K filings (health-insurer watchlist)
         run: npx tsx cms-intelligence/data/adapters/pull-sec-edgar-filings.ts
 

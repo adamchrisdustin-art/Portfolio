@@ -16,6 +16,9 @@
  * - Deductible trend (Q069): silver and bronze deductibles.
  * - Issuer participation (Q071): issuer entry and exit by state, counted by
  *   opaque HIOS id, never named.
+ * - Enrollment (Q066) and premium after subsidy against enrollment, from
+ *   CMS's Open Enrollment state-level files, every state and DC
+ *   (enrollmentInsights.ts, added 2026-09-25).
  *
  * Every comparison is like-for-like: series use states present in every
  * year, and year-over-year changes use states present in both years
@@ -29,6 +32,7 @@ import { checkAgainstHistory, type HistoryCheck } from "../../intelligence/metri
 import { selectNoteworthy, type Candidate } from "../../intelligence/salience/selectNoteworthy";
 import { classifyConfidence, directionOf, meetsPersistence } from "../../intelligence/trends/trend";
 import type { AgentContext, DomainAgent } from "../types";
+import { enrollmentInsights } from "./enrollmentInsights";
 
 const AGENT_ID = "commercial-marketplace-intelligence";
 const TOP_N_STATES = 8;
@@ -71,9 +75,8 @@ export const commercialMarketplaceAgent: DomainAgent = {
 
   async run(ctx: AgentContext): Promise<Insight[]> {
     const years = loadAllPlanYears();
-    if (years.length < 2) return [];
-    const insights = [benchmarkTrendInsight(years), await benchmarkStateInsight(years, ctx), deductibleInsight(years), await issuerInsight(years, ctx)];
-    return insights.filter((i): i is Insight => i !== null);
+    const rateInsights = years.length < 2 ? [] : [benchmarkTrendInsight(years), await benchmarkStateInsight(years, ctx), deductibleInsight(years), await issuerInsight(years, ctx)];
+    return [...rateInsights.filter((i): i is Insight => i !== null), ...(await enrollmentInsights(ctx))];
   },
 };
 

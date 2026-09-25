@@ -23,6 +23,7 @@ export const SOURCE_ID_BY_DATASET: Record<string, string> = {
   "home-health-care-agencies": "cms:home-health-care-agencies",
   "hospital-general-information": "cms:hospital-general-information",
   "ma-part-d-enrollment": "cms:ma-part-d-enrollment",
+  "marketplace-oep-state": "cms:marketplace-oep-state",
   "marketplace-rate-puf": "cms:marketplace-rate-puf",
   "medicare-physician-by-provider-summary": "cms:medicare-physician-by-provider",
   "medicare-physician-by-service-summary": "cms:medicare-physician-by-service",

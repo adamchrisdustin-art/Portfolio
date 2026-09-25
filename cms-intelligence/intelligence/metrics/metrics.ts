@@ -114,6 +114,11 @@ export function pearsonCorrelation(xs: number[], ys: number[]): number {
   return numerator / Math.sqrt(denomX * denomY);
 }
 
+/** Smallest |r| that is significant at p < 0.05 (two-tailed) for n points: t = 1.96 approximation, r = t / sqrt(n - 2 + t^2). */
+export function criticalR(n: number): number {
+  return 1.96 / Math.sqrt(n - 2 + 1.96 ** 2);
+}
+
 export interface TukeyBox extends Quartiles {
   whiskerLow: number;
   whiskerHigh: number;

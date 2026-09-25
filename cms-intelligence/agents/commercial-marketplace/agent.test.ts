@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { validateInsight } from "../../intelligence/evidence/validate";
 import { loadAllPlanYears } from "../../data/adapters/marketplaceRatePuf";
+import { loadAllOepYears } from "../../data/adapters/marketplaceEnrollment";
 import { commercialMarketplaceAgent } from "./agent";
 
-/** Runs against the real CMS Marketplace plan-year summaries committed to this repo. */
+/** Runs against the real CMS Marketplace plan-year summaries and open enrollment files committed to this repo. */
 describe("commercialMarketplaceAgent", () => {
   it("produces benchmark, state, deductible and issuer insights from every plan year", async () => {
-    const insights = await commercialMarketplaceAgent.run({ modelProvider: null });
+    const insights = (await commercialMarketplaceAgent.run({ modelProvider: null })).filter((i) => i.sourceIds.includes("cms:marketplace-rate-puf"));
     expect(insights.map((i) => i.id.replace(/^sig-marketplace-\d{4}-/, "")).sort()).toEqual(["benchmark-by-state", "benchmark-trend", "deductible-trend", "issuer-participation"]);
     for (const insight of insights) {
       expect(() => validateInsight(insight)).not.toThrow();
@@ -17,6 +18,20 @@ describe("commercialMarketplaceAgent", () => {
     }
     const trend = insights.find((i) => i.id.endsWith("benchmark-trend"))!;
     expect(trend.series?.points.length).toBe(loadAllPlanYears().length);
+  });
+
+  it("produces enrollment insights for every state and DC from the open enrollment files", async () => {
+    const insights = (await commercialMarketplaceAgent.run({ modelProvider: null })).filter((i) => i.sourceIds.includes("cms:marketplace-oep-state"));
+    expect(insights.map((i) => i.id.replace(/^sig-marketplace-\d{4}-/, "")).sort()).toEqual(["enrollment-by-state", "enrollment-trend", "net-premium-vs-enrollment"]);
+    for (const insight of insights) expect(() => validateInsight(insight)).not.toThrow();
+    const trend = insights.find((i) => i.id.endsWith("enrollment-trend"))!;
+    expect(trend.questionId).toBe("Q066");
+    expect(trend.series?.points.length).toBe(loadAllOepYears().length);
+    // Headline verbs carry the direction; the number must not repeat it as a sign ("fell -4.9%")
+    expect(trend.headline).not.toMatch(/(fell|rose) [+-]/);
+    const scatter = insights.find((i) => i.id.endsWith("net-premium-vs-enrollment"))!;
+    if (scatter.chart?.type !== "scatter") throw new Error("expected a scatter chart");
+    expect(scatter.chart.points.length).toBeGreaterThanOrEqual(10);
   });
 
   it("never names a carrier - issuers are counted by id only", async () => {

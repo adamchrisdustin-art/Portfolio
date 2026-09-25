@@ -49,7 +49,7 @@ import { loadAllYears as loadPhysicianYears, SOURCE_ID as PHYSICIAN_SOURCE_ID } 
 import { byState, US_STATES } from "../../intelligence/metrics/physicianTrends";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
-import { pearsonCorrelation } from "../../intelligence/metrics/metrics";
+import { criticalR, pearsonCorrelation } from "../../intelligence/metrics/metrics";
 import type { AgentContext, DomainAgent } from "../types";
 
 const AGENT_ID = "emerging-trends-signal-detection";
@@ -61,11 +61,6 @@ function ownershipConcentrationByState(rows: { state: string; hospital_ownership
     if (stateRows.length > 0) concentrations.set(state, cr4For(stateRows));
   }
   return concentrations;
-}
-
-/** Smallest |r| that is significant at p < 0.05 (two-tailed) for n points: t = 1.96 approximation, r = t / sqrt(n - 2 + t^2). */
-function criticalR(n: number): number {
-  return 1.96 / Math.sqrt(n - 2 + 1.96 ** 2);
 }
 
 export const emergingTrendsAgent: DomainAgent = {
