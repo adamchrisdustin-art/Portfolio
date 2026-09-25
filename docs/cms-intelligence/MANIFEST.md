@@ -68,7 +68,7 @@ reads; if either secret is missing, reasoning skips at $0.
    fit them. Outlier detection is also still open. The replay (Adam,
    2026-09-25) used the comparisons correctly: it led with the
    half-year Phase 3 decline and called final rules steady.
-4. **Full-population summary tables: built 2026-09-25, not yet pushed.**
+4. **Full-population summary tables: built and pushed 2026-09-25.**
    Adam asked whether the NIH and claims samples were hard API limits.
    They weren't. The limits were our own choices, mostly to keep
    committed snapshots small, never to save on model cost. Checking them
@@ -84,11 +84,19 @@ reads; if either secret is missing, reasoning skips at $0.
      own history, and state growth on standardized payment.
    - Reworked insights: the reimbursement agent's payment-to-charge
      benchmark now covers all providers nationally. The emerging-trends
-     correlation covers 51 states instead of 5. NIH totals and the
+     correlation covers the 50 states and DC (territories excluded)
+     instead of 5 states. NIH totals and the
      by-institute split cover every award.
    - NIH monthly counts joined the period comparisons, marked seasonal.
-   Pushing this changes the committed data, so the live Executive Pulse
-   falls back to the fixed ranking until the next reasoning run.
+   Pushing this changed the committed data, so the live Executive Pulse
+   shows the fixed ranking until the next reasoning run. That's Adam's
+   call (2026-09-25): no separate rerun now, wait for the next live test,
+   the Oct 1 cron, or project completion. The new workflow steps have
+   only run locally, so check the Oct 1 run's log: the physician step
+   should take seconds (every year is cached) and NIH about 6 minutes.
+   The revoked Anthropic key must be replaced in the
+   `HEALTHCARE_INTEL_ANTH` secret before then, or the analyst step fails
+   and the page keeps the fixed ranking.
 5. **Salience benchmark note.** Every rejected salience answer
    in the benchmark was a model calculating a number itself (day spans,
    counts, sums). Telling the salience prompt "copy numbers exactly, never
