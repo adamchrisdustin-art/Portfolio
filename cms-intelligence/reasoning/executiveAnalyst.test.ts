@@ -157,6 +157,35 @@ describe("runExecutiveAnalyst with period comparisons", () => {
     expect(result.briefing).toMatch(/22.6%/);
   });
 
+  it("gives the model the outliers and accepts text citing their values", async () => {
+    const [a] = twoFromDifferentAgents();
+    const outlierFacts = [
+      {
+        metric: "Year-over-year change in the benchmark premium",
+        sourceId: "cms:marketplace-rate-puf",
+        period: "plan year 2025 to 2026",
+        group: "HealthCare.gov states",
+        groupSize: 30,
+        median: "21.7%",
+        flaggedCount: 1,
+        outliers: [{ id: "AR", label: "AR", value: "69.1%", direction: "above" as const, modifiedZ: 6.2 }],
+      },
+    ];
+    const provider = fakeProvider((user) => {
+      expect(user).toContain("Outliers (JSON):");
+      return JSON.stringify({
+        topFindings: [{ insightId: a.id, whyItMatters: "Arkansas's benchmark premium rose 69.1%, far above the 21.7% median state." }],
+        patterns: [],
+        briefing: "Arkansas stands apart on premium growth at 69.1% against a 21.7% median, while the benchmark rose 44.4% elsewhere.",
+      });
+    });
+    const result = await runExecutiveAnalyst(insights, [], provider, [], outlierFacts);
+    expect(result.topFindings).toHaveLength(1);
+    // 44.4% was never computed, so the briefing is rejected even though the outlier numbers are real.
+    expect(result.briefing).toBeNull();
+    expect(result.rejected[0].reason).toMatch(/44.4/);
+  });
+
   it("still rejects a period number the code never computed", async () => {
     const provider = fakeProvider(() =>
       JSON.stringify({ topFindings: [], patterns: [], briefing: "Phase 3 results postings fell 912.7% year-over-year in the first half." })

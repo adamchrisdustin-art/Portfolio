@@ -14,6 +14,7 @@
  */
 import type { Insight } from "../intelligence/evidence/schema";
 import type { ModelProvider } from "../providers/types";
+import type { MetricOutlierFacts } from "./outlierFacts";
 import type { MetricPeriodFacts } from "./periodFacts";
 import { checkGrounding } from "./grounding";
 
@@ -63,6 +64,8 @@ Rules - a response that breaks one is discarded:
 
 Period comparisons: code compared each dated metric at every period length its history supports (month, quarter, half-year, year-over-year) and marked each comparison notable or not by a fixed statistical rule. Use them to choose the time view that shows a real shift. Mention a rise or fall only where notable is true, name the period length it appears at, and cite that comparison's own counts and period labels. Never describe a comparison whose notable is false as a rise, drop, surge, slowdown or shift; you may say a metric held steady across the periods checked. A notable comparison is a shift worth watching, not a trend.
 
+Outliers: code also compared each state (or service code) with the rest of its group in the same period and listed the ones far from the group median by a fixed robust rule (modified z-score above 3.5). An outlier differs from its peers; it is not a change over time, a ranking of importance, or evidence of a cause. Mention a state or service as unusual only if it is listed, and cite its value and the group median as given. A metric with an empty outliers list means no member stood apart; never call it uneven. flaggedCount can exceed the listed outliers when the list was capped.
+
 Patterns: a pattern is a real link where one fact bears on the other - the same population, program, market, or decision affected from two angles. Two independent counts that merely involve the same companies, or a share placed beside a count, are not a pattern even with a hedge attached. Fewer, stronger patterns beat filling the quota; [] is a good answer.`;
 
 function factsPayload(insights: Insight[], changedSourceIds: string[]): string {
@@ -84,7 +87,7 @@ function factsPayload(insights: Insight[], changedSourceIds: string[]): string {
   );
 }
 
-function userPrompt(facts: string, periods: string, changedSourceIds: string[]): string {
+function userPrompt(facts: string, periods: string, outliers: string, changedSourceIds: string[]): string {
   return `Sources with new data this cycle: ${changedSourceIds.length > 0 ? changedSourceIds.join(", ") : "none recorded"}.
 
 Facts (JSON):
@@ -92,6 +95,9 @@ ${facts}
 
 Period comparisons (JSON):
 ${periods}
+
+Outliers (JSON):
+${outliers}
 
 Respond with ONLY a raw JSON object (no markdown fence, no prose):
 {"topFindings": [{"insightId": "<id from facts>", "whyItMatters": "<1-2 sentences for a healthcare leader>"}],
@@ -127,20 +133,22 @@ export async function runExecutiveAnalyst(
   insights: Insight[],
   changedSourceIds: string[],
   provider: ModelProvider | null,
-  periodFacts: MetricPeriodFacts[] = []
+  periodFacts: MetricPeriodFacts[] = [],
+  outlierFacts: MetricOutlierFacts[] = []
 ): Promise<AnalystResult> {
   if (!provider) return none(null, "No model provider configured.");
   if (insights.length === 0) return none(provider.name, "No insights to reason over.");
 
   const insightFacts = factsPayload(insights, changedSourceIds);
   const periods = JSON.stringify(periodFacts);
-  // Grounding checks model text against both blocks it was given.
-  const facts = `${insightFacts}\n${periods}`;
+  const outliers = JSON.stringify(outlierFacts);
+  // Grounding checks model text against every block it was given.
+  const facts = `${insightFacts}\n${periods}\n${outliers}`;
   let raw: string | null = null;
   try {
     raw = await provider.generate({
       system: SYSTEM_PROMPT,
-      user: userPrompt(insightFacts, periods, changedSourceIds),
+      user: userPrompt(insightFacts, periods, outliers, changedSourceIds),
       // The one judgment call a leader actually reads: think hard (Opus 5.5 defaults to medium), with room so thinking can't crowd out the answer.
       effort: "high",
       maxOutputTokens: 16000,

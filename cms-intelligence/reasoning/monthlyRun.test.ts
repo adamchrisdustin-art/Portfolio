@@ -55,6 +55,7 @@ describe("runMonthlyReasoning", () => {
     expect(run.sweep.allInsights.length).toBeGreaterThan(0);
     // The code-computed period comparisons the analyst saw are saved with the run.
     expect(run.periodFacts?.length).toBeGreaterThan(0);
+    expect(run.outlierFacts?.length).toBeGreaterThan(0);
     // First run ever: every source counts as new.
     expect(run.changedDatasets.length).toBe(Object.keys(run.sourceFingerprints).length);
   });

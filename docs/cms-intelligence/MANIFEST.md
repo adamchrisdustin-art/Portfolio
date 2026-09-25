@@ -48,8 +48,34 @@ completion, whichever comes first. **Next, pick with Adam:**
   `run-salience-evaluation.ts` (a few cents for all six models) and
   compare acceptance with the 2026-09-25 runs. The production model
   (gpt-6-luna) was already at 100%, so this is a safety margin for it.
-- **Outlier detection for the analyst** (next up): flag states or services far from
-  the rest in a year, not only breaks from their own history.
+- **Outlier detection for the analyst: built 2026-09-25, not yet
+  replayed.** The analyst now also gets states and service codes that
+  sit far from the rest of their group in the latest period (rule and
+  metrics in TREND_FRAMEWORK.md, "Cross-sectional outliers"; code in
+  `intelligence/trends/outliers.ts` and `reasoning/outlierFacts.ts`).
+  Its prompt has rules for them, grounding checks them, and each
+  reasoned run saves them in `outlierFacts`. On the current data:
+  - Physician metrics by state and home health spending: no state stands
+    apart.
+  - Benchmark premium, 2025 to 2026: Arkansas +69.1% against a 21.7%
+    median; West Virginia's level ($1,093.95) against a $655.44 median.
+  - Marketplace consumers: New Mexico +18.1% against a -6.0% median;
+    new consumers up in Rhode Island and Mississippi against a -23.1%
+    median.
+  - Service codes, 2023 to 2024: 36 flagged. Top dollar moves are skin
+    substitutes (Q4205 +$878.7M, Q4262 -$870.7M) and eye injections
+    (aflibercept -$602.4M, faricimab +$481.3M).
+  To check the prompt, run the replay at the next live test (one Opus
+  call, about $0.05-0.10).
+- **Home health parsing bug: fixed 2026-09-25.** CMS writes episode
+  counts of 1,000+ with commas, and `Number()` turned them into NaN, so
+  the market-growth agent dropped 2,222 agencies holding 73% of all
+  episodes. Its headline changes from "AL, 330 episodes per agency" to
+  "NJ, 4,615". The fix is `parseNumericCell` in the home health adapter.
+  The replay pattern in step 1 below ("high-volume home health states run
+  above the 0.97 ratio") was built on the undercounted volumes; the next
+  reasoned run replaces it. The evaluation suite keeps the old figure as
+  a frozen task input.
 - **Marketplace 2017-2019 open enrollment:** Excel report workbooks with
   per-year layouts; needs a small xlsx reader. Low priority.
 - **Medicaid/T-MSIS:** still deprioritized as the most fragmented source.
@@ -109,7 +135,8 @@ reasoned run over the full data.
    (enrollment, hospitals, home health) have no dated history of their
    own, so they need monthly pulls to build up first. Their comparisons
    will need a level-based rule, because the Poisson count test doesn't
-   fit them. Outlier detection is also still open. The replay (Adam,
+   fit them. Outlier detection was built later the same day (see "Next"
+   above). The replay (Adam,
    2026-09-25) used the comparisons correctly: it led with the
    half-year Phase 3 decline and called final rules steady.
 4. **Full-population summary tables: built and pushed 2026-09-25.**

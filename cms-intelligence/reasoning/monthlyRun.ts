@@ -14,6 +14,7 @@ import path from "node:path";
 import { runFullSweep, type FullSweepResult } from "../agents/orchestrator/fullSweep";
 import type { ModelProvider } from "../providers/types";
 import { runExecutiveAnalyst, type AnalystResult } from "./executiveAnalyst";
+import { buildOutlierFacts, type MetricOutlierFacts } from "./outlierFacts";
 import { buildPeriodFacts, type MetricPeriodFacts } from "./periodFacts";
 import { changedSources, currentFingerprints, toSourceIds, type Fingerprints } from "./sourceFingerprints";
 
@@ -29,6 +30,8 @@ export interface ReasonedRun {
   sweep: FullSweepResult;
   /** Period comparisons the analyst was given. Absent on runs before 2026-09-25's second release. */
   periodFacts?: MetricPeriodFacts[];
+  /** Cross-sectional outliers the analyst was given. Absent on runs before the 2026-09-25 outlier release. */
+  outlierFacts?: MetricOutlierFacts[];
   analyst: AnalystResult;
 }
 
@@ -81,7 +84,8 @@ export async function runMonthlyReasoning(options: {
 
   const sweep = await runFullSweep({ modelProvider: salience });
   const periodFacts = buildPeriodFacts();
-  const analystResult = await runExecutiveAnalyst(sweep.allInsights, toSourceIds(changed), analyst, periodFacts);
+  const outlierFacts = buildOutlierFacts();
+  const analystResult = await runExecutiveAnalyst(sweep.allInsights, toSourceIds(changed), analyst, periodFacts, outlierFacts);
 
   const run: ReasonedRun = {
     schemaVersion: 1,
@@ -91,6 +95,7 @@ export async function runMonthlyReasoning(options: {
     changedDatasets: changed,
     sweep,
     periodFacts,
+    outlierFacts,
     analyst: analystResult,
   };
 

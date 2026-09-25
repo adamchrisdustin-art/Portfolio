@@ -109,6 +109,41 @@ An anomaly is *not* automatically an emerging trend — it is reported as
 `signalType: "anomaly"` and only reclassified to `"trend"` after meeting
 the Persistence rule below.
 
+## Cross-sectional outliers (implemented 2026-09-25)
+
+The anomaly rule above compares a value with its own history. A
+cross-sectional outlier is a member of a group (a state, a service
+code) that sits far from the rest of that group in the same period.
+`cms-intelligence/intelligence/trends/outliers.ts` implements it, and
+`cms-intelligence/reasoning/outlierFacts.ts` hands the results to the
+executive analyst.
+
+- **Rule:** Iglewicz and Hoaglin's modified z-score,
+  0.6745 × (value − median) / MAD, flagged when its absolute value is
+  above **3.5**. It uses median and MAD for the same reason as above: one
+  extreme member can't inflate the spread and hide itself or others. The
+  history rule's 2× MAD is not reused: across 51 states it would flag
+  about a quarter of them.
+- **Minimum group size: 10.** With a MAD of 0 (most members identical),
+  nothing is judged.
+- **Suppression:** states with fewer than 11 providers (or a prior-year
+  base under 11) are left out, per the Suppression rule below.
+- **Service codes** are compared only when paid at least $50M
+  (standardized) in both years, because small codes swing by large
+  percentages on little money. A flagged code is listed only if it moved
+  at least $25M, and at most the 10 largest dollar moves are listed.
+  `flaggedCount` still reports every flagged code.
+- **Metrics (latest period):** by state, physician standardized payment
+  per beneficiary-provider pair, services per pair, and year-over-year
+  payment and provider-count growth; Marketplace consumers and new
+  consumers year over year; the benchmark premium level and its
+  year-over-year change (HealthCare.gov states); and home health's
+  episode-weighted spending ratio. Also, by service code, year-over-year
+  standardized payment change.
+- **Reading an outlier:** it is different from its peers, not a change
+  over time and not a cause. A metric with an empty list is reported as
+  checked, with no member standing apart.
+
 ## Minimum sample sizes
 
 This system must respect CMS's own public-data suppression rules, not
