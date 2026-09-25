@@ -4,6 +4,7 @@ import BarChart from "./charts/BarChart";
 import BoxPlot from "./charts/BoxPlot";
 import DonutChart from "./charts/DonutChart";
 import LineChart from "./charts/LineChart";
+import MultiLineChart from "./charts/MultiLineChart";
 import StatTile from "./charts/StatTile";
 
 /**
@@ -109,6 +110,11 @@ export default function AnalyticsExplorer({ overview }: { overview: AnalyticsOve
           {overview.marketplacePlanAvailabilityBar && (
             <div className="card" style={panelStyle}>
               <BarChart chart={overview.marketplacePlanAvailabilityBar} />
+            </div>
+          )}
+          {overview.marketplaceFastestRisingLines && (
+            <div className="card" style={{ ...panelStyle, gridColumn: "1 / -1" }}>
+              <MultiLineChart chart={overview.marketplaceFastestRisingLines} />
             </div>
           )}
           {overview.facilityCountSeries && (

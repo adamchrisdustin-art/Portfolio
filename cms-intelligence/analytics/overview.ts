@@ -25,6 +25,7 @@ import { loadAllYears as loadPhysicianYears } from "../data/adapters/physicianBy
 import { loadLatestSnapshot as loadFederalRegisterSnapshot } from "../data/adapters/federalRegisterDocuments";
 import { loadLatestSnapshot as loadMaPartDSnapshot } from "../data/adapters/maPartDEnrollment";
 import { loadAllPlanYears as loadMarketplaceYears } from "../data/adapters/marketplaceRatePuf";
+import { panelStates } from "../intelligence/metrics/marketplaceTrends";
 import { tukeyBox } from "../intelligence/metrics/metrics";
 import { dateFromSnapshotFilename } from "../data/sources/snapshotHistory";
 import { boxplotByState } from "../agents/claims-utilization-cost/agent";
@@ -63,6 +64,7 @@ export interface AnalyticsOverview {
   maPartDPlanTypeBar: ChartBar | null;
   marketplacePremiumBoxplot: ChartBoxPlot | null;
   marketplacePlanAvailabilityBar: ChartBar | null;
+  marketplaceFastestRisingLines: MultiLineChartData | null;
 }
 
 function donutFromCounts(title: string, unit: string, counts: Map<string, number>, topN: number): ChartDonut {
@@ -96,6 +98,21 @@ function ratingBar(title: string, rows: { rating?: string }[]): ChartBar | null 
   return { type: "bar", title, unit: "facilities", bars };
 }
 
+export interface MultiLinePoint {
+  date: string;
+  value: number;
+  /** Shown on hover alongside the value, e.g. the dollar figure behind a percent change. */
+  detail: string;
+}
+
+export interface MultiLineChartData {
+  title: string;
+  unit: string;
+  lines: { label: string; points: MultiLinePoint[] }[];
+}
+
+const FASTEST_RISING_STATES = 5;
+
 /** A box drawn from fewer rating areas than this says little about spread. */
 const MIN_RATING_AREAS_FOR_BOX = 5;
 
@@ -125,6 +142,7 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
   let maPartDPlanTypeBar: ChartBar | null = null;
   let marketplacePremiumBoxplot: ChartBoxPlot | null = null;
   let marketplacePlanAvailabilityBar: ChartBar | null = null;
+  let marketplaceFastestRisingLines: MultiLineChartData | null = null;
 
   const hospitalFiles = listHospitalSnapshots();
   if (hospitalFiles.length >= 2) {
@@ -291,6 +309,32 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
       unit: "issuers",
       bars: marketplace.states.map((st) => ({ label: st.state, value: st.issuerIds.length })).sort((a, b) => a.value - b.value),
     };
+
+    // Cumulative benchmark change since the first plan year, for the states that rose most. Only states on
+    // HealthCare.gov every year, so each line is continuous and starts from the same year.
+    const first = marketplaceYears[0];
+    const benchmarks = panelStates(marketplaceYears).flatMap((state) => {
+      const values = marketplaceYears.map((y) => ({ year: y.planYear, value: y.states.find((st) => st.state === state)?.benchmarkMedian ?? null }));
+      return values.every((v) => v.value !== null) ? [{ state, values: values as { year: number; value: number }[] }] : [];
+    });
+    const rising = benchmarks
+      .map((b) => ({ ...b, total: b.values[b.values.length - 1].value / b.values[0].value - 1 }))
+      .sort((a, b) => b.total - a.total)
+      .slice(0, FASTEST_RISING_STATES);
+    if (rising.length > 0 && marketplaceYears.length >= 2) {
+      marketplaceFastestRisingLines = {
+        title: `Benchmark silver premium change since ${first.planYear}, age ${marketplace.referenceAge}: the ${rising.length} fastest-rising HealthCare.gov states`,
+        unit: "% since " + first.planYear,
+        lines: rising.map((b) => ({
+          label: b.state,
+          points: b.values.map((v) => ({
+            date: String(v.year),
+            value: Math.round((v.value / b.values[0].value - 1) * 1000) / 10,
+            detail: `$${Math.round(v.value).toLocaleString()}/month`,
+          })),
+        })),
+      };
+    }
   }
 
   return {
@@ -310,5 +354,6 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
     maPartDPlanTypeBar,
     marketplacePremiumBoxplot,
     marketplacePlanAvailabilityBar,
+    marketplaceFastestRisingLines,
   };
 }

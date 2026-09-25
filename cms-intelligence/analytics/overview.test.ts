@@ -46,6 +46,19 @@ describe("buildAnalyticsOverview", () => {
     }
   });
 
+  it("fastest-rising Marketplace states start at 0% in the first plan year and are ranked by total rise", () => {
+    const chart = buildAnalyticsOverview().marketplaceFastestRisingLines;
+    expect(chart).not.toBeNull();
+    expect(chart!.lines).toHaveLength(5);
+    const finals = chart!.lines.map((l) => l.points[l.points.length - 1].value);
+    expect(finals).toEqual([...finals].sort((a, b) => b - a));
+    for (const line of chart!.lines) {
+      expect(line.points[0].value).toBe(0);
+      expect(line.points.map((p) => p.date)).toEqual(chart!.lines[0].points.map((p) => p.date));
+      for (const p of line.points) expect(p.detail).toMatch(/^\$[\d,]+\/month$/);
+    }
+  });
+
   it("MA/Part D charts never name a real carrier - category labels only", () => {
     const overview = buildAnalyticsOverview();
     const forbiddenNamePatterns = ["unitedhealthcare", "optum", "humana", "aetna", "kaiser", "cigna"].map((n) => new RegExp(`\\b${n}\\b`, "i"));
