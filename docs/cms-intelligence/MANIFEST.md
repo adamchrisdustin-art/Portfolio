@@ -16,7 +16,7 @@ the standard `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` variables the code
 reads; if either secret is missing, reasoning skips at $0.
 
 **Next session, in order:**
-1. **Replay the tuned analyst prompt.** The first live autonomous run
+1. **First live run reviewed; analyst prompt tuned and verified.** The first live autonomous run
    happened 2026-09-25 (hand-triggered, run 36166201308, bot commit
    `bf0aec2`, live on the Executive Pulse). Opus 5.5 returned 5 findings,
    3 patterns and a briefing, and grounding rejected 0 items: every number
@@ -33,11 +33,13 @@ reads; if either secret is missing, reasoning skips at $0.
    - A forced pattern paired 8-K leadership-change counts with enrollment
      share, and the briefing called the filings "frequent" for all four
      insurers, although Humana filed only 5.
-   The analyst prompt now has rules against all three. Verify them with
-   `npx tsx cms-intelligence/reasoning/replay-analyst.ts`, run with
-   `ANTHROPIC_API_KEY` set in Adam's terminal. It is one Opus call
-   (~$0.05–0.10), writes nothing, and prints the published and replayed
-   output side by side.
+   The analyst prompt now has rules against all three. A replay over the
+   same run's facts (`npx tsx cms-intelligence/reasoning/replay-analyst.ts`,
+   one Opus call, writes nothing) fixed all three with 0 rejections and
+   no new errors. It kept 1 pattern instead of 3, a real one: high-volume
+   home health states run above the 0.97 national spending ratio. The
+   next live test is the Oct 1 cron. Use the replay tool for any future
+   prompt change.
 2. **Salience prompt tightening: deferred.** The real run showed no
    salience rejections, so there is no live evidence for it yet. The
    benchmark note below still stands; revisit it if a monthly run logs
