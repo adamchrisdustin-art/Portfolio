@@ -42,6 +42,7 @@ import {
 } from "../../data/adapters/hospitalGeneralInformation";
 import {
   loadLatestSnapshot as loadHomeHealthSnapshot,
+  parseNumericCell,
   SOURCE_ID as HOME_HEALTH_SOURCE_ID,
   type HomeHealthAgencyRow,
 } from "../../data/adapters/homeHealthCareAgencies";
@@ -94,13 +95,13 @@ function computeStateHomeHealthStats(rows: HomeHealthAgencyRow[]): StateHomeHeal
     let fullServiceCount = 0;
 
     for (const row of stateRows) {
-      const episodes = Number(row.no_of_episodes_to_calc_how_much_medicare_spends_per_episode_4f4e);
+      const episodes = parseNumericCell(row.no_of_episodes_to_calc_how_much_medicare_spends_per_episode_4f4e);
       if (!Number.isNaN(episodes)) totalEpisodes += episodes;
 
-      const star = Number(row.quality_of_patient_care_star_rating);
+      const star = parseNumericCell(row.quality_of_patient_care_star_rating);
       if (!Number.isNaN(star)) starRatings.push(star);
 
-      const ratio = Number(row.how_much_medicare_spends_on_an_episode_of_care_at_this_agen_56e6);
+      const ratio = parseNumericCell(row.how_much_medicare_spends_on_an_episode_of_care_at_this_agen_56e6);
       if (!Number.isNaN(ratio)) spendingRatios.push(ratio);
 
       if (SERVICE_FIELDS.every((f) => row[f] === "Yes")) fullServiceCount++;

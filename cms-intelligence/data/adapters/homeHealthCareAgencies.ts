@@ -140,6 +140,17 @@ export function latestSnapshotFile(): string | null {
   return files.length ? files[files.length - 1] : null;
 }
 
+/**
+ * A numeric cell as a number, or NaN when blank or "-" (not available).
+ * CMS writes counts of 1,000 or more with thousands separators ("1,608"),
+ * which plain Number() turns into NaN. Until 2026-09-25 that silently
+ * dropped every agency with 1,000+ episodes - 73% of all episodes.
+ */
+export function parseNumericCell(raw: unknown): number {
+  if (typeof raw !== "string" || raw.trim() === "") return NaN;
+  return Number(raw.replace(/,/g, ""));
+}
+
 export function loadSnapshot(file: string): HomeHealthSnapshot {
   return JSON.parse(fs.readFileSync(file, "utf-8")) as HomeHealthSnapshot;
 }

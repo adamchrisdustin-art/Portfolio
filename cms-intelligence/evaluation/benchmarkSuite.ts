@@ -19,7 +19,11 @@
  * - cms:home-health-care-agencies - 8,603 agencies with reported spending-
  *   ratio data, national average 0.97 (CMS risk-adjusted benchmark = 1.0);
  *   Alabama highest episodes-per-agency (330) among above-median-quality,
- *   favorable-spending states.
+ *   favorable-spending states. That figure came from a parsing bug (fixed
+ *   2026-09-25) that dropped agencies with 1,000+ episodes; the live
+ *   agent now finds NJ at 4,615. Kept here unchanged because the tasks
+ *   are frozen inputs: changing them would break comparison with past
+ *   model scores, and the tasks test reasoning, not the figure itself.
  * - cms:medicare-physician-other-practitioners - 5-state sample (WA, CA,
  *   TX, NY, FL); Medicare pays 23% of submitted charges on average across
  *   the top 5 provider types by volume, largest being Diagnostic Radiology.
