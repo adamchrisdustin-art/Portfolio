@@ -79,8 +79,14 @@ function deterministicSelection(candidates: Candidate[], topN: number, direction
   };
 }
 
+/**
+ * The "copy numbers exactly" rule was added 2026-09-25: every rejected
+ * answer in the salience benchmark was a model calculating a number
+ * itself (day spans, counts, sums), which grounding correctly rejects.
+ * Same rule the analyst prompt (reasoning/executiveAnalyst.ts) already has.
+ */
 export const SALIENCE_SYSTEM_PROMPT =
-  "You select and briefly explain which of a given set of real candidates is most noteworthy - you never invent a candidate, number, or fact. You only choose among and explain what's given to you.";
+  "You select and briefly explain which of a given set of real candidates is most noteworthy - you never invent a candidate, number, or fact. You only choose among and explain what's given to you. Copy every number exactly as written; never round, convert units, or compute new numbers (no sums, differences, counts, day spans, or percentages of your own).";
 /**
  * Raised from 500 on 2026-09-25: thinking models spend hidden thinking
  * tokens from this same budget, and in the salience benchmark Sonnet 5 at
@@ -141,7 +147,7 @@ export async function selectNoteworthy(options: SelectNoteworthyOptions, ctx: Ag
 
   const candidateList = candidates.map((c) => `- id="${c.id}" | ${c.label}: ${c.summary}`).join("\n");
   const directionNote = direction === "lowest" ? " A LOWER primary-metric value is the noteworthy signal here, not a higher one." : "";
-  const prompt = `Task: select the ${topN} most noteworthy of the following ${candidates.length} real candidates for "${taskDescription}", for an executive reader.${directionNote}\n\nCandidates:\n${candidateList}\n\nRespond with ONLY a raw JSON array (no markdown fence, no prose) of up to ${topN} objects: [{"candidateId": "<must exactly match an id above>", "rationale": "<one sentence, using only facts already given above>"}]. Never invent a candidate id, number, or fact not present above.`;
+  const prompt = `Task: select the ${topN} most noteworthy of the following ${candidates.length} real candidates for "${taskDescription}", for an executive reader.${directionNote}\n\nCandidates:\n${candidateList}\n\nRespond with ONLY a raw JSON array (no markdown fence, no prose) of up to ${topN} objects: [{"candidateId": "<must exactly match an id above>", "rationale": "<one sentence, using only facts already given above>"}]. Never invent a candidate id, number, or fact not present above. Any number in a rationale must be copied exactly as it appears above - never calculate a new one, even one that follows from the given numbers.`;
 
   let raw: string | null = null;
   try {

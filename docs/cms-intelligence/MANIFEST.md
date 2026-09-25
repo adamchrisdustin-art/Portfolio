@@ -39,12 +39,16 @@ only, no agent or data changes):
 because the data changed after the last reasoning run; per Adam, the
 rerun waits for the next live test, the Oct 1 cron, or project
 completion, whichever comes first. **Next, pick with Adam:**
-- **Salience prompt fix** (recommended first, step 2 and the benchmark
-  note): tell the salience prompt to copy numbers exactly and never
-  calculate new ones. Small change; proving it needs a short benchmark
-  run with Adam's API key (well under $1), which can wait for the next
-  live test.
-- **Outlier detection for the analyst:** flag states or services far from
+- **Salience prompt fix: made 2026-09-25, not yet benchmarked.** Both
+  the system prompt and the per-call prompt in
+  `intelligence/salience/selectNoteworthy.ts` now say to copy numbers
+  exactly and never calculate new ones (same rule as the analyst). The
+  benchmark captures production's prompts, so it tests the new wording
+  as is. To prove it at the next live test, rerun
+  `run-salience-evaluation.ts` (a few cents for all six models) and
+  compare acceptance with the 2026-09-25 runs. The production model
+  (gpt-6-luna) was already at 100%, so this is a safety margin for it.
+- **Outlier detection for the analyst** (next up): flag states or services far from
   the rest in a year, not only breaks from their own history.
 - **Marketplace 2017-2019 open enrollment:** Excel report workbooks with
   per-year layouts; needs a small xlsx reader. Low priority.
@@ -226,7 +230,8 @@ reasoned run over the full data.
    in the benchmark was a model calculating a number itself (day spans,
    counts, sums). Telling the salience prompt "copy numbers exactly, never
    calculate new ones", as the analyst prompt already does, would likely
-   raise acceptance for every model.
+   raise acceptance for every model. **Done 2026-09-25** (see "Next"
+   above); the benchmark rerun to confirm it is still pending.
 
 Model choices, costs, and all evaluation evidence: `MODEL_EVALUATION.md`.
 
