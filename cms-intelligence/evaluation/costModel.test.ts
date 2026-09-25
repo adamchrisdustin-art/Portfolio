@@ -18,7 +18,7 @@ describe("costModel", () => {
 
   it("cheaper providers produce a cheaper per-question estimate", () => {
     const haiku = estimateCost("anthropic:claude-haiku-4-5-20251001")!;
-    const opus = estimateCost("anthropic:claude-opus-5.5")!;
+    const opus = estimateCost("anthropic:claude-opus-5-5")!;
     const gptMini = estimateCost("openai:gpt-4o-mini")!;
     expect(haiku.costPerQuestionUsd).toBeLessThan(opus.costPerQuestionUsd);
     expect(gptMini.costPerQuestionUsd).toBeLessThan(haiku.costPerQuestionUsd);

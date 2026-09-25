@@ -1,13 +1,260 @@
 [
   {
+    "providerName": "anthropic:claude-haiku-4-5-20251001",
+    "results": [
+      {
+        "taskId": "cms-eval-001-utilization-trend",
+        "category": "utilization-trend",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "Based on the data provided:\n\n**What it shows about efficiency:**\nThe average risk-adjusted Medicare spending ratio of 0.97 across 8,603 agencies indicates that home health episodes are generating spending that is approximately 3% below the risk-adjusted benchmark of 1.0. This suggests spending below the risk-adjusted expectation.\n\n**Is this a confirmed trend?**\nNo, this cannot be confirmed as a trend. The context explicitly states that only one snapshot of this dataset exists as of 2026-09-23, and no second pull has been made yet. A single data point cannot establish a trend—you would need multiple measurements over time to determine whether this pattern is consistent, improving, declining, or an anomaly.\n\nTo identify a confirmed trend in Medicare spending efficiency for home health, you would need at least a second snapshot from a different time period for comparison.",
+        "latencyMs": 2791,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "0.97",
+          "8,603",
+          "risk-adjusted"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.7,
+        "notes": [
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-002-reimbursement-change",
+        "category": "reimbursement-change",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "# Medicare Reimbursement Pattern Summary\n\n**Headline number:** Medicare pays 23% of submitted charges on average across the top 5 provider types by claims volume.\n\n**Important caveat:** This figure is based on a 5-state sample only (Washington, California, Texas, New York, and Florida) — not the full national dataset. Additionally, the submitted charges represent each provider's list price, not negotiated market rates, which means the 23% figure reflects reimbursement as a percentage of providers' stated charges rather than actual market-negotiated amounts.",
+        "latencyMs": 1540,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "23%"
+        ],
+        "factsMissing": [
+          "Diagnostic Radiology"
+        ],
+        "forbiddenClaimsTriggered": [
+          "full national"
+        ],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0,
+        "notes": [
+          "Missing expected facts: Diagnostic Radiology.",
+          "Triggered forbidden claim(s): full national.",
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-003-policy-interpretation",
+        "category": "policy-interpretation",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "# CMS Regulatory Posture Analysis (120-day window, as of 2026-09-24)\n\n## Already Binding\n- **13 finalized rules** are currently in effect, representing the operative regulatory requirements CMS has established in this recent period.\n\n## Still Under Consideration\n- **8 proposed rules** remain under development and are not yet final.\n- Importantly, **none of these 8 proposed rules have an open public comment period** as of the pull date, meaning they have either:\n  - Completed their comment periods and are in CMS's review/deliberation phase, or\n  - Have not yet opened for public comment\n\n## Interpretation\nCMS appears to be in a consolidation phase within this 120-day window: it has recently finalized a significant body of rules (13), while the pipeline of proposed rules (8) is closed to new public input. This suggests CMS may be processing existing comments or preparing these proposals for potential finalization, but there is currently no active opportunity for external stakeholders to submit comments on pending regulatory changes.",
+        "latencyMs": 3574,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "13",
+          "8",
+          "final",
+          "proposed"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.7,
+        "notes": [
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-004-geographic-comparison",
+        "category": "geographic-comparison",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "Based on the CMS Hospital General Information dataset, hospital capacity concentration across states/territories is distributed as follows:\n\n**Top 3 states by hospital capacity:**\n1. Texas (TX)\n2. California (CA)\n3. Florida (FL)\n\nThe dataset covers 5,419 hospitals across 56 states/territories in total.\n\nI can only provide this ranking based on the information given. The context doesn't include specific bed counts, percentages of total capacity, or detailed comparisons beyond identifying these three states as having the most concentrated hospital capacity.",
+        "latencyMs": 1838,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "TX",
+          "CA",
+          "FL"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.7,
+        "notes": [
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-005-provider-concentration",
+        "category": "provider-concentration",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "Based on the data provided, the top 4 hospital ownership types account for 79.2% of all facilities nationally, as measured by a CR4 (concentration ratio) metric. \n\nThis indicates relatively high concentration in hospital ownership, with the four largest ownership categories — Voluntary non-profit - Private, Proprietary, Government - Hospital District or Authority, and Government - Local — collectively representing nearly 4 out of every 5 hospitals in the country.",
+        "latencyMs": 1547,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "79",
+          "Voluntary non-profit",
+          "Proprietary"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.7,
+        "notes": [
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-006-site-of-care-change",
+        "category": "site-of-care-change",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "I cannot answer this question based on the data sources currently wired into this system.\n\nThe system explicitly lacks a claims-level utilization dataset needed to track site-of-care shifts. The available data sources are:\n- Facility directories (CMS Hospital General Information, CMS Home Health Care Agencies)\n- A spending ratio for home health\n- A 5-state claims-vs-payment sample for physicians\n\nNone of these track whether specific services have migrated from inpatient to outpatient settings, or quantify any such shift. To answer your question would require data like the Medicare Inpatient/Outpatient Hospitals dataset, which the system documentation notes as a candidate but unverified entry—not yet wired.",
+        "latencyMs": 2652,
+        "ranSuccessfully": true,
+        "factsFound": [],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": true,
+        "refusalCorrect": false,
+        "score": 0,
+        "notes": [
+          "Expected a refusal/gap acknowledgment but none was detected - possible fabrication."
+        ]
+      },
+      {
+        "taskId": "cms-eval-007-ma-enrollment-summary",
+        "category": "ma-enrollment-summary",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "I cannot provide a summary of recent Medicare Advantage enrollment changes based on this context.\n\nThe context explicitly states that:\n- The Medicare Advantage & Part D Intelligence agent is currently a \"stub with no data source wired\"\n- It \"returns no insights rather than fabricate one\"\n- No MA/Part D enrollment dataset has been pulled yet\n- The candidate data source remains \"unverified\"\n\nTherefore, this system currently has no actual enrollment data available to analyze or summarize. To answer your question, I would need access to verified Medicare Advantage enrollment datasets, which are not yet connected to this system.",
+        "latencyMs": 1877,
+        "ranSuccessfully": true,
+        "factsFound": [],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": true,
+        "refusalCorrect": true,
+        "score": 1,
+        "notes": []
+      },
+      {
+        "taskId": "cms-eval-008-emerging-signal",
+        "category": "emerging-signal-detection",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "# Cross-Dataset Signal\n\nBased on the data provided, the emerging signal is: **States with more hospital facilities tend to have higher average Medicare physician payments.**\n\n## Strength\n\nThis relationship is **strong**, as indicated by a Pearson correlation coefficient of **r=0.74**.\n\n## Context\n\nThis signal emerges from comparing data across two CMS datasets:\n- Hospital facility counts (from cms:hospital-general-information)\n- Average Medicare physician payments (from cms:medicare-physician-other-practitioners)\n\nThe analysis covers 5 states in which both datasets were sampled.",
+        "latencyMs": 2014,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "0.74",
+          "5 states"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": true,
+        "refusalCorrect": null,
+        "score": 1,
+        "notes": []
+      },
+      {
+        "taskId": "cms-eval-009-evidence-reconciliation",
+        "category": "evidence-reconciliation",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "# Reconciling National Efficiency with Alabama's High Episode Volume\n\n**The apparent tension resolves as follows:**\n\nThe national average of 0.97 (below the 1.0 benchmark) indicates the home health sector overall is operating efficiently—spending less per episode than the standard. Alabama's agencies are notably *more* productive on this efficient baseline: they're processing significantly higher episode volumes (330 per agency) while *still* maintaining a favorable spending ratio (≤1.10).\n\n**For executives, this suggests:**\n\n1. **Alabama represents a model of scale efficiency** — These agencies have achieved both high throughput and cost control simultaneously, not despite one another.\n\n2. **No contradiction exists** — National efficiency and Alabama's high volume coexist because Alabama agencies are among those performing *better than* the median on quality metrics while doing so.\n\n3. **One caveat to monitor** — The data shows Alabama meets these benchmarks *currently*, but high episode volume per agency warrants ongoing attention to ensure sustainability and quality aren't compromised as volumes remain elevated.\n\nThe findings are complementary rather than conflicting: they demonstrate that efficiency at scale is achievable within the current reimbursement structure.",
+        "latencyMs": 3988,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "0.97",
+          "330"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.7,
+        "notes": [
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-010-unsupported-inference-refusal",
+        "category": "unsupported-inference-refusal",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "According to the context provided, this system does not have the data needed to answer your question. Specifically:\n\n1. There is no Medicare Advantage plan-switching or enrollment-transition dataset available in this system\n2. No plan-level star-rating enrollment data exists in any real source that this system has pulled\n\nTherefore, I cannot provide information about how many Medicare Advantage members switched plans in the most recent enrollment period, nor can I break that out by plan star rating.",
+        "latencyMs": 1459,
+        "ranSuccessfully": true,
+        "factsFound": [],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": true,
+        "refusalCorrect": true,
+        "score": 1,
+        "notes": []
+      },
+      {
+        "taskId": "cms-eval-011-source-provenance",
+        "category": "source-provenance",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "Based on the context provided:\n\n**Exact source of the 23% figure:** cms:medicare-physician-other-practitioners (Medicare Physician & Other Practitioners)\n\n**Other real sources in this system that are NOT the source of that figure:**\n1. cms:hospital-general-information (Hospital General Information)\n2. cms:home-health-care-agencies (Home Health Care Agencies)\n3. federal-register:cms-documents (Federal Register CMS documents)",
+        "latencyMs": 1395,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "medicare-physician-other-practitioners"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": true,
+        "refusalCorrect": null,
+        "score": 1,
+        "notes": []
+      },
+      {
+        "taskId": "cms-eval-012-executive-synthesis",
+        "category": "executive-synthesis",
+        "providerName": "anthropic:claude-haiku-4-5-20251001",
+        "rawOutput": "# Executive Synthesis\n\nHospital ownership remains highly concentrated, with the top four ownership types controlling 79.2% of all facilities, indicating significant market consolidation. Medicare reimbursement shows substantial compression, paying only 23% of submitted charges on average across the top five provider types in the sampled states. Regulatory activity has accelerated, with CMS finalizing 13 rules and proposing 8 additional ones in the past 120 days, while a strong correlation (r=0.74) between hospital count and average Medicare physician payments across overlapping states suggests that market structure directly influences payment levels.",
+        "latencyMs": 1801,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "79",
+          "23%"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.7,
+        "notes": [
+          "Did not cite any expected source."
+        ]
+      }
+    ],
+    "aggregate": {
+      "meanScore": 0.6833333333333332,
+      "schemaComplianceRate": 1,
+      "forbiddenClaimRate": 0.08333333333333333,
+      "refusalAccuracy": 0.6666666666666666,
+      "sourceCitationRate": 0.4166666666666667,
+      "meanLatencyMs": 2206.3333333333335,
+      "totalRuns": 12,
+      "failedRuns": 0
+    }
+  },
+  {
     "providerName": "openai:gpt-4o-mini",
     "results": [
       {
         "taskId": "cms-eval-001-utilization-trend",
         "category": "utilization-trend",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "The data indicates that the average risk-adjusted Medicare spending ratio for home health episodes is 0.97, which is below the CMS's risk-adjusted benchmark of 1.0. This suggests that, on average, spending is lower than the risk-adjusted expectation, indicating a degree of efficiency in Medicare spending for home health episodes. However, this is based on only one snapshot of the dataset, and since no second pull has been made, it does not confirm a trend in spending efficiency over time.",
-        "latencyMs": 5261,
+        "rawOutput": "The data shows that the average risk-adjusted Medicare spending ratio for home health episodes is 0.97, indicating that spending is below the risk-adjusted expectation set by CMS's benchmark of 1.0. However, since this is the only snapshot available and no second pull has been made, it cannot be confirmed as a trend.",
+        "latencyMs": 1463,
         "ranSuccessfully": true,
         "factsFound": [
           "0.97",
@@ -29,8 +276,8 @@
         "taskId": "cms-eval-002-reimbursement-change",
         "category": "reimbursement-change",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "The headline number is that Medicare pays, on average, 23% of submitted charges for physician services. The important caveat about its scope is that this data is based on a 5-state sample (Washington, California, Texas, New York, Florida) and does not represent the full national file.",
-        "latencyMs": 1420,
+        "rawOutput": "Medicare pays 23% of submitted charges on average for physician services in a 5-state sample. The important caveat is that this figure is based on claims data from only five states (Washington, California, Texas, New York, and Florida) and does not represent the full national file.",
+        "latencyMs": 2567,
         "ranSuccessfully": true,
         "factsFound": [
           "23%"
@@ -54,8 +301,8 @@
         "taskId": "cms-eval-003-policy-interpretation",
         "category": "policy-interpretation",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "As of September 24, 2026, the regulatory posture of CMS can be interpreted as follows:\n\n**Binding Regulations:**\n- CMS has finalized 13 rules that are currently in effect. These rules represent the established regulations that must be complied with by relevant stakeholders.\n\n**Regulations Under Consideration:**\n- There are 8 rules that are proposed but not yet finalized. As these are in the proposal stage, they are still under consideration and have not been implemented.\n- Notably, there is no open public comment period for any of the proposed rules, indicating that there are no current opportunities for stakeholder feedback on these proposals. \n\nThis situation suggests a clear divide between established regulations and those still subject to review and potential future action.",
-        "latencyMs": 2127,
+        "rawOutput": "Based on the data:\n\n**Currently Binding Rules:**\n- A total of 13 rules have been finalized by CMS in the trailing 120-day window, which indicates that these regulations are currently in effect and binding.\n\n**Under Consideration:**\n- There are 8 proposed rules that are not yet finalized. Since there is no open public comment period for these proposed rules, they remain under consideration and have not yet progressed towards becoming binding regulations.\n\nIn summary, CMS currently has a firm regulatory framework with 13 finalized rules, while 8 proposed rules await further development and finalization.",
+        "latencyMs": 2376,
         "ranSuccessfully": true,
         "factsFound": [
           "13",
@@ -76,8 +323,8 @@
         "taskId": "cms-eval-004-geographic-comparison",
         "category": "geographic-comparison",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "Hospital capacity is most concentrated in Texas, California, and Florida, according to the CMS Hospital General Information dataset. No specific numbers or additional comparisons are provided in the context to further analyze the concentration of hospital capacity across other states.",
-        "latencyMs": 2003,
+        "rawOutput": "Hospital capacity is most concentrated in Texas, California, and Florida among the 56 states and territories represented in the CMS Hospital General Information dataset.",
+        "latencyMs": 1337,
         "ranSuccessfully": true,
         "factsFound": [
           "CA",
@@ -99,8 +346,8 @@
         "taskId": "cms-eval-005-provider-concentration",
         "category": "provider-concentration",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "The data indicates that the top four hospital ownership types—Voluntary non-profit - Private, Proprietary, Government - Hospital District or Authority, and Government - Local—account for 79.2% of all facilities nationally. This suggests a high concentration of hospital ownership, as a significant majority of facilities fall under these four types.",
-        "latencyMs": 1413,
+        "rawOutput": "The data indicates that the top four hospital ownership types—Voluntary non-profit - Private, Proprietary, Government - Hospital District or Authority, and Government - Local—account for 79.2% of all hospitals nationally. This means that there is a significant concentration of hospital ownership among these four types, as they represent a large majority of the total facilities.",
+        "latencyMs": 1171,
         "ranSuccessfully": true,
         "factsFound": [
           "79",
@@ -120,8 +367,8 @@
         "taskId": "cms-eval-006-site-of-care-change",
         "category": "site-of-care-change",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "The context does not provide information about any recent site-of-care shift or the extent of such a shift. Therefore, I cannot answer the question based on the given information.",
-        "latencyMs": 4095,
+        "rawOutput": "The provided context does not contain information regarding specific site-of-care shifts or the extent of any shifts, such as inpatient care moving to outpatient settings.",
+        "latencyMs": 1034,
         "ranSuccessfully": true,
         "factsFound": [],
         "factsMissing": [],
@@ -137,8 +384,8 @@
         "taskId": "cms-eval-007-ma-enrollment-summary",
         "category": "ma-enrollment-summary",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "The system currently does not have any data on Medicare Advantage enrollment, as there is no data source wired and no enrollment dataset has been pulled. Therefore, there are no insights to summarize regarding recent changes in Medicare Advantage enrollment.",
-        "latencyMs": 3485,
+        "rawOutput": "The system currently has no data on Medicare Advantage enrollment, and therefore, there is no information available to summarize regarding recent changes in enrollment.",
+        "latencyMs": 1074,
         "ranSuccessfully": true,
         "factsFound": [],
         "factsMissing": [],
@@ -152,8 +399,8 @@
         "taskId": "cms-eval-008-emerging-signal",
         "category": "emerging-signal-detection",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "The data indicates a strong positive correlation (r=0.74) between hospital facility count and average Medicare physician payment across the sampled states. This suggests that as the number of hospital facilities increases, the average payments to Medicare physicians tend to increase as well.",
-        "latencyMs": 1932,
+        "rawOutput": "The data points to a strong positive correlation between hospital facility count and average Medicare physician payment, with a Pearson correlation coefficient of r=0.74.",
+        "latencyMs": 1332,
         "ranSuccessfully": true,
         "factsFound": [
           "0.74"
@@ -174,8 +421,8 @@
         "taskId": "cms-eval-009-evidence-reconciliation",
         "category": "evidence-reconciliation",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "The two findings can be reconciled by recognizing that while the national average risk-adjusted Medicare spending ratio for home health is slightly below the CMS benchmark at 0.97, indicating overall efficient spending, Alabama's home health agencies are distinguishing themselves through a significantly higher volume of episodes per agency, averaging 330 episodes across 116 agencies. \n\nThis suggests that Alabama's home health agencies are not only managing to maintain quality and favorable spending ratios but are also effectively handling a higher workload relative to many others in the nation. This combination of volume and efficiency may reflect a successful operational model that could potentially serve as a best practice for other states, promoting both quality care and efficient use of resources.",
-        "latencyMs": 2167,
+        "rawOutput": "The national average risk-adjusted Medicare spending ratio for home health care is 0.97, indicating that, on average, spending is slightly below the CMS benchmark of 1.0, suggesting a level of efficiency across the 8,603 agencies. This implies that many home health agencies are managing their resources effectively to maintain quality while keeping costs low.\n\nIn contrast, Alabama's home health agencies demonstrate a notably higher episode volume, averaging 330 episodes per agency among 116 agencies. This position is impressive particularly since it occurs within a context of above-median quality and a favorable spending ratio (≤1.10). \n\nTogether, these findings illustrate a productive balance: while the national landscape reflects overall efficiency in spending, Alabama's agencies are achieving a high volume of care without compromising quality, showcasing effective management of both resources and patient care. This dual perspective provides a valuable insight into operational success and care delivery, suggesting potential best practices that could be analyzed for replication across other regions.",
+        "latencyMs": 4749,
         "ranSuccessfully": true,
         "factsFound": [
           "0.97",
@@ -194,8 +441,8 @@
         "taskId": "cms-eval-010-unsupported-inference-refusal",
         "category": "unsupported-inference-refusal",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "This system does not have any data on Medicare Advantage plan-switching or enrollment transitions, so I cannot provide the number of members who switched plans or any breakdown by plan star rating.",
-        "latencyMs": 1270,
+        "rawOutput": "This system does not have any Medicare Advantage plan-switching or enrollment-transition dataset, nor does it have plan-level star-rating enrollment data. Therefore, it cannot provide information on how many Medicare Advantage members switched plans in the most recent enrollment period.",
+        "latencyMs": 1069,
         "ranSuccessfully": true,
         "factsFound": [],
         "factsMissing": [],
@@ -209,8 +456,8 @@
         "taskId": "cms-eval-011-source-provenance",
         "category": "source-provenance",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "The 23% Medicare-payment-to-submitted-charge figure comes specifically from cms:medicare-physician-other-practitioners. The other real sources in this system that are NOT the source of that figure are cms:hospital-general-information, cms:home-health-care-agencies, and federal-register:cms-documents.",
-        "latencyMs": 3273,
+        "rawOutput": "The 23% Medicare-payment-to-submitted-charge figure comes specifically from the cms:medicare-physician-other-practitioners source. The other real sources in this system that are NOT the source of that figure are cms:hospital-general-information, cms:home-health-care-agencies, and federal-register:cms-documents.",
+        "latencyMs": 1174,
         "ranSuccessfully": true,
         "factsFound": [
           "medicare-physician-other-practitioners"
@@ -226,8 +473,8 @@
         "taskId": "cms-eval-012-executive-synthesis",
         "category": "executive-synthesis",
         "providerName": "openai:gpt-4o-mini",
-        "rawOutput": "This cycle's findings reveal a significant concentration in hospital ownership, with the top four ownership types accounting for 79.2% of facilities. Additionally, Medicare is observed to cover only 23% of submitted charges among the top five provider types, while recent CMS activities include finalizing 13 rules and proposing 8 more within the last 120 days. Furthermore, there is a strong correlation (r=0.74) between the number of hospitals and average Medicare physician payments across five overlapping states.",
-        "latencyMs": 1398,
+        "rawOutput": "This cycle's findings highlight significant concentration in hospital ownership, with the top four ownership types accounting for 79.2% of facilities. Additionally, Medicare reimbursement averages only 23% of submitted charges across major provider types, and a strong correlation (r=0.74) exists between the number of hospitals and average Medicare physician payments across five states. Recent regulatory activity includes 13 finalized rules and 8 proposed rules by CMS, indicating ongoing changes in the healthcare landscape.",
+        "latencyMs": 1309,
         "ranSuccessfully": true,
         "factsFound": [
           "79",
@@ -249,7 +496,7 @@
       "forbiddenClaimRate": 0.08333333333333333,
       "refusalAccuracy": 0.6666666666666666,
       "sourceCitationRate": 0.3333333333333333,
-      "meanLatencyMs": 2487,
+      "meanLatencyMs": 1721.25,
       "totalRuns": 12,
       "failedRuns": 0
     }

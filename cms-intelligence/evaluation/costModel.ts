@@ -18,6 +18,7 @@
  * "LLM vs. code split" rule). The estimators below model that real
  * shape, not a hypothetical heavier one.
  */
+import { BENCHMARK_MAX_OUTPUT_TOKENS } from "./runner";
 import type { CostEstimate, ModelPricing } from "./types";
 
 export const MODEL_PRICING: ModelPricing[] = [
@@ -36,7 +37,8 @@ export const MODEL_PRICING: ModelPricing[] = [
     verifiedOn: "2026-09-23",
   },
   {
-    providerName: "anthropic:claude-opus-5.5",
+    // Must match the real API model ID exactly (claude-opus-5-5, hyphens) - a "5.5" spelling here made every Opus run report "unpriced".
+    providerName: "anthropic:claude-opus-5-5",
     inputPerMillionUsd: 4,
     outputPerMillionUsd: 20,
     verifiedVia: "claude.com/pricing (live fetch)",
@@ -48,6 +50,20 @@ export const MODEL_PRICING: ModelPricing[] = [
     outputPerMillionUsd: 0.6,
     verifiedVia: "web search cross-check of OpenAI published pricing (openai.com/api/pricing returned 403 to a direct fetch)",
     verifiedOn: "2026-09-23",
+  },
+  {
+    providerName: "openai:gpt-6-luna",
+    inputPerMillionUsd: 0.1,
+    outputPerMillionUsd: 0.5,
+    verifiedVia: "developers.openai.com/api/docs/pricing (live fetch), cross-checked against launch coverage (VentureBeat, MarkTechPost)",
+    verifiedOn: "2026-09-25",
+  },
+  {
+    providerName: "openai:gpt-6-sol",
+    inputPerMillionUsd: 2,
+    outputPerMillionUsd: 10,
+    verifiedVia: "developers.openai.com/api/docs/pricing (live fetch), cross-checked against launch coverage (VentureBeat, MarkTechPost)",
+    verifiedOn: "2026-09-25",
   },
   {
     providerName: "openai:gpt-4.1-mini",
@@ -86,7 +102,7 @@ const OBSERVED_SYNTHESIS_INPUT_TOKENS = 1200;
 const OBSERVED_SYNTHESIS_OUTPUT_TOKENS = 300;
 /** Average observed input tokens for one benchmark-suite task (system + user + context) - see benchmarkSuite.ts. */
 const OBSERVED_TASK_INPUT_TOKENS = 220;
-const OBSERVED_TASK_OUTPUT_TOKENS_CAP = 400;
+const OBSERVED_TASK_OUTPUT_TOKENS_CAP = BENCHMARK_MAX_OUTPUT_TOKENS;
 
 export function estimateCost(providerName: string): CostEstimate | null {
   const pricing = getPricing(providerName);

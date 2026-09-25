@@ -1,20 +1,18 @@
 name: Healthcare Intelligence Data Pipeline
 
-# Quarterly, not weekly - see docs/cms-intelligence/COST_AND_OPERATING_MODEL.md's
-# 2026-09-23 decision: this is a portfolio demo, not a live monitoring
-# system, and re-checking more often than a source's real publication
-# cadence has no value here. Separate from - and independent of -
-# pipeline/'s existing weekly cms-pipeline.yml (Track C v1), which
+# Monthly (was quarterly until 2026-09-25) - see
+# docs/cms-intelligence/COST_AND_OPERATING_MODEL.md's revised cadence
+# section. Pulling public data is free (plain HTTP, no LLM call), so there's
+# no cost reason to wait a quarter; sources that publish slower than
+# monthly just produce an unchanged snapshot. Separate from - and
+# independent of - pipeline/'s weekly cms-pipeline.yml (Track C v1), which
 # stays untouched per docs/cms-intelligence/PROJECT_BOUNDARY.md.
 #
-# Pulling public CMS data costs nothing against the $100 Anthropic
-# credit (plain HTTP, no LLM call) - this workflow never sets an API key
-# and never triggers agent LLM synthesis, only data collection. That
-# keeps this safe to run on its own schedule regardless of the credit's
-# November 4 deadline for the separate backfill/synthesis work.
+# This workflow never sets an API key and never triggers LLM reasoning,
+# only data collection.
 on:
   schedule:
-    - cron: "0 13 1 1,4,7,10 *" # 13:00 UTC on the 1st of Jan/Apr/Jul/Oct
+    - cron: "0 13 1 * *" # 13:00 UTC on the 1st of every month
   workflow_dispatch: {}
 
 permissions:

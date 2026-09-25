@@ -33,31 +33,42 @@ system.
 - The dashboard must always read pre-computed/cached results from scheduled
   runs. Never re-run an agent live on a visitor's page load.
 
-## Run cadence: quarterly-to-annual, aligned to each source's real publication schedule
+## Run cadence: monthly data pulls (revised 2026-09-25)
 
-Decided 2026-09-23, after Phase 3. This is a **portfolio/demo project, not a
-live production monitoring system** - that changes what "reasonable cadence"
-means, and it means something different here than it would for a real
-payer's operational dashboard:
+Originally decided 2026-09-23 as quarterly-to-annual. **Revised 2026-09-25
+to monthly for data pulls**, per Adam, on the reasoning that pulling public
+data costs nothing (plain HTTP on GitHub Actions' free public-repo
+minutes, no LLM call), so there's no cost reason to wait a quarter:
 
-- Default run cadence for the 12-agent system is **quarterly to annual**,
-  not weekly - a deliberate departure from Track C v1's weekly cron
-  (`pipeline/cms-pipeline.yml`), which stays weekly and untouched (see
+- `.github/workflows/healthcare-intelligence-pipeline.yml` pulls every
+  source on the 1st of each month. Track C v1's weekly cron
+  (`pipeline/cms-pipeline.yml`) stays weekly and untouched (see
   `PROJECT_BOUNDARY.md` - the two systems' cadences are independent
   decisions).
-- The specific cadence per dataset should match **that dataset's own real
-  CMS release schedule** (e.g. annual fee-schedule rules, monthly MA/Part D
-  enrollment files, quarterly T-MSIS releases) - checking more often than a
-  source actually publishes wastes a run for zero signal, regardless of how
-  cheap the check is. Agent #11 (Data Source & CMS Change Monitor,
-  `cms-intelligence/agents/source-change-monitor/`) is where this
-  per-dataset cadence gets encoded once Phase 4 builds the source registry.
-- Where a dataset's real cadence is *faster* than quarterly, this project
-  still caps checks at quarterly - the extra freshness a real operational
-  system would need has no value for a portfolio demo, and quarterly is the
-  ceiling, not just a floor.
+- Some sources genuinely publish monthly or faster (MA/Part D enrollment,
+  Federal Register, SEC 8-Ks, openFDA, NIH RePORTER, ClinicalTrials.gov),
+  so monthly picks up real new information from them. Others refresh
+  quarterly (Hospital General Information, Home Health Care Agencies) or
+  annually (Physician & Other Practitioners, Marketplace Rate PUF), so most
+  monthly pulls of those will find nothing new. That's expected and costs
+  nothing; the real cost is repo growth, about 20MB of raw JSON per full
+  pull, which git compresses heavily (the whole repo's history was 3.1MB
+  on 2026-09-25).
+- Any LLM reasoning over new data must stay behind the change gate below:
+  a pull that found nothing new should trigger no model call at all.
 
 ## The $100 Anthropic credit: one-time backfill, then steady state
+
+> **Correction (2026-09-25): the premise of this section was wrong.** The
+> $100 credit expiring 2026-11-04 turned out to be **Claude Code
+> cloud-session credit**: it applies automatically to Claude Code cloud
+> sessions and is "not eligible for Projects and Routines," per its own
+> terms screen. It is **not** Developer Platform API credit, so it can't pay
+> for this project's agents, which call `api.anthropic.com` with an API
+> key billed separately. The Nov 4 deadline below does not constrain this
+> project's API spend. Real measured API cost is tiny anyway (see
+> `MODEL_EVALUATION.md`'s live results). The original text is kept below as
+> a record of the decision as it was made.
 
 Decided 2026-09-23. Adam has $100 in Anthropic API credit earmarked for this
 project (see `DEPLOYMENT.md`'s "what's not set up yet" section for the

@@ -12,6 +12,15 @@ import { BENCHMARK_SUITE } from "./benchmarkSuite";
 import { scoreResponse } from "./scorer";
 import type { BenchmarkTask, EvaluationResult, ProviderAggregate, ProviderRunResult } from "./types";
 
+/**
+ * Raised from 400 on 2026-09-25: the first Opus 5.5 run wrote long,
+ * formatted markdown and got cut off mid-answer before stating the facts
+ * the scorer checks for, so the benchmark was measuring verbosity against
+ * a cap, not reasoning quality. 1024 leaves room for every model tested
+ * so far to finish.
+ */
+export const BENCHMARK_MAX_OUTPUT_TOKENS = 1024;
+
 const SYSTEM_PROMPT =
   "You are a healthcare-market intelligence analyst. Answer using only the facts given in the context below - never invent a number, date, source, or company name. If the context doesn't contain enough information to answer, say so plainly rather than guessing. Never name a specific real health insurer.";
 
@@ -22,7 +31,7 @@ export async function runTask(provider: ModelProvider, task: BenchmarkTask): Pro
     rawOutput = await provider.generate({
       system: SYSTEM_PROMPT,
       user: `Context:\n${task.context}\n\nQuestion: ${task.question}`,
-      maxOutputTokens: 400,
+      maxOutputTokens: BENCHMARK_MAX_OUTPUT_TOKENS,
     });
   } catch {
     rawOutput = null; // a provider failure is a reliability data point, not a thrown error - same "never throws" posture as fullSweep.ts

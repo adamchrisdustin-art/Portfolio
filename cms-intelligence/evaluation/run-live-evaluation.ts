@@ -16,6 +16,17 @@
  *
  * Exits cleanly with a message (not an error) if no key is configured -
  * matching every other provider-gated code path in this repo.
+ *
+ * ANTHROPIC_MODEL (optional): a comma-separated list of Anthropic model
+ * IDs to run the suite through instead of just the default (Haiku) -
+ * e.g. ANTHROPIC_MODEL=claude-sonnet-5,claude-opus-5-5 to compare tiers
+ * in one run. Each listed model becomes its own row in the report.
+ * OPENAI_MODEL works the same way for OpenAI (default gpt-4o-mini).
+ *
+ * Output is timestamped down to the second (not just the date), so
+ * multiple real runs on the same calendar day never silently overwrite
+ * each other's results - a real gap fixed 2026-09-25 after the first
+ * same-day rerun would have clobbered the prior run's file.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -28,10 +39,17 @@ import type { ProviderRunResult } from "./types";
 
 const RESULTS_DIR = path.resolve(process.cwd(), "data", "healthcare-intelligence", "evaluation-runs");
 
+/** undefined in the returned list means "use that provider's own default model". */
+function modelList(envValue: string | undefined): (string | undefined)[] {
+  return envValue ? envValue.split(",").map((m) => m.trim()).filter(Boolean) : [undefined];
+}
+
 function configuredProviders(): ModelProvider[] {
   const providers: ModelProvider[] = [];
-  if (process.env.ANTHROPIC_API_KEY) providers.push(createAnthropicProvider(process.env.ANTHROPIC_API_KEY));
-  if (process.env.OPENAI_API_KEY) providers.push(createOpenAIProvider(process.env.OPENAI_API_KEY));
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const openaiKey = process.env.OPENAI_API_KEY;
+  if (anthropicKey) for (const model of modelList(process.env.ANTHROPIC_MODEL)) providers.push(createAnthropicProvider(anthropicKey, model));
+  if (openaiKey) for (const model of modelList(process.env.OPENAI_MODEL)) providers.push(createOpenAIProvider(openaiKey, model));
   return providers;
 }
 
@@ -52,7 +70,7 @@ async function main() {
   }
 
   fs.mkdirSync(RESULTS_DIR, { recursive: true });
-  const stamp = new Date().toISOString().slice(0, 10);
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19); // e.g. 2026-09-25T14-32-07
 
   const resultsFile = path.join(RESULTS_DIR, `${stamp}-results.json`);
   fs.writeFileSync(resultsFile, JSON.stringify(runs, null, 2));

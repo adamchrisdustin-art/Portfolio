@@ -38,6 +38,9 @@ export function createAnthropicProvider(apiKey: string, model: string = DEFAULT_
       }
 
       const body = await res.json();
+      if (body.stop_reason === "max_tokens") {
+        console.warn(`[anthropic-provider] ${model} response truncated at the output-token cap`);
+      }
       const text = body.content
         ?.map((block: { type?: string; text?: string }) => (block.type === "text" ? block.text : ""))
         .filter(Boolean)

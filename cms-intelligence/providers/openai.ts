@@ -36,6 +36,10 @@ export function createOpenAIProvider(apiKey: string, model: string = DEFAULT_MOD
       }
 
       const body = await res.json();
+      // Reasoning models spend hidden reasoning tokens from the same output budget, so a cap can end a response with little or no visible answer.
+      if (body.status === "incomplete") {
+        console.warn(`[openai-provider] ${model} response truncated: ${body.incomplete_details?.reason ?? "unknown reason"}`);
+      }
       const text = body.output
         ?.flatMap((item: { content?: { text?: string }[] }) => item.content ?? [])
         .map((c: { text?: string }) => c.text)

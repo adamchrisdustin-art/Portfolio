@@ -133,11 +133,15 @@ asked next.
   that carrier's systems (revised 2026-09-24; see the naming-privacy
   pattern above and the `healthcare-intelligence-no-uhc-optum-naming`
   memory for the full history of this decision).
-- Quarterly-to-annual pull cadence, not weekly (`COST_AND_OPERATING_MODEL.md`).
-- **Hard deadline: the initial LLM-synthesis backfill must complete
-  before 2026-11-04** (the $100 Anthropic credit's constraint — pulling
-  public data is free and untouched by this deadline; only a real
-  scheduled LLM call spends it, and none has happened yet).
+- Monthly data-pull cadence as of 2026-09-25, previously quarterly; data
+  pulls are free, and any LLM reasoning stays gated on real new data
+  (`COST_AND_OPERATING_MODEL.md`).
+- ~~Hard deadline: the initial LLM-synthesis backfill must complete
+  before 2026-11-04.~~ **Withdrawn 2026-09-25**: that $100 credit is
+  Claude Code cloud-session credit, not Developer Platform API credit, so
+  it never funded this project's API calls (see
+  `COST_AND_OPERATING_MODEL.md`'s correction). API spend is billed
+  normally and is tiny at measured rates.
 - Chart/visual conventions in `DASHBOARD_BLUEPRINT.md` are binding on
   any new chart component, not just Phase 5's.
 
