@@ -3,68 +3,75 @@
 ## Start here (2026-09-24)
 
 **Phases 1–6 are built and live, plus a 12th agent (Market/Catalyst
-Intelligence) added the same day.** The dashboard runs at
+Intelligence) and a full round of dashboard-review fixes, all shipped
+the same extended session.** The dashboard runs at
 `/healthcare-intelligence`, live in production at adamdustin.me
 (auto-deploys from `main` via Vercel — see `DEPLOYMENT.md`). No phase is
-"next" by default — Phase 7 (hardening/portfolio write-up), a live Phase
-6 provider run, and retrofitting the salience layer into the remaining
-original agents are all live options; pick based on what's asked next.
+"next" by default — Phase 7's remaining pieces (a live Phase 6 provider
+run, retrofitting the salience layer into the remaining agents) are the
+main open options; pick based on what's asked next.
 
 **What's real:**
 - **10 data sources wired**: the original 6 CMS-focused sources (all 3
   items on Adam's CMS priority order are done) — Hospital General
   Information, Home Health Care Agencies, Medicare Physician & Other
-  Practitioners (5-state sample), the Federal Register API (CMS filter,
-  rolling 120-day window), CMS's MA/Part D Monthly Enrollment by Plan
-  file, and CMS's Marketplace Rate PUF — plus 4 new non-CMS sources added
-  2026-09-24 for the Market/Catalyst Intelligence agent: SEC EDGAR 8-K
-  filings (6-company health-insurer watchlist), openFDA novel drug
-  approvals, NIH RePORTER award notices, and ClinicalTrials.gov Phase 3
-  results postings (all 4 on a 150-day rolling window). Full detail,
-  verification method, and known limitations for each: `SOURCE_REGISTRY.md`.
-  Medicaid/T-MSIS is the only named CMS source left unwired — deliberately
-  deprioritized as most fragmented.
+  Practitioners (5-state sample), the Federal Register API (CMS filter),
+  CMS's MA/Part D Monthly Enrollment by Plan file, and CMS's Marketplace
+  Rate PUF — plus 4 non-CMS sources added 2026-09-24 for the
+  Market/Catalyst Intelligence agent: SEC EDGAR 8-K filings (6-company
+  health-insurer watchlist), openFDA novel drug approvals, NIH RePORTER
+  award notices, and ClinicalTrials.gov Phase 3 results postings. The
+  Federal Register feed and all 4 Market/Catalyst sources use a
+  live-verified 730-day (2-year) rolling window (widened the same day
+  from an original 120-150 days per Adam's request - see the History
+  entry below for the real per-source feasibility check behind this).
+  Full detail, verification method, and known limitations for each:
+  `SOURCE_REGISTRY.md`. Medicaid/T-MSIS is the only named CMS source left
+  unwired — deliberately deprioritized as most fragmented.
 - **9 of 12 domain agents produce real, evidence-backed insights**
   (Market Growth ×2, Claims/Utilization/Cost, Reimbursement & Payment,
-  Provider & Network ×up to 5 (Q038 ownership-concentration plus
-  Q125-Q128's star-rating/quality-outcome signals), Emerging Trends,
-  Policy/Regulation/CMS ×3, MA/Part D ×2, Commercial/Marketplace ×2, and
-  the new Market/Catalyst Intelligence agent ×up to 12). Medicaid/CHIP/
-  Duals is the one remaining honest stub among the original 11. 2 agents
-  are infrastructure-only (Source Monitor, Data Architecture). All 7
-  dashboard layers have at least one real finding (Market/Catalyst's
-  Q113-Q124 and Provider & Network's Q125-Q128 both fold into existing
-  layers — Emerging Signals and Provider & Network respectively — rather
-  than adding new ones).
+  Provider & Network ×up to 7 (Q036/Q038 ownership-concentration,
+  Q042/Q043 facility entries/exits, Q125-Q128's star-rating/quality-
+  outcome signals), Emerging Trends, Policy/Regulation/CMS ×3, MA/Part D
+  ×2, Commercial/Marketplace ×2, and Market/Catalyst Intelligence ×up to
+  13). Medicaid/CHIP/Duals is the one remaining honest stub among the
+  original 11. 2 agents are infrastructure-only (Source Monitor, Data
+  Architecture). All 7 dashboard layers have at least one real finding
+  (Market/Catalyst's Q113-Q124/Q129 and Provider & Network's Q125-Q128
+  both fold into existing layers — Emerging Signals and Provider &
+  Network respectively — rather than adding new ones).
 - **12th agent: Market/Catalyst Intelligence** (`agents/market-catalyst/`,
-  Q113-Q124) — a new question category beyond the original 112-question
-  catalog, tracking real corporate-disclosure (SEC 8-K), drug-approval
-  (openFDA), federal-grant (NIH RePORTER), and clinical-trial-results
-  (ClinicalTrials.gov) activity. The third real use of the revised
-  carrier-naming rule (see `AGENT_ARCHITECTURE.md` §13). One real,
-  disclosed correction made during implementation: NIH RePORTER's real
-  `agency_code` field turned out to be the sponsoring HHS operating
-  division, not NIH institute-level detail, as originally planned — the
-  agent's Q115 insight is honestly relabeled for this. "Grants rescinded"
-  was researched and found infeasible with any free/verifiable public
-  source and was deliberately not built — see `DATA_GAP_REGISTER.md` §8.
-- **Star rating vs. quality outcomes (Q125-Q128, added 2026-09-24)**,
-  owned by Provider & Network on the already-live Hospital General
-  Information dataset — per Adam's PDF-annotated feedback. A real scatter
-  plot (Q125, new `ChartScatter` chart type) correlating CMS's overall
-  star rating against a real net quality-outcome score derived from the
-  same dataset's mortality/safety/readmission measure-group counts
-  (Pearson r = 0.56 as of the first real pull — moderate-to-strong
-  positive, disclosed as correlation, never causation); Tukey boxplots of
-  star rating (Q126) and net quality-outcome score (Q127) by state; and a
-  states-improving-over-time check (Q128) built on the same
-  snapshotHistory/meetsPersistence mechanism every other agent uses — as
-  of 2026-09-24 this honestly reports no state has yet shown a persistent
-  improvement (this CMS dataset refreshes quarterly; only ~1 week of real
-  history exists so far), alongside a real current-snapshot ranking of
-  which states have the best outcomes right now. New shared
-  `pearsonCorrelation()` in `intelligence/metrics/metrics.ts` and
-  `ScatterChart.tsx` component.
+  Q113-Q124, Q129) — a new question category beyond the original
+  112-question catalog, tracking real corporate-disclosure (SEC 8-K),
+  drug-approval (openFDA), federal-grant (NIH RePORTER), NIH
+  research-theme frequency (Q129, added 2026-09-24), and
+  clinical-trial-results (ClinicalTrials.gov) activity. The third real
+  use of the revised carrier-naming rule (see `AGENT_ARCHITECTURE.md`
+  §13). Real, disclosed corrections made during implementation (not
+  papered over): NIH RePORTER's real `agency_code` field turned out to be
+  the sponsoring HHS operating division, not NIH institute-level detail,
+  as originally planned — the agent's Q115 insight is honestly relabeled
+  for this. "Grants rescinded" was researched and found infeasible with
+  any free/verifiable public source and was deliberately not built — see
+  `DATA_GAP_REGISTER.md` §8.
+- **Star rating vs. quality outcomes (Q125-Q128) and facility
+  entries/exits (Q042/Q043)**, both added 2026-09-24, owned by Provider &
+  Network on the already-live Hospital General Information dataset — per
+  Adam's dashboard feedback. A real scatter plot (Q125, `ChartScatter`
+  chart type) correlating CMS's overall star rating against a real net
+  quality-outcome score derived from the same dataset's mortality/safety/
+  readmission measure-group counts (Pearson r = 0.56 as of the first real
+  pull — moderate-to-strong positive, disclosed as correlation, never
+  causation); Tukey boxplots of star rating (Q126) and net
+  quality-outcome score (Q127) by state; a states-improving-over-time
+  check (Q128); and real facility-entry/exit tracking (Q042/Q043) via the
+  same `diffRows()` mechanism the Data Source & CMS Change Monitor agent
+  uses. As of 2026-09-24 both Q128 and Q042/Q043 honestly report no
+  persistent change/entries/exits observed yet (this CMS dataset
+  refreshes quarterly; only ~1 week of real history exists so far),
+  alongside real current-snapshot rankings. New shared
+  `pearsonCorrelation()` in `intelligence/metrics/metrics.ts`,
+  `ScatterChart.tsx` and `ListChart.tsx` components.
 - **Salience/triage reasoning layer**
   (`cms-intelligence/intelligence/salience/selectNoteworthy.ts`): splits
   real fact computation (stays deterministic) from selecting/explaining
@@ -72,9 +79,9 @@ original agents are all live options; pick based on what's asked next.
   only choose among and explain given candidates, never invent one).
   Falls back to the prior deterministic top-N ranking whenever no model
   is configured (true today — zero behavior change, zero cost by
-  default). Used in the MA/Part D and Marketplace agents so far; the
-  other 6 real agents still use their original fixed top-N logic pending
-  a go-ahead to retrofit them.
+  default). Used in the MA/Part D, Marketplace, and Market/Catalyst
+  agents so far; the other 6 real agents still use their original fixed
+  top-N logic pending a go-ahead to retrofit them.
 - **Naming-privacy pattern, revised 2026-09-24**: MA/Part D and
   Marketplace source files both name a real carrier/plan on every row.
   The rule is no longer "drop every named field unconditionally" — a real

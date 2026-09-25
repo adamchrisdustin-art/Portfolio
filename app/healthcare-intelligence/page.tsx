@@ -98,7 +98,7 @@ export default async function HealthcareIntelligencePage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 14 }}>
           <StatTile label="Specialist agents run this cycle" value={String(sweep.agentStatuses.length)} />
           <StatTile label="Evidence-backed insights" value={String(sweep.allInsights.length)} />
-          <StatTile label="Real data sources wired" value="6" />
+          <StatTile label="Real data sources wired" value="10" />
           <StatTile
             label="Layers with real findings"
             value={`${Object.values(sweep.insightsByLayer).filter((l) => l.length > 0).length} / 6`}
@@ -180,11 +180,13 @@ export default async function HealthcareIntelligencePage() {
           <div>
             <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Architecture</h3>
             <p style={{ margin: 0, color: "var(--text-muted)", marginBottom: 10 }}>
-              Dashboard → Executive Orchestrator → 11 domain specialist agents (market, claims, reimbursement,
-              provider network, Medicare Advantage/Part D, Medicaid, Marketplace, policy, emerging signals, plus two
-              infrastructure agents for data-source monitoring and the shared semantic model) → data adapters →
-              public CMS sources. A model-provider interface sits behind every agent&apos;s reasoning step, so the same
-              system can run on different language models without changing any business logic.
+              Dashboard → Executive Orchestrator → 12 domain specialist agents (market, claims, reimbursement,
+              provider network, Medicare Advantage/Part D, Medicaid, Marketplace, policy, emerging signals,
+              market/catalyst intelligence, plus two infrastructure agents for data-source monitoring and the
+              shared semantic model) → data adapters → public sources (CMS program data plus SEC EDGAR, openFDA,
+              NIH RePORTER, and ClinicalTrials.gov). A model-provider interface sits behind every agent&apos;s
+              reasoning step, so the same system can run on different language models without changing any
+              business logic.
             </p>
             <p style={{ margin: 0, color: "var(--text-muted)" }}>
               {sweep.agentStatuses.length} agents ran this cycle, producing {sweep.allInsights.length} evidence-backed
@@ -195,19 +197,26 @@ export default async function HealthcareIntelligencePage() {
           <div>
             <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Data</h3>
             <p style={{ margin: 0, color: "var(--text-muted)" }}>
-              Currently live: CMS Hospital General Information, CMS Home Health Care Agencies, CMS Medicare Physician
-              &amp; Other Practitioners (a 5-state sample, not the full national file), the Federal Register API
-              filtered to CMS as the publishing agency (a rolling 120-day window, not full regulatory history), CMS&apos;s
-              Medicare Advantage/Part D Monthly Enrollment by Plan file, and CMS&apos;s ACA Marketplace Rate PUF. The
-              Marketplace file exposes only category fields and an opaque plan identifier used solely as a count,
-              never a carrier name; the MA/Part D file does name a real parent organization on every row, and this
-              project surfaces that name only for a genuine, sourced finding (an enrollment ranking), never a
-              fabricated or implied-proprietary claim (see &quot;Known limitations&quot; below). The first three are public,
-              no-registration CMS Provider Data Catalog / Datastore datasets; the rest are separate public federal
-              sources — chosen because each is directly fetchable and updates on a predictable cadence, which matters
-              for a project run on a fixed budget and a once-a-quarter refresh schedule rather than a live production
-              feed. Two independent CMS sources sharing the same states is also what makes the Emerging Signals
-              cross-check below possible.
+              Currently live: 6 CMS-focused sources — Hospital General Information, Home Health Care Agencies,
+              Medicare Physician &amp; Other Practitioners (a 5-state sample, not the full national file), the
+              Federal Register API filtered to CMS as the publishing agency, CMS&apos;s Medicare Advantage/Part D
+              Monthly Enrollment by Plan file, and CMS&apos;s ACA Marketplace Rate PUF — plus 4 non-CMS sources behind
+              the Market/Catalyst agent: SEC EDGAR 8-K filings for a fixed 6-company health-insurer watchlist,
+              openFDA novel drug approvals, NIH RePORTER award notices, and ClinicalTrials.gov Phase 3 results
+              postings. The Federal Register feed and the 4 Market/Catalyst sources each use a rolling 730-day
+              (2-year) window, not full history — a real, live-verified choice: those sources&apos; own APIs support
+              historical date-range queries, unlike CMS&apos;s Provider Data Catalog API, which exposes only the
+              current dataset vintage (no historical-vintage parameter exists), so the CMS-program sources can only
+              accumulate real history forward from each future pull. The Marketplace file exposes only category
+              fields and an opaque issuer/plan identifier used solely as a count, never a carrier name; the MA/Part D
+              file does name a real parent organization on every row, and this project surfaces that name only for a
+              genuine, sourced finding (an enrollment ranking), never a fabricated or implied-proprietary claim (see
+              &quot;Known limitations&quot; below). The first three CMS sources are public, no-registration CMS Provider
+              Data Catalog / Datastore datasets; the rest are separate public federal/registry sources — chosen
+              because each is directly fetchable and updates on a predictable cadence, which matters for a project
+              run on a fixed budget and a once-a-quarter refresh schedule rather than a live production feed. Two
+              independent CMS sources sharing the same states is also what makes the Emerging Signals cross-check
+              below possible.
             </p>
           </div>
           <div>
@@ -258,12 +267,17 @@ export default async function HealthcareIntelligencePage() {
                 real provider — no API key is configured anywhere for this project yet.
               </li>
               <li>
-                The salience/triage reasoning layer (choosing which real findings matter most) runs in only 2 of the
-                8 real agents so far (Medicare Advantage/Part D, Marketplace); the rest still use a fixed top-N rule.
+                The salience/triage reasoning layer (choosing which real findings matter most) runs in only 3 of the
+                9 real agents so far (Medicare Advantage/Part D, Marketplace, Market/Catalyst); the rest still use a
+                fixed top-N rule.
               </li>
               <li>
-                The physician dataset is a 5-state sample, not the full national file; the Federal Register feed is
-                a rolling 120-day window, not full regulatory history.
+                The physician dataset is a 5-state sample, not the full national file; the Federal Register feed,
+                and the 4 corporate/regulatory/research sources behind the Market/Catalyst agent, are each a rolling
+                730-day (2-year) window, not full history — CMS&apos;s own program datasets (hospital counts,
+                MA/Part D enrollment, Marketplace rates), by contrast, can only accumulate real history forward from
+                each future pull, since CMS&apos;s own live API exposes no historical-vintage parameter to backfill
+                from.
               </li>
               <li>
                 Confidence scores read low across the board — genuinely, not a bug — because there&apos;s only about
