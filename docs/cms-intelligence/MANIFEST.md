@@ -118,7 +118,7 @@ reads; if either secret is missing, reasoning skips at $0.
    check still catches invented company names and most invented
    numbers, but it gets weaker as data grows. The analyst prompt's rules
    are the other line of defense.
-6. **Service-level physician data: built 2026-09-25, not yet pushed.**
+6. **Service-level physician data: built and pushed 2026-09-25.**
    National Medicare Part B totals for every procedure code, 2013-2024
    (CMS's "by Geography and Service", national rows only: 3 requests a
    year), with CMS's RBCS service categories. Stored compactly, about
@@ -136,7 +136,38 @@ reads; if either secret is missing, reasoning skips at $0.
    - Part B drug share: 10.7% of payment in 2013, 24.5% in 2024. This is
      also why the 2024 ophthalmology and ASC service counts jumped: drugs
      are counted in dose units (for example, aflibercept HD, new in 2024).
-7. **Salience benchmark note.** Every rejected salience answer
+7. **Marketplace, every HealthCare.gov state, 2014-2026: built 2026-09-25, not yet pushed.**
+   The Rate PUF is now joined to the Plan Attributes PUF and summarized
+   per plan year (about 55KB a year). The 5-state sample it replaced was
+   wrong in three ways:
+   - About 10,800 of its 14,200 rows were stand-alone dental plans (under
+     $50), so the live "median premium" was mostly a dental premium, and
+     its issuer counts included dental issuers.
+   - Its "No Preference" tobacco filter dropped every tobacco-rated plan,
+     about half of all plans.
+   - It mixed in small-group rates effective later in the year.
+   The $0 and $9,999 rates it excluded as an "empirical judgment" were all
+   dental and small-group rows; no individual medical rate has either
+   value in any year.
+   The agent now reports four insights:
+   - Benchmark (second-lowest silver, age 40) trend, Q067: +21.7% for
+     2026 in the median state, rising in 28 of 30, which breaks from the
+     2014-2025 pattern. The history matches the published record: +22.8%
+     in 2017, silver +39.5% vs bronze +16.9% in 2018 (silver loading),
+     declines 2019-2022.
+   - Benchmark change by state, Q067: Arkansas +69.1%, South Dakota
+     -5.4%; West Virginia highest at $1,094 a month.
+   - Deductibles, Q069: median silver deductible $5,925, +$900 from 2025;
+     $2,500 in 2014.
+   - Issuer participation, Q071: 22 exits and 10 entries for 2026;
+     state-issuer pairs fell from 187 (2025) to 175, against a low of 87
+     in 2018.
+   The federal files only cover HealthCare.gov states (30 for 2026); 20
+   states and DC run their own exchanges. Every comparison uses only
+   states present in the years compared. CMS's Open Enrollment
+   state-level PUF covers all 50 states and DC and would also answer
+   Q066 (enrollment) - a candidate next source.
+8. **Salience benchmark note.** Every rejected salience answer
    in the benchmark was a model calculating a number itself (day spans,
    counts, sums). Telling the salience prompt "copy numbers exactly, never
    calculate new ones", as the analyst prompt already does, would likely

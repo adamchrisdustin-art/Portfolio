@@ -24,7 +24,7 @@ import { loadLatestSnapshot as loadHomeHealthSnapshot } from "../data/adapters/h
 import { loadAllYears as loadPhysicianYears } from "../data/adapters/physicianByProviderSummary";
 import { loadLatestSnapshot as loadFederalRegisterSnapshot } from "../data/adapters/federalRegisterDocuments";
 import { loadLatestSnapshot as loadMaPartDSnapshot } from "../data/adapters/maPartDEnrollment";
-import { loadLatestSnapshot as loadMarketplaceSnapshot } from "../data/adapters/marketplaceRatePuf";
+import { loadAllPlanYears as loadMarketplaceYears } from "../data/adapters/marketplaceRatePuf";
 import { tukeyBox } from "../intelligence/metrics/metrics";
 import { dateFromSnapshotFilename } from "../data/sources/snapshotHistory";
 import { boxplotByState } from "../agents/claims-utilization-cost/agent";
@@ -96,6 +96,9 @@ function ratingBar(title: string, rows: { rating?: string }[]): ChartBar | null 
   return { type: "bar", title, unit: "facilities", bars };
 }
 
+/** A box drawn from fewer rating areas than this says little about spread. */
+const MIN_RATING_AREAS_FOR_BOX = 5;
+
 export function buildAnalyticsOverview(): AnalyticsOverview {
   const hospital = loadHospitalSnapshot();
   const homeHealth = loadHomeHealthSnapshot();
@@ -103,7 +106,8 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
   const physician = physicianYears[physicianYears.length - 1];
   const federalRegister = loadFederalRegisterSnapshot();
   const maPartD = loadMaPartDSnapshot();
-  const marketplace = loadMarketplaceSnapshot();
+  const marketplaceYears = loadMarketplaceYears();
+  const marketplace = marketplaceYears[marketplaceYears.length - 1];
 
   const kpis: AnalyticsKpi[] = [];
   let facilityTypeDonut: ChartDonut | null = null;
@@ -257,49 +261,35 @@ export function buildAnalyticsOverview(): AnalyticsOverview {
     };
   }
 
-  if (marketplace && marketplace.rows.length > 0) {
-    // Same disclosed empirical exclusion as commercial-marketplace/agent.ts - see that file's header for why $0/$9999 exact values are excluded.
-    const plausible = marketplace.rows.filter((r) => r.individualRate > 0 && r.individualRate < 9999);
-    kpis.push({ label: `Marketplace plan-rate rows sampled (${marketplace.planYear})`, value: plausible.length.toLocaleString() });
+  if (marketplace && marketplace.states.length > 0) {
+    kpis.push({ label: `HealthCare.gov states with Marketplace plans (${marketplace.planYear})`, value: String(marketplace.states.length) });
 
+    // Spread of the benchmark (second-lowest-cost silver plan) across each state's rating areas.
     const byState = new Map<string, number[]>();
-    for (const r of plausible) {
-      if (!byState.has(r.state)) byState.set(r.state, []);
-      byState.get(r.state)!.push(r.individualRate);
+    for (const a of marketplace.ratingAreas) {
+      if (a.benchmark === null) continue;
+      if (!byState.has(a.state)) byState.set(a.state, []);
+      byState.get(a.state)!.push(a.benchmark);
     }
     const boxes = Array.from(byState.entries())
-      .filter(([, values]) => values.length >= 20)
+      .filter(([, values]) => values.length >= MIN_RATING_AREAS_FOR_BOX)
       .map(([state, values]) => ({ label: state, ...tukeyBox(values) }))
       .sort((a, b) => a.median - b.median);
     if (boxes.length > 0) {
       marketplacePremiumBoxplot = {
         type: "boxplot",
-        title: `Individual Marketplace premium distribution by state (age ${marketplace.referenceAge}, tobacco-neutral)`,
+        title: `Benchmark silver premium across each state's rating areas, age ${marketplace.referenceAge}, plan year ${marketplace.planYear} (states with ${MIN_RATING_AREAS_FOR_BOX}+ rating areas)`,
         unit: "usd/month",
         boxes,
       };
     }
 
-    const issuersByState = new Map<string, Set<string>>();
-    for (const r of plausible) {
-      if (!issuersByState.has(r.state)) issuersByState.set(r.state, new Set());
-      issuersByState.get(r.state)!.add(r.issuerId);
-    }
+    // Issuers per state, fewest first - the low end is the competitive-intensity signal (Q071).
     marketplacePlanAvailabilityBar = {
       type: "bar",
-      // State, not rating area, and distinct ISSUERS, not distinct plans -
-      // redesigned 2026-09-24 to match commercial-marketplace/agent.ts's
-      // Q071 insight redesign (see that file for the real degenerate-tie
-      // bug this fixes: rating-area-level plan counts are near-uniform
-      // within a state, since issuers file consistently across every
-      // rating area they enter - state-level issuer count is the real,
-      // non-tied signal). Sorted ascending (fewest issuers first) - the
-      // low end is the real competitive-intensity signal.
-      title: "Marketplace states with the fewest distinct issuers sampled",
+      title: `Marketplace issuers per HealthCare.gov state, plan year ${marketplace.planYear} (fewest first)`,
       unit: "issuers",
-      bars: Array.from(issuersByState.entries())
-        .map(([label, issuers]) => ({ label, value: issuers.size }))
-        .sort((a, b) => a.value - b.value),
+      bars: marketplace.states.map((st) => ({ label: st.state, value: st.issuerIds.length })).sort((a, b) => a.value - b.value),
     };
   }
 

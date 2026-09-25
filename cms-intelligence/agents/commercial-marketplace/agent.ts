@@ -2,65 +2,67 @@
  * Commercial / Marketplace Intelligence agent - see
  * docs/cms-intelligence/AGENT_ARCHITECTURE.md section 8.
  *
- * Wired 2026-09-23 to the third and final item in Adam's data-source
- * priority order: CMS's Health Insurance Exchange (Marketplace) Rate
- * PUF (see cms-intelligence/data/adapters/marketplaceRatePuf.ts for how
- * it was verified live, why WA/CA/NY couldn't be reused from this
- * project's usual 5-state sample, and the naming/privacy design
- * decision). No enrollment data exists in this file family (Q066 stays
- * unaddressed - see SOURCE_REGISTRY.md); this agent covers premium
- * distribution (Q067) and plan-availability/competitive-intensity
- * (Q071) from real data.
+ * Rebuilt 2026-09-25 on the full plan-year summaries
+ * (data/adapters/marketplaceRatePuf.ts): every HealthCare.gov state,
+ * every plan year from 2014, individual-market medical plans only. The
+ * 5-state sample it replaced mixed stand-alone dental plans into its
+ * premium medians and dropped tobacco-rated plans; see the adapter header.
  *
- * DATA-QUALITY JUDGMENT (disclosed, not officially confirmed): this
- * pull's real 5-state/age-21/tobacco-neutral sample contains 67 rows at
- * exactly IndividualRate=9999 and 1,129 rows at exactly 0 - both
- * statistical outliers wildly inconsistent with the rest of the
- * distribution. The real CMS Rate PUF data dictionary (verified
- * 2026-09-23) does NOT document either as an official sentinel/
- * placeholder value - IndividualRate is documented only as "Free Text."
- * This agent excludes both as a disclosed empirical judgment (not an
- * official CMS convention), same as every other agent's own materiality
- * thresholds - see EXCLUDED_RATE_CEILING/EXCLUDED_RATE_FLOOR below.
+ * Insights:
+ * - Benchmark premium trend (Q067): the second-lowest-cost silver premium
+ *   for a 40-year-old, the plan subsidies are pegged to, over every year.
+ * - Benchmark change by state (Q067), with the salience layer choosing
+ *   which states to show.
+ * - Deductible trend (Q069): silver and bronze deductibles.
+ * - Issuer participation (Q071): issuer entry and exit by state, counted by
+ *   opaque HIOS id, never named.
  *
- * Second use of the salience/triage reasoning layer
- * (intelligence/salience/selectNoteworthy.ts) - the plan-availability
- * insight computes real distinct-issuer-counts for every sampled state,
- * then lets the same deterministic-fallback/model-reasoned selection
- * choose which are noteworthy.
- *
- * REDESIGNED 2026-09-24 (real bug, caught from Adam's screenshot): the
- * plan-availability insight originally ranked distinct-PlanId counts per
- * RATING AREA, which produced a degenerate, tie-dominated ranking (9
- * South Carolina rating areas tied at exactly 27) because issuers file
- * consistently across every rating area they enter within a state -
- * rating area isn't where this data's real variation lives. Redesigned
- * to count distinct real IssuerId values (added to the adapter the same
- * day - previously dropped entirely) aggregated to the STATE level,
- * which shows genuine, non-tied variation (7 to 18 issuers across the 5
- * sampled states) and better matches Q071's own catalog wording ("number
- * of ISSUERS/plans"). IssuerId is still never surfaced as a name - only
- * ever used as a COUNT, same discipline as PlanId.
+ * Every comparison is like-for-like: series use states present in every
+ * year, and year-over-year changes use states present in both years
+ * (intelligence/metrics/marketplaceTrends.ts).
  */
-import { loadLatestSnapshot, SOURCE_ID, type MarketplaceRateRow } from "../../data/adapters/marketplaceRatePuf";
+import { loadAllPlanYears, REFERENCE_AGE, SOURCE_ID, type MarketplaceYearSummary } from "../../data/adapters/marketplaceRatePuf";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
-import { tukeyBox } from "../../intelligence/metrics/metrics";
+import { coverageChanges, issuerFlows, panelSeries, panelStates, stateChanges, type StateChange } from "../../intelligence/metrics/marketplaceTrends";
+import { checkAgainstHistory, type HistoryCheck } from "../../intelligence/metrics/physicianTrends";
 import { selectNoteworthy, type Candidate } from "../../intelligence/salience/selectNoteworthy";
-import { classifyConfidence } from "../../intelligence/trends/trend";
+import { classifyConfidence, directionOf, meetsPersistence } from "../../intelligence/trends/trend";
 import type { AgentContext, DomainAgent } from "../types";
 
 const AGENT_ID = "commercial-marketplace-intelligence";
-const EXCLUDED_RATE_FLOOR = 0; // see file header - a disclosed empirical judgment, not an official CMS convention
-const EXCLUDED_RATE_CEILING = 9999; // ditto
-const MIN_ROWS_FOR_BOXPLOT = 20;
+const TOP_N_STATES = 8;
 
-function baselineConfidence() {
-  return classifyConfidence({ persistenceMet: false, hasFullBaseline: false, hasExternalCorroboration: false });
-}
+const pct = (x: number, digits = 1) => `${x >= 0 ? "+" : ""}${(x * 100).toFixed(digits)}%`;
+const usd = (x: number) => `$${Math.round(x).toLocaleString()}`;
+const signedUsd = (x: number) => `${x >= 0 ? "+" : "-"}$${Math.abs(Math.round(x)).toLocaleString()}`;
+const median = (values: number[]) => {
+  const s = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+};
+const planYearStart = (year: number) => `${year}-01-01`;
+const planYearEnd = (year: number) => `${year}-12-31`;
 
-function plausibleRows(rows: MarketplaceRateRow[]): MarketplaceRateRow[] {
-  return rows.filter((r) => r.individualRate > EXCLUDED_RATE_FLOOR && r.individualRate < EXCLUDED_RATE_CEILING);
+const evidenceFor = (years: MarketplaceYearSummary[], id: string) => {
+  const latest = years[years.length - 1];
+  return {
+    id,
+    sourceId: SOURCE_ID,
+    description: `CMS Marketplace Rate and Plan Attributes PUFs, plan years ${years[0].planYear}-${latest.planYear}, every HealthCare.gov state (${latest.states.length} in ${latest.planYear}), individual-market medical plans, summarized at pull time`,
+    datasetVintage: latest.pulledAt.slice(0, 10),
+  };
+};
+
+const COMMON_LIMITATIONS = [
+  "HealthCare.gov states only: states running their own exchange (including CA, NY, WA, PA, NJ, IL and GA in recent years) are not in CMS's federal files, and the set changes as states leave. Every comparison uses only states present in the years compared.",
+  "Filed list premiums before subsidies; most enrollees receive a premium tax credit that lowers what they pay.",
+  "No enrollment in these files, so every median is across plans or rating areas, not weighted by how many people bought them.",
+];
+
+function historyNote(check: HistoryCheck | null, first: number, prior: number): string {
+  if (!check) return "can't yet be judged against its own history (too few years)";
+  return `${check.anomalous ? "breaks from" : "is in line with"} its own ${first}-${prior} pattern (median yearly change ${pct(check.medianGrowth)})`;
 }
 
 export const commercialMarketplaceAgent: DomainAgent = {
@@ -68,194 +70,273 @@ export const commercialMarketplaceAgent: DomainAgent = {
   questionIds: ["Q066", "Q067", "Q068", "Q069", "Q070", "Q071", "Q072"],
 
   async run(ctx: AgentContext): Promise<Insight[]> {
-    const snapshot = loadLatestSnapshot();
-    if (!snapshot || snapshot.rows.length === 0) return [];
-
-    const insights: Insight[] = [];
-    const premiumInsight = buildPremiumDistributionSignal(snapshot.rows, snapshot);
-    if (premiumInsight) insights.push(premiumInsight);
-    const availabilityInsight = await buildPlanAvailabilitySignal(snapshot.rows, snapshot, ctx);
-    if (availabilityInsight) insights.push(availabilityInsight);
-
-    return insights;
+    const years = loadAllPlanYears();
+    if (years.length < 2) return [];
+    const insights = [benchmarkTrendInsight(years), await benchmarkStateInsight(years, ctx), deductibleInsight(years), await issuerInsight(years, ctx)];
+    return insights.filter((i): i is Insight => i !== null);
   },
 };
 
-function buildPremiumDistributionSignal(
-  allRows: MarketplaceRateRow[],
-  snapshot: { planYear: number; pulledAt: string; sampledStates: string[]; referenceAge: string }
-): Insight | null {
-  const rows = plausibleRows(allRows);
-  if (rows.length === 0) return null;
+function benchmarkTrendInsight(years: MarketplaceYearSummary[]): Insight | null {
+  const latest = years[years.length - 1];
+  const prior = years[years.length - 2];
+  const panel = panelStates(years);
+  const series = panelSeries(years, "benchmarkMedian", panel);
+  const silver = stateChanges(latest, prior, "benchmarkMedian").filter((c) => c.growth !== null);
+  const bronze = stateChanges(latest, prior, "lowestBronzeMedian").filter((c) => c.growth !== null);
+  if (silver.length === 0 || series.length < 2) return null;
 
-  const byState = new Map<string, number[]>();
-  for (const r of rows) {
-    if (!byState.has(r.state)) byState.set(r.state, []);
-    byState.get(r.state)!.push(r.individualRate);
-  }
-  const boxes = Array.from(byState.entries())
-    .filter(([, values]) => values.length >= MIN_ROWS_FOR_BOXPLOT)
-    .map(([state, values]) => ({ label: state, ...tukeyBox(values) }))
-    .sort((a, b) => a.median - b.median);
-  if (boxes.length === 0) return null;
+  const silverGrowth = median(silver.map((c) => c.growth!));
+  const bronzeGrowth = bronze.length ? median(bronze.map((c) => c.growth!)) : null;
+  const rose = silver.filter((c) => c.growth! > 0).length;
+  const check = checkAgainstHistory(series.map((p) => p.value));
+  const directions = series.slice(1).map((p, i) => directionOf(p.value, series[i].value));
+  const persistent = meetsPersistence(directions);
+  const confidence = classifyConfidence({ persistenceMet: persistent, hasFullBaseline: true, hasExternalCorroboration: false });
+  const { left, joined } = coverageChanges(latest, prior);
+  const latestPanel = series[series.length - 1];
+  // The largest earlier yearly change, so the latest one reads in context.
+  const changes = series.slice(1).map((p, i) => ({ year: p.year, growth: p.value / series[i].value - 1 }));
+  const largestEarlier = changes.slice(0, -1).reduce((a, b) => (Math.abs(b.growth) > Math.abs(a.growth) ? b : a), changes[0]);
 
-  const cheapest = boxes[0];
-  const priciest = boxes[boxes.length - 1];
-  const stamp = snapshot.pulledAt.slice(0, 10);
-  const confidence = baselineConfidence();
-
-  const summary = boxes
-    .map((b) => `${b.label}: median $${b.median.toFixed(0)} (IQR $${b.q1.toFixed(0)}-$${b.q3.toFixed(0)}, n=${b.sampleSize})`)
-    .join("; ");
-
-  const insight: Insight = {
-    id: `sig-marketplace-${snapshot.planYear}-premium-distribution`,
-    headline: `Median individual Marketplace premium (age ${snapshot.referenceAge}, tobacco-neutral) ranges from $${cheapest.median.toFixed(0)} in ${cheapest.label} to $${priciest.median.toFixed(0)} in ${priciest.label} across the ${boxes.length} sampled states, plan year ${snapshot.planYear}.`,
+  return validateInsight({
+    id: `sig-marketplace-${latest.planYear}-benchmark-trend`,
+    headline: `The benchmark silver premium for a 40-year-old changed ${pct(silverGrowth)} for plan year ${latest.planYear} in the median HealthCare.gov state (rising in ${rose} of ${silver.length} states); the lowest-cost bronze premium changed ${bronzeGrowth === null ? "by an unknown amount" : pct(bronzeGrowth)}.`,
     questionId: "Q067",
-    signalType: "baseline",
-    period: { start: `${snapshot.planYear}-01-01`, end: stamp },
+    signalType: check?.anomalous ? "anomaly" : persistent ? "trend" : "baseline",
+    period: { start: planYearStart(series[0].year), end: planYearEnd(latest.planYear) },
     population: "marketplace",
-    geography: { level: "state", code: boxes.map((b) => b.label).join("/"), label: boxes.map((b) => b.label).join(", ") },
-    magnitude: { value: priciest.median, unit: "usd/month", comparedTo: `${cheapest.label} median ($${cheapest.median.toFixed(0)})`, delta: priciest.median - cheapest.median },
+    geography: { level: "state", code: "US-FFM", label: `${silver.length} HealthCare.gov states` },
+    magnitude: { value: silverGrowth * 100, unit: "percent", comparedTo: `${prior.planYear} benchmark premium, same states` },
     drivers: [
       {
-        description: `Real per-plan premiums at CMS's own reference age (${snapshot.referenceAge}), tobacco-neutral rating, by state: ${summary}. ${allRows.length - rows.length} rows were excluded as implausible ($0 or $9999 exactly - a disclosed empirical judgment, not an official CMS-documented convention; see this agent's file header).`,
-        supportingEvidenceIds: ["ev-marketplace-rate"],
+        description: `Benchmark = the second-lowest-cost silver plan in each rating area at age ${REFERENCE_AGE}, the plan the premium tax credit is pegged to; each state's value is the median across its rating areas. Across the ${panel.length} states on HealthCare.gov in every year since ${series[0].year}, the median benchmark went from ${usd(series[0].value)} to ${usd(latestPanel.value)} a month; the ${latest.planYear} change ${historyNote(check, series[0].year, prior.planYear)}. The largest earlier yearly change was ${pct(largestEarlier.growth)} in ${largestEarlier.year}.${bronzeGrowth !== null ? ` Silver moving ${Math.abs(silverGrowth - bronzeGrowth) >= 0.05 ? "well apart from" : "with"} bronze (${pct(silverGrowth)} vs ${pct(bronzeGrowth)}) ${Math.abs(silverGrowth - bronzeGrowth) >= 0.05 ? "points to pricing specific to silver plans" : "points to market-wide pricing"}.` : ""}${left.length ? ` Left HealthCare.gov for their own exchange this year, and excluded: ${left.join(", ")}.` : ""}${joined.length ? ` Newly on HealthCare.gov: ${joined.join(", ")}.` : ""}`,
+        supportingEvidenceIds: ["ev-marketplace-benchmark"],
         relationship: "correlation",
       },
     ],
     businessRelevance:
-      "A real, state-level baseline read on Marketplace premium levels and spread - the starting point for any future pricing/competitive-positioning question (Q067). Median (not mean) is used deliberately given the real right-skewed distribution observed in this data.",
-    evidence: [
-      {
-        id: "ev-marketplace-rate",
-        sourceId: SOURCE_ID,
-        description: `CMS Marketplace Rate PUF, plan year ${snapshot.planYear}, age ${snapshot.referenceAge}, tobacco-neutral, ${rows.length} plausible real rows across ${snapshot.sampledStates.join(", ")}`,
-        datasetVintage: stamp,
-      },
-    ],
+      "The benchmark premium sets subsidy amounts for most Marketplace enrollees and is the standard yardstick for exchange pricing; its year-over-year change is the headline premium signal for plan pricing and competitive positioning (Q067).",
+    evidence: [evidenceFor(years, "ev-marketplace-benchmark")],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real Marketplace Rate PUF snapshot this agent has pulled - no prior pull exists yet to assess persistence or build a baseline.`,
-    freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
+    confidenceRationale: `${confidence.rationale} Every plan in every HealthCare.gov state for ${years.length} plan years, not a sample.`,
+    freshness: { dataAsOf: latest.pulledAt.slice(0, 10), generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
-      `Bounded to ${snapshot.sampledStates.join(", ")} - the 5 largest Federally-Facilitated Marketplace states by row count in this file. WA, CA, and NY run their own State-Based Exchanges and are not in this federal file at all (see this agent's data adapter for the live-verified detail).`,
-      `A single reference age (${snapshot.referenceAge}) and tobacco-neutral rating - real premiums vary by age curve and tobacco status, not captured here.`,
-      "List/filed rates, not post-subsidy consumer-paid premiums - most Marketplace enrollees receive a premium tax credit that lowers their actual net cost well below these figures.",
-      "9,999 and 0 exact-value rows were excluded as an empirical judgment (statistical outliers), not because CMS's own Rate PUF data dictionary documents them as placeholders - it does not.",
+      ...COMMON_LIMITATIONS,
+      "Benchmarks are computed per rating area; the official benchmark is set per county, and not every plan in a rating area serves every county in it.",
+      "State values are medians across rating areas, not population-weighted.",
     ],
-    nextSignal: "Watch this state ranking and spread across a second real pull for the first genuine premium shift, which is what would move this from baseline to a real trend read.",
-    recommendedInternalValidation: "Compare against a real payer's own filed/contracted rates before using this for actual pricing decisions - this is public list-rate data only.",
+    nextSignal: `CMS publishes plan year ${latest.planYear + 1} files in the fall; watch whether the benchmark keeps moving in the same direction.`,
+    recommendedInternalValidation: "Compare against a plan's own filed rate change for the same states and year.",
     sourceIds: [SOURCE_ID],
     generatingAgent: AGENT_ID,
-    chart: { type: "boxplot", title: `Individual Marketplace premium distribution by state (age ${snapshot.referenceAge}, tobacco-neutral)`, unit: "usd/month", boxes },
-  };
-
-  return validateInsight(insight);
+    series: {
+      label: `Median benchmark silver premium, age ${REFERENCE_AGE}, ${panel.length} states on HealthCare.gov every year`,
+      unit: "usd/month",
+      points: series.map((p) => ({ date: planYearStart(p.year), value: Math.round(p.value * 100) / 100 })),
+    },
+  });
 }
 
-async function buildPlanAvailabilitySignal(
-  allRows: MarketplaceRateRow[],
-  snapshot: { planYear: number; pulledAt: string; sampledStates: string[] },
-  ctx: AgentContext
-): Promise<Insight | null> {
-  const rows = plausibleRows(allRows);
+async function benchmarkStateInsight(years: MarketplaceYearSummary[], ctx: AgentContext): Promise<Insight | null> {
+  const latest = years[years.length - 1];
+  const prior = years[years.length - 2];
+  const rows = stateChanges(latest, prior, "benchmarkMedian").filter((c): c is StateChange & { growth: number } => c.growth !== null);
   if (rows.length === 0) return null;
+  const fiveBack = years.length > 5 ? years[years.length - 6] : null;
+  const longRun = fiveBack ? new Map(stateChanges(latest, fiveBack, "benchmarkMedian").map((c) => [c.state, c])) : new Map<string, StateChange>();
+  const national = median(rows.map((r) => r.growth));
 
-  // State-level distinct-issuer count, not rating-area-level distinct-plan
-  // count - redesigned 2026-09-24 after a real data review (caught from
-  // Adam's screenshot showing 9 South Carolina rating areas tied at
-  // exactly 27 distinct plans): issuers file consistently across every
-  // rating area they enter within a state, so a rating-area-level plan
-  // count is structurally near-uniform within a state and produces a
-  // degenerate, tie-dominated ranking rather than a real competitive-
-  // intensity signal. Distinct issuer count aggregated to the STATE level
-  // is the metric that actually varies (verified: 7 to 18 real distinct
-  // issuers across the 5 sampled states, no ties) - and it's a closer
-  // match to Q071's own catalog wording ("number of ISSUERS/plans") than
-  // the prior plan-only count was.
-  const issuersByState = new Map<string, Set<string>>();
-  for (const r of rows) {
-    if (!issuersByState.has(r.state)) issuersByState.set(r.state, new Set());
-    issuersByState.get(r.state)!.add(r.issuerId);
-  }
-
-  const candidates: Candidate[] = Array.from(issuersByState.entries()).map(([state, issuers]) => ({
-    id: state,
-    label: state,
-    summary: `${issuers.size} distinct issuer(s) sampled`,
-    primaryMetric: issuers.size,
-  }));
-  if (candidates.length === 0) return null;
-
+  const describe = (r: (typeof rows)[number]) => {
+    const five = longRun.get(r.state);
+    return `benchmark ${usd(r.prior)} to ${usd(r.current)} a month (${pct(r.growth)})${five?.growth != null && fiveBack ? `; ${pct(five.growth)} since ${fiveBack.planYear}` : ""}`;
+  };
+  const candidates: Candidate[] = rows.map((r) => ({ id: r.state, label: r.state, summary: describe(r), primaryMetric: r.growth }));
   const { selections, source } = await selectNoteworthy(
-    {
-      candidates,
-      topN: candidates.length, // only 5 real sampled states - show all, not a truncated top-N
-      taskDescription: "Marketplace issuer competitive intensity by state this cycle",
-      // Fewer issuers is the competitive-intensity signal worth an executive's attention here.
-      direction: "lowest",
-    },
+    { candidates, topN: TOP_N_STATES, taskDescription: `Marketplace benchmark silver premium change by state, plan year ${prior.planYear} to ${latest.planYear}, against a median state change of ${pct(national)}` },
     ctx
   );
-  if (selections.length === 0) return null;
+  const byState = new Map(rows.map((r) => [r.state, r]));
+  const selected = selections.map((s) => ({ row: byState.get(s.candidateId)!, rationale: s.rationale })).filter((s) => s.row);
+  if (selected.length === 0) return null;
 
-  const byId = new Map(candidates.map((c) => [c.id, c]));
-  const selected = selections.map((s) => ({ selection: s, candidate: byId.get(s.candidateId)! })).filter((x) => x.candidate);
-  const mostIssuers = candidates.reduce((a, b) => (b.primaryMetric > a.primaryMetric ? b : a));
-  const fewestIssuers = candidates.reduce((a, b) => (b.primaryMetric < a.primaryMetric ? b : a));
-  const stamp = snapshot.pulledAt.slice(0, 10);
-  const confidence = baselineConfidence();
+  const ranked = [...rows].sort((a, b) => b.growth - a.growth);
+  const top = ranked[0];
+  const bottom = ranked[ranked.length - 1];
+  const priciest = [...latest.states].filter((s) => s.benchmarkMedian !== null).sort((a, b) => b.benchmarkMedian! - a.benchmarkMedian!);
+  const confidence = classifyConfidence({ persistenceMet: false, hasFullBaseline: true, hasExternalCorroboration: false });
 
-  const summary = selected.map(({ selection, candidate }) => `${candidate.label}: ${candidate.summary} — ${selection.rationale}`).join("; ");
-
-  const insight: Insight = {
-    id: `sig-marketplace-${snapshot.planYear}-plan-availability`,
-    headline: `Distinct issuer count ranges from ${fewestIssuers.primaryMetric} in ${fewestIssuers.label} to ${mostIssuers.primaryMetric} in ${mostIssuers.label} across the ${candidates.length} real sampled states, plan year ${snapshot.planYear}.`,
-    questionId: "Q071",
+  return validateInsight({
+    id: `sig-marketplace-${latest.planYear}-benchmark-by-state`,
+    headline: `${top.state} had the largest benchmark premium change for plan year ${latest.planYear} (${pct(top.growth)}) and ${bottom.state} the smallest (${pct(bottom.growth)}); ${priciest[0].state} has the highest benchmark at ${usd(priciest[0].benchmarkMedian!)} a month for a 40-year-old.`,
+    questionId: "Q067",
     signalType: "baseline",
-    period: { start: `${snapshot.planYear}-01-01`, end: stamp },
+    period: { start: planYearStart(prior.planYear), end: planYearEnd(latest.planYear) },
     population: "marketplace",
-    geography: { level: "state", code: snapshot.sampledStates.join("/"), label: snapshot.sampledStates.join(", ") },
-    magnitude: { value: mostIssuers.primaryMetric, unit: "issuers", comparedTo: `${fewestIssuers.label} (${fewestIssuers.primaryMetric})` },
+    geography: { level: "state", code: "US-FFM", label: `${rows.length} HealthCare.gov states` },
+    magnitude: { value: top.growth * 100, unit: "percent", comparedTo: `median state change of ${pct(national)}` },
     drivers: [
       {
-        description: `Real distinct-issuer counts per state (counting only plausible-rate rows, see this agent's file header): ${summary}. Candidate selection method: ${source === "llm" ? "model-reasoned salience ranking over all 5 real sampled states" : "deterministic ranking (all real candidates included)"}.`,
-        supportingEvidenceIds: ["ev-marketplace-availability"],
+        description: `Benchmark silver premium at age ${REFERENCE_AGE}, median across each state's rating areas: ${selected.map(({ row, rationale }) => `${row.state}: ${describe(row)}${source === "llm" ? ` - ${rationale}` : ""}`).join("; ")}. Highest ${latest.planYear} benchmarks: ${priciest.slice(0, 3).map((s) => `${s.state} ${usd(s.benchmarkMedian!)}`).join(", ")}; lowest: ${priciest.slice(-3).reverse().map((s) => `${s.state} ${usd(s.benchmarkMedian!)}`).join(", ")}.${source === "llm" ? ` Candidate selection method: model-reasoned salience ranking over all ${rows.length} states.` : " Candidate selection method: deterministic ranking by change."}`,
+        supportingEvidenceIds: ["ev-marketplace-states"],
         relationship: "correlation",
       },
     ],
-    businessRelevance:
-      "Distinct issuer count per state is a direct, real competitive-intensity proxy (Q071) - a state with few distinct issuers is a market with limited consumer choice and limited issuer competition, worth flagging for further investigation. State, not rating area, is the geography that actually carries this signal - see limitations.",
-    evidence: [
-      {
-        id: "ev-marketplace-availability",
-        sourceId: SOURCE_ID,
-        description: `CMS Marketplace Rate PUF, plan year ${snapshot.planYear}, distinct real IssuerId counts by state across ${rows.length} plausible real rows`,
-        datasetVintage: stamp,
-      },
-    ],
+    businessRelevance: "Where exchange premiums are rising fastest - the states where pricing pressure, and the subsidy cost that follows the benchmark, is concentrated.",
+    evidence: [evidenceFor(years, "ev-marketplace-states")],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real Marketplace Rate PUF snapshot with issuer data this agent has pulled - no prior pull exists yet to assess persistence or build a baseline.`,
-    freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
-    limitations: [
-      `Bounded to ${snapshot.sampledStates.join(", ")} - see this agent's data adapter for why WA/CA/NY are structurally absent from this federal file, and why only 5 real states exist to compare (a small real sample, not padded to look larger).`,
-      "State, not rating area, is the geography reported here: a real data review found distinct-issuer and distinct-plan counts are near-uniform across rating areas within the same state (issuers file consistently across every rating area they enter) - a rating-area-level version of this same metric produced a degenerate, tie-dominated ranking with no real signal.",
-      "Issuer count is a real proxy for consumer choice, not a confirmed antitrust or market-power measure.",
-      "Never attributes an issuer count to a named carrier - only an opaque real IssuerId is counted, never surfaced or resolved to a company name (see this agent's data adapter).",
-    ],
-    nextSignal: "Watch each state's issuer count across a second real pull for the first genuine entry/exit signal, which would be a real market-structure change, not just this baseline snapshot.",
-    recommendedInternalValidation: "Not applicable - this is public aggregate plan-filing data, not tied to any specific payer's book of business.",
+    confidenceRationale: `${confidence.rationale} Every plan in each state; one year's state ranking is a baseline, not a trend.`,
+    freshness: { dataAsOf: latest.pulledAt.slice(0, 10), generatedAt: new Date().toISOString(), isStale: false },
+    limitations: [...COMMON_LIMITATIONS, "Small states have one or a few rating areas and few issuers, so one issuer's rate change can move the state's benchmark."],
+    nextSignal: `Check whether the states with the largest ${latest.planYear} increases also lost issuers (see the issuer participation insight).`,
+    recommendedInternalValidation: "Compare against a plan's own rate filings in the same states.",
     sourceIds: [SOURCE_ID],
     generatingAgent: AGENT_ID,
     chart: {
       type: "bar",
-      title: "Distinct Marketplace issuers sampled per state",
-      unit: "issuers",
-      bars: selected.map(({ candidate }) => ({ label: candidate.label, value: candidate.primaryMetric })),
+      title: `Benchmark silver premium change by state, plan year ${prior.planYear} to ${latest.planYear}`,
+      unit: "% change",
+      bars: selected.map(({ row }) => ({ label: row.state, value: Math.round(row.growth * 1000) / 10 })),
     },
-  };
+  });
+}
 
-  return validateInsight(insight);
+function deductibleInsight(years: MarketplaceYearSummary[]): Insight | null {
+  const latest = years[years.length - 1];
+  const prior = years[years.length - 2];
+  const panel = panelStates(years);
+  const silverSeries = panelSeries(years, "silverDeductibleMedian", panel);
+  const bronzeSeries = panelSeries(years, "bronzeDeductibleMedian", panel);
+  const silver = stateChanges(latest, prior, "silverDeductibleMedian");
+  const bronze = stateChanges(latest, prior, "bronzeDeductibleMedian");
+  if (silver.length === 0 || silverSeries.length < 2) return null;
+
+  const silverChange = median(silver.map((c) => c.change));
+  const bronzeChange = bronze.length ? median(bronze.map((c) => c.change)) : null;
+  const silverNow = median(silver.map((c) => c.current));
+  const moved = [...silver].sort((a, b) => Math.abs(b.change) - Math.abs(a.change)).slice(0, 5);
+  const directions = silverSeries.slice(1).map((p, i) => directionOf(p.value, silverSeries[i].value));
+  const persistent = meetsPersistence(directions);
+  const confidence = classifyConfidence({ persistenceMet: persistent, hasFullBaseline: true, hasExternalCorroboration: false });
+  const first = silverSeries[0];
+  const last = silverSeries[silverSeries.length - 1];
+
+  return validateInsight({
+    id: `sig-marketplace-${latest.planYear}-deductible-trend`,
+    headline: `The median silver-plan deductible in HealthCare.gov states is ${usd(silverNow)} for plan year ${latest.planYear}, ${signedUsd(silverChange)} from ${prior.planYear} in the median state${bronzeChange !== null ? ` (bronze ${signedUsd(bronzeChange)})` : ""}; in the states on HealthCare.gov since ${first.year} it went from ${usd(first.value)} to ${usd(last.value)}.`,
+    questionId: "Q069",
+    signalType: persistent ? "trend" : "baseline",
+    period: { start: planYearStart(first.year), end: planYearEnd(latest.planYear) },
+    population: "marketplace",
+    geography: { level: "state", code: "US-FFM", label: `${silver.length} HealthCare.gov states` },
+    magnitude: { value: silverChange, unit: "usd", comparedTo: `${prior.planYear} median silver deductible, same states` },
+    drivers: [
+      {
+        description: `In-network individual deductible of each on-exchange plan's standard version (the combined medical and drug deductible where the plan has one), median across a state's plans. Largest ${latest.planYear} silver changes: ${moved.map((c) => `${c.state} ${usd(c.prior)} to ${usd(c.current)}`).join("; ")}. Bronze median across the same ${panel.length}-state panel: ${bronzeSeries.length ? `${usd(bronzeSeries[0].value)} in ${bronzeSeries[0].year} to ${usd(bronzeSeries[bronzeSeries.length - 1].value)}` : "not available"}.`,
+        supportingEvidenceIds: ["ev-marketplace-deductibles"],
+        relationship: "correlation",
+      },
+    ],
+    businessRelevance: "Deductibles are the affordability signal the premium doesn't show: a lower premium bought with a higher deductible shifts cost to members at the point of care (Q069).",
+    evidence: [evidenceFor(years, "ev-marketplace-deductibles")],
+    contradictoryEvidence: [],
+    confidence: confidence.level,
+    confidenceRationale: `${confidence.rationale} Every on-exchange plan's filed deductible, ${years.length} plan years.`,
+    freshness: { dataAsOf: latest.pulledAt.slice(0, 10), generatedAt: new Date().toISOString(), isStale: false },
+    limitations: [
+      ...COMMON_LIMITATIONS,
+      "Standard plan versions only: lower-income enrollees in cost-sharing-reduction silver variants have much lower deductibles.",
+      "Deductibles are medians across plans offered, not what enrollees chose.",
+    ],
+    nextSignal: `Watch whether plan year ${latest.planYear + 1} deductibles move with or against premiums - a premium cut paired with a deductible rise is a benefit buy-down, not cheaper coverage.`,
+    recommendedInternalValidation: "Compare against a plan's own metal-level benefit designs in the same states.",
+    sourceIds: [SOURCE_ID],
+    generatingAgent: AGENT_ID,
+    series: {
+      label: `Median silver deductible, ${panel.length} states on HealthCare.gov every year`,
+      unit: "usd",
+      points: silverSeries.map((p) => ({ date: planYearStart(p.year), value: p.value })),
+    },
+  });
+}
+
+async function issuerInsight(years: MarketplaceYearSummary[], ctx: AgentContext): Promise<Insight | null> {
+  const latest = years[years.length - 1];
+  const prior = years[years.length - 2];
+  const flows = issuerFlows(latest, prior);
+  if (flows.length === 0) return null;
+  const entered = flows.reduce((n, f) => n + f.entered, 0);
+  const exited = flows.reduce((n, f) => n + f.exited, 0);
+  const panel = new Set(panelStates(years));
+  const participation = years.map((y) => ({ year: y.planYear, value: y.states.filter((s) => panel.has(s.state)).reduce((n, s) => n + s.issuerIds.length, 0) }));
+  const singleIssuerAreas = latest.ratingAreas.filter((a) => a.issuers === 1);
+
+  const describe = (f: (typeof flows)[number]) => `${f.issuers} issuer(s), ${f.priorIssuers} in ${prior.planYear} (${f.entered} entered, ${f.exited} left)`;
+  const candidates: Candidate[] = flows.map((f) => ({ id: f.state, label: f.state, summary: describe(f), primaryMetric: f.issuers }));
+  const { selections, source } = await selectNoteworthy(
+    {
+      candidates,
+      topN: TOP_N_STATES,
+      taskDescription: `Marketplace issuer participation by state, plan year ${latest.planYear}, with entry and exit since ${prior.planYear}`,
+      // Fewer issuers is the competitive-intensity signal worth an executive's attention.
+      direction: "lowest",
+    },
+    ctx
+  );
+  const byState = new Map(flows.map((f) => [f.state, f]));
+  const selected = selections.map((s) => ({ row: byState.get(s.candidateId)!, rationale: s.rationale })).filter((s) => s.row);
+  if (selected.length === 0) return null;
+
+  const netLosers = flows.filter((f) => f.issuers < f.priorIssuers).sort((a, b) => a.issuers - a.priorIssuers - (b.issuers - b.priorIssuers));
+  const fewest = [...flows].sort((a, b) => a.issuers - b.issuers)[0];
+  const most = [...flows].sort((a, b) => b.issuers - a.issuers)[0];
+  const peak = participation.reduce((a, b) => (b.value > a.value ? b : a));
+  const trough = participation.reduce((a, b) => (b.value < a.value ? b : a));
+  const confidence = classifyConfidence({ persistenceMet: false, hasFullBaseline: true, hasExternalCorroboration: false });
+
+  return validateInsight({
+    id: `sig-marketplace-${latest.planYear}-issuer-participation`,
+    headline: `${exited} issuer exits and ${entered} entries across ${flows.length} HealthCare.gov states for plan year ${latest.planYear}; issuers per state range from ${fewest.issuers} in ${fewest.state} to ${most.issuers} in ${most.state}.`,
+    questionId: "Q071",
+    signalType: exited > entered ? "structural-change" : "baseline",
+    period: { start: planYearStart(prior.planYear), end: planYearEnd(latest.planYear) },
+    population: "marketplace",
+    geography: { level: "state", code: "US-FFM", label: `${flows.length} HealthCare.gov states` },
+    magnitude: { value: entered - exited, unit: "issuers (net)", comparedTo: `${prior.planYear} issuer participation, same states` },
+    drivers: [
+      {
+        description: `Issuers with an on-exchange medical plan in each state, matched year to year by CMS issuer id: ${selected.map(({ row, rationale }) => `${row.state}: ${describe(row)}${source === "llm" ? ` - ${rationale}` : ""}`).join("; ")}.${netLosers.length ? ` Net losses: ${netLosers.slice(0, 5).map((f) => `${f.state} ${f.priorIssuers} to ${f.issuers}`).join(", ")}.` : ""} ${singleIssuerAreas.length} of ${latest.ratingAreas.length} rating areas ${singleIssuerAreas.length === 1 ? "has" : "have"} a single issuer. State-issuer pairs across the ${panel.size} states on HealthCare.gov every year: ${trough.value} at the ${trough.year} low, ${peak.value} at the ${peak.year} high, ${participation[participation.length - 1].value} in ${latest.planYear}.${source === "llm" ? ` Candidate selection method: model-reasoned salience ranking over all ${flows.length} states.` : " Candidate selection method: deterministic ranking, fewest issuers first."}`,
+        supportingEvidenceIds: ["ev-marketplace-issuers"],
+        relationship: "correlation",
+      },
+    ],
+    businessRelevance: "Issuer entry and exit is the clearest read on exchange competitive intensity (Q071): exits leave fewer choices and tend to precede premium increases, and entries mark markets issuers see as profitable.",
+    evidence: [evidenceFor(years, "ev-marketplace-issuers")],
+    contradictoryEvidence: [],
+    confidence: confidence.level,
+    confidenceRationale: `${confidence.rationale} Every filed issuer in each state; counts, not market shares.`,
+    freshness: { dataAsOf: latest.pulledAt.slice(0, 10), generatedAt: new Date().toISOString(), isStale: false },
+    limitations: [
+      ...COMMON_LIMITATIONS,
+      "An issuer that files under a new HIOS id (after a merger or restructuring) counts as one exit and one entry.",
+      "Issuers are counted, never named, and without enrollment an exit by a small issuer counts the same as one by a large issuer.",
+    ],
+    nextSignal: `Plan year ${latest.planYear + 1} filings will show whether the ${latest.planYear} exits continue.`,
+    recommendedInternalValidation: "Not applicable - public filing data, not tied to any payer's book of business.",
+    sourceIds: [SOURCE_ID],
+    generatingAgent: AGENT_ID,
+    chart: {
+      type: "bar",
+      title: `Marketplace issuers per state, plan year ${latest.planYear} (fewest first)`,
+      unit: "issuers",
+      bars: selected.map(({ row }) => ({ label: row.state, value: row.issuers })).sort((a, b) => a.value - b.value),
+    },
+    series: {
+      label: `Issuer participations (state-issuer pairs), ${panel.size} states on HealthCare.gov every year`,
+      unit: "issuers",
+      points: participation.map((p) => ({ date: planYearStart(p.year), value: p.value })),
+    },
+  });
 }

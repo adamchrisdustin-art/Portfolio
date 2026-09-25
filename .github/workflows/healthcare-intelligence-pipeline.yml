@@ -52,7 +52,7 @@ jobs:
       - name: Pull CMS MA/Part D Monthly Enrollment by Plan
         run: npx tsx cms-intelligence/data/adapters/pull-ma-part-d.ts
 
-      - name: Pull CMS Marketplace Rate PUF
+      - name: Summarize CMS Marketplace Rate + Plan Attributes PUFs (every HealthCare.gov state; newest plan year re-checked, older years kept)
         run: npx tsx cms-intelligence/data/adapters/pull-marketplace-rate-puf.ts
 
       - name: Pull SEC EDGAR 8-K filings (health-insurer watchlist)

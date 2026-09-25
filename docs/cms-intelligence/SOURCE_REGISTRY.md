@@ -26,7 +26,7 @@ unverified rather than filled in with a guessed dataset ID or URL.
 | `cms:medicare-physician-by-provider` | Medicare Physician & Other Practitioners - by Provider (every provider, 2013 onward, summarized) | `data.cms.gov/data-api/v1/dataset/{per-year id}/data` | 2026-09-25 | Q011, Q012, Q013, Q014, Q026, Q027, Q031, Q088 |
 | `federal-register:cms-documents` | Federal Register - CMS documents | `federalregister.gov/api/v1/documents.json` | 2026-09-23 | Q073, Q074, Q075, Q076 |
 | `cms:ma-part-d-enrollment` | MA/Part D Monthly Enrollment by Plan | `cms.gov/.../medicare-advantagepart-d-contract-and-enrollment-data/monthly-enrollment-plan` | 2026-09-23 | Q049, Q053 |
-| `cms:marketplace-rate-puf` | Marketplace (Exchange) Rate PUF | `cms.gov/marketplace/resources/data/public-use-files` | 2026-09-23 | Q067, Q071 |
+| `cms:marketplace-rate-puf` | Marketplace (Exchange) Rate and Plan Attributes PUFs (every HealthCare.gov state, 2014 onward) | `cms.gov/marketplace/resources/data/public-use-files` | 2026-09-25 | Q067, Q069, Q071 |
 | `sec-edgar:healthcare-8k-filings` | SEC EDGAR 8-K filings, health-insurer watchlist | `data.sec.gov/submissions/CIK{10-digit}.json` | 2026-09-24 | Q120, Q121, Q122 |
 | `openfda:drugsfda-novel-approvals` | openFDA drugsfda - novel (Type 1) drug approvals | `api.fda.gov/drug/drugsfda.json` | 2026-09-24 | Q117, Q118, Q119 |
 | `nih-reporter:project-awards` | NIH RePORTER - project award notices | `api.reporter.nih.gov/v2/projects/search` | 2026-09-24 | Q113, Q114, Q115, Q116, Q129 |
@@ -34,7 +34,7 @@ unverified rather than filled in with a guessed dataset ID or URL.
 
 ### Full-population summary tables (2026-09-25)
 
-Two sources used to keep a small slice of their records. Both now pull
+These sources used to keep a small slice of their records. Both now pull
 every record and summarize it at pull time, keeping only the tables
 agents need. None of the earlier limits were API cost: pulls are free,
 and the model only ever sees computed facts.
@@ -62,6 +62,16 @@ and sorting by `appl_id` (returned when requested as "ApplId") gives
 stable pages. The adapter pages one month at a time and halves any range
 over the cap. August 2025 had 15,138 awards and needed the split. The
 first pull captured 140,718 notices, $79.47B.
+
+**Marketplace Rate and Plan Attributes PUFs** (`data/adapters/marketplaceRatePuf.ts`)
+replaces the 5-state, age-21 sample. Verified live 2026-09-25: CMS links
+both files for every plan year from 2014. The Rate PUF has no plan-type
+columns, so it is joined to Plan Attributes (`StandardComponentId` =
+Rate PUF `PlanId`) to keep only on-exchange individual medical plans;
+the old sample had mixed in dental plans. The 2014 Rate PUF unzips to
+722MB, so the adapter streams it; columns are found by header name
+because order and quoting change by year. About 6-10 seconds and 55KB
+per plan year.
 
 **Medicare Physician & Other Practitioners by service** (`data/adapters/physicianServiceSummary.ts`)
 pulls only the national rows of CMS's "by Geography and Service" file for

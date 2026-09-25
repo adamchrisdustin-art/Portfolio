@@ -140,11 +140,12 @@ export function tukeyBox(values: number[]): TukeyBox {
   const inRange = sorted.filter((v) => v >= lowerFence && v <= upperFence);
   const outliers = sorted.filter((v) => v < lowerFence || v > upperFence);
   return {
-    whiskerLow: inRange.length > 0 ? inRange[0] : q1,
+    // With few values an interpolated quartile can sit beyond the last in-range value; a whisker never ends inside the box.
+    whiskerLow: inRange.length > 0 ? Math.min(inRange[0], q1) : q1,
     q1,
     median,
     q3,
-    whiskerHigh: inRange.length > 0 ? inRange[inRange.length - 1] : q3,
+    whiskerHigh: inRange.length > 0 ? Math.max(inRange[inRange.length - 1], q3) : q3,
     outliers,
     sampleSize: sorted.length,
   };

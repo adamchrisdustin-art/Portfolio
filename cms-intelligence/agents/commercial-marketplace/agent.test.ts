@@ -1,68 +1,47 @@
 import { describe, expect, it } from "vitest";
 import { validateInsight } from "../../intelligence/evidence/validate";
+import { loadAllPlanYears } from "../../data/adapters/marketplaceRatePuf";
 import { commercialMarketplaceAgent } from "./agent";
 
-/** Runs against the real CMS Marketplace Rate PUF snapshot already committed to this repo. */
+/** Runs against the real CMS Marketplace plan-year summaries committed to this repo. */
 describe("commercialMarketplaceAgent", () => {
-  it("produces valid, evidence-backed insights from real Marketplace rate data with no model configured", async () => {
+  it("produces benchmark, state, deductible and issuer insights from every plan year", async () => {
     const insights = await commercialMarketplaceAgent.run({ modelProvider: null });
-    expect(insights.length).toBeGreaterThan(0);
+    expect(insights.map((i) => i.id.replace(/^sig-marketplace-\d{4}-/, "")).sort()).toEqual(["benchmark-by-state", "benchmark-trend", "deductible-trend", "issuer-participation"]);
     for (const insight of insights) {
       expect(() => validateInsight(insight)).not.toThrow();
       expect(insight.sourceIds).toContain("cms:marketplace-rate-puf");
       expect(insight.population).toBe("marketplace");
+      // Every insight must say which states the federal files leave out
+      expect(insight.limitations.join(" ")).toMatch(/HealthCare\.gov states only/);
     }
+    const trend = insights.find((i) => i.id.endsWith("benchmark-trend"))!;
+    expect(trend.series?.points.length).toBe(loadAllPlanYears().length);
   });
 
-  it("never names a real carrier - only opaque plan/issuer IDs are counted, never surfaced, and state codes only", async () => {
+  it("never names a carrier - issuers are counted by id only", async () => {
     const insights = await commercialMarketplaceAgent.run({ modelProvider: null });
-    const forbiddenNamePatterns = ["unitedhealthcare", "optum", "humana", "aetna", "cigna", "kaiser", "molina", "centene", "elevance", "anthem"].map(
+    const forbidden = ["unitedhealthcare", "optum", "humana", "aetna", "cigna", "kaiser", "molina", "centene", "ambetter", "elevance", "anthem", "oscar"].map(
       (n) => new RegExp(`\\b${n}\\b`, "i")
     );
     for (const insight of insights) {
       const text = JSON.stringify(insight);
-      for (const pattern of forbiddenNamePatterns) expect(text).not.toMatch(pattern);
+      for (const pattern of forbidden) expect(text).not.toMatch(pattern);
     }
   });
 
-  it("the premium distribution insight uses a real boxplot with correctly ordered whiskers", async () => {
+  it("reports premiums at medical-plan levels, not the dental premiums the old sample mixed in", async () => {
     const insights = await commercialMarketplaceAgent.run({ modelProvider: null });
-    const premium = insights.find((i) => i.questionId === "Q067");
-    expect(premium).toBeDefined();
-    expect(premium?.chart?.type).toBe("boxplot");
-    if (premium?.chart?.type === "boxplot") {
-      for (const box of premium.chart.boxes) {
-        expect(box.whiskerLow).toBeLessThanOrEqual(box.q1);
-        expect(box.q3).toBeLessThanOrEqual(box.whiskerHigh);
-      }
-    }
-    // Must disclose that $0/$9999 exclusion is an empirical judgment, not an official CMS convention
-    expect(premium?.limitations.join(" ")).toMatch(/empirical judgment/i);
+    const trend = insights.find((i) => i.id.endsWith("benchmark-trend"))!;
+    for (const p of trend.series!.points) expect(p.value).toBeGreaterThan(150);
   });
 
-  it("discloses that WA/CA/NY are structurally absent from this federal file", async () => {
+  it("the issuer chart lists states fewest-first with real counts", async () => {
     const insights = await commercialMarketplaceAgent.run({ modelProvider: null });
-    for (const insight of insights) {
-      expect(insight.limitations.join(" ")).toMatch(/State-Based Exchange|absent from this federal file/i);
-    }
-  });
-
-  it("the plan-availability insight's chart shows real, non-tied per-state issuer counts, not a degenerate per-rating-area tie", async () => {
-    const insights = await commercialMarketplaceAgent.run({ modelProvider: null });
-    const availability = insights.find((i) => i.questionId === "Q071");
-    expect(availability).toBeDefined();
-    expect(availability?.chart?.type).toBe("bar");
-    expect(availability?.geography.level).toBe("state");
-    // Real bug this guards against: a rating-area-level version of this metric produced 9 South
-    // Carolina rating areas tied at exactly 27 - a degenerate ranking with no real signal. The
-    // state-level real IssuerId count must show genuine variation (no repeated values) instead.
-    const fewestFromComparedTo = Number(availability?.magnitude.comparedTo?.match(/\((\d+)\)/)?.[1]);
-    expect(Number.isNaN(fewestFromComparedTo)).toBe(false);
-    if (availability?.chart?.type === "bar") {
-      const values = availability.chart.bars.map((b) => b.value);
-      for (const v of values) expect(v).toBeGreaterThan(0);
-      expect(values.some((v) => v === fewestFromComparedTo)).toBe(true);
-      expect(new Set(values).size).toBe(values.length);
-    }
+    const issuers = insights.find((i) => i.id.endsWith("issuer-participation"))!;
+    if (issuers.chart?.type !== "bar") throw new Error("expected a bar chart");
+    const values = issuers.chart.bars.map((b) => b.value);
+    expect(values).toEqual([...values].sort((a, b) => a - b));
+    for (const v of values) expect(v).toBeGreaterThan(0);
   });
 });

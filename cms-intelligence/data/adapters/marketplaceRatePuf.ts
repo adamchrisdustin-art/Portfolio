@@ -1,221 +1,382 @@
 /**
- * CMS Health Insurance Exchange Public Use Files (Marketplace PUFs) -
- * the Rate PUF specifically. Third and final item (per Adam's priority
- * order) in the CMS data-source list - T-MSIS/Medicaid stays
- * deprioritized as the most fragmented (see MANIFEST.md).
+ * CMS Health Insurance Exchange Public Use Files (Marketplace PUFs) - the
+ * Rate PUF joined to the Plan Attributes PUF, summarized per plan year at
+ * pull time for every HealthCare.gov state, 2014 onward.
  *
- * Verified live 2026-09-23 by crawling CMS's real page structure:
- *   https://www.cms.gov/marketplace/resources/data/public-use-files
- * lists real per-plan-year .zip links back to 2014
- * (download.cms.gov/marketplace-puf/<year>/rate-puf.zip). Downloaded and
- * inspected the real 2026 file directly: a 16MB zip containing a single
- * 280MB CSV, 2,235,761 real data rows, real header confirmed as
- * BusinessYear,StateCode,IssuerId,SourceName,ImportDate,
- * RateEffectiveDate,RateExpirationDate,PlanId,RatingAreaId,Tobacco,Age,
- * IndividualRate,... (family-tier columns follow, unused here).
+ * Verified live 2026-09-25 (rebuilt from the 2026-09-23 5-state sample):
+ * - https://www.cms.gov/marketplace/resources/data/public-use-files links
+ *   download.cms.gov/marketplace-puf/<year>/rate-puf.zip and
+ *   plan-attributes-puf.zip for every plan year back to 2014.
+ * - The files cover Federally-Facilitated Marketplace (HealthCare.gov)
+ *   states only. States running their own exchange (CA, NY, WA, ...) are
+ *   absent, and the set changes as states leave HealthCare.gov, so every
+ *   trend compares only states present in both years.
+ * - The Rate PUF mixes medical plans with stand-alone dental plans and
+ *   small-group (SHOP) plans, and has no column saying which. The 5-state
+ *   sample this replaced got that wrong: about 10,800 of its 14,200 rows
+ *   were dental premiums under $50. Plan Attributes (DentalOnlyPlan,
+ *   MarketCoverage, MetalLevel, joined on StandardComponentId = the Rate
+ *   PUF's PlanId) is what separates them.
+ * - Tobacco-rated plans carry Tobacco = "Tobacco User/Non-Tobacco User"
+ *   with the non-tobacco rate in IndividualRate; the old "No Preference"
+ *   filter silently dropped about half of all plans.
+ * - SHOP plans also file quarterly rates (effective Apr/Jul/Oct); only
+ *   rates effective January 1 of the plan year are used.
+ * - Column order changes between years (2014 adds VersionNum, IssuerId2,
+ *   FederalTIN) and 2014 quotes every field, so columns are looked up by
+ *   header name. The 2014 Rate PUF unzips to 722MB, too large for one
+ *   string, so the zip is streamed and parsed line by line.
  *
- * IMPORTANT REAL FINDING that changed this adapter's design: unlike the
- * other CMS adapters, this file only covers Federally-Facilitated
- * Marketplace (FFM) states - inspection confirmed WA, CA, and NY (which
- * run their own State-Based Exchanges: Washington Healthplanfinder,
- * Covered California, NY State of Health) do NOT appear anywhere in
- * this file. The WA/CA/TX/NY/FL 5-state sample this project's physician
- * data used at the time could not be reused for that reason.
- * SAMPLED_STATES below is instead the 5 largest FFM states by real row
- * count in the actual 2026 file (FL, MI, OH, TX, SC) - an objective,
- * documented selection criterion, not an arbitrary pick.
+ * Reference age 40, the age KFF and CMS use for premium comparisons. The
+ * benchmark premium is the second-lowest-cost silver plan (the plan the
+ * premium tax credit is pegged to) in each rating area.
  *
- * Bounded further to a single standard reference age (21 - the flat
- * pre-adult-curve reference age CMS's own rate-review materials and
- * most published ACA premium comparisons use to compare across
- * geography without age-curve noise) and tobacco-neutral rating
- * ("No Preference"). A full 5-state pull at every age/tobacco
- * combination is still ~770K rows - impractical to commit as raw rows.
- * (Summarizing at pull time, as physicianByProviderSummary.ts does, would
- * lift that limit - not yet done here.) This
- * combination yields 14,179 real rows nationally across the 5 sampled
- * states.
+ * NAMING: issuers are kept as opaque HIOS IssuerIds and used only as
+ * counts and for entry/exit; Plan Attributes' marketing names are not
+ * stored.
  *
- * NAMING/PRIVACY: this file's issuer field (IssuerId) is an opaque
- * numeric HIOS identifier, never a literal company-name string like the
- * MA/Part D file had. Revised 2026-09-24 (see this project's revised
- * carrier-naming rule, AGENT_ARCHITECTURE.md): IssuerId IS now kept,
- * because Q071's own catalog definition ("county-level competitive-
- * intensity signal - number of ISSUERS/plans") calls for counting
- * distinct issuers, and a real data review this same day found that
- * distinct-PlanId counts per RATING AREA are structurally near-uniform
- * within a state (issuers file consistently across every rating area
- * they enter), producing a degenerate, tie-dominated ranking - a real
- * bug caught from Adam's screenshot showing 9 South Carolina rating
- * areas tied at exactly 27. Distinct issuer count, aggregated to the
- * STATE level (not rating area), is the metric that actually carries
- * real cross-geography signal (verified: 7 to 18 real distinct issuers
- * across the 5 sampled states). IssuerId itself is still never surfaced
- * as a name anywhere downstream - only used as a COUNT, same discipline
- * as PlanId below, which is kept for the same real "how many plan
- * options exist" competitive-intensity read (Q071) - every downstream
- * use of either is a COUNT of distinct IDs, never the ID itself
- * surfaced in an insight.
- *
- * Parsing note: unlike maPartDEnrollment.ts's CSV (which has quoted
- * organization-name fields with embedded commas), this file's real,
- * inspected structure has no quoted fields at all - a fast line/comma
- * split is used instead of the shared RFC4180 parseCsv() in ./csv.ts,
- * which would be needlessly slow across 2.2M real lines. If CMS ever
- * changes this file to include quoted fields, the header-index lookup
- * below would still catch a column-count mismatch rather than silently
- * misreading data.
+ * Storage: one file per plan year under years/, and a dated manifest of
+ * content hashes under snapshots/ for the reasoning change gate.
  */
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { unzipSync } from "fflate";
+import { Unzip, UnzipInflate, unzipSync } from "fflate";
+import { parseCsv } from "./csv";
 
 export const SOURCE_ID = "cms:marketplace-rate-puf";
+export const DATASET_NAME = "marketplace-rate-puf";
 const PUF_PAGE_URL = "https://www.cms.gov/marketplace/resources/data/public-use-files";
-const YEAR_LINK_PATTERN = /href="(https:\/\/download\.cms\.gov\/marketplace-puf\/(\d{4})\/rate-puf\.zip)"/g;
-const DATASET_NAME = "marketplace-rate-puf";
-const REFERENCE_AGE = "21";
-const TOBACCO_FILTER = "No Preference";
-/** The 5 largest Federally-Facilitated Marketplace states by real row count in the 2026 Rate PUF - see file header for why WA/CA/NY couldn't be reused from this project's usual sample. */
-const SAMPLED_STATES = new Set(["FL", "MI", "OH", "TX", "SC"]);
-const SNAPSHOTS_DIR = path.resolve(process.cwd(), "data", "healthcare-intelligence", DATASET_NAME, "snapshots");
+const YEAR_LINK_PATTERN = /href="https:\/\/download\.cms\.gov\/marketplace-puf\/(\d{4})\/rate-puf\.zip"/g;
+const zipUrl = (year: number, file: "rate-puf" | "plan-attributes-puf") => `https://download.cms.gov/marketplace-puf/${year}/${file}.zip`;
+export const REFERENCE_AGE = "40";
+/** Share of Rate PUF lines allowed to have the wrong field count before the pull fails rather than misread data. */
+const MAX_MALFORMED_SHARE = 0.001;
 const FETCH_HEADERS = { "User-Agent": "Mozilla/5.0 (compatible; healthcare-intelligence-dashboard/1.0)" };
 
-export interface MarketplaceRateRow {
+const DATA_DIR = path.resolve(process.cwd(), "data", "healthcare-intelligence", DATASET_NAME);
+const YEARS_DIR = path.join(DATA_DIR, "years");
+const SNAPSHOTS_DIR = path.join(DATA_DIR, "snapshots");
+
+/** One on-exchange, individual-market medical plan (a standard component; its cost-sharing variants share its rates). */
+export interface PlanInfo {
   state: string;
-  ratingArea: string;
-  /** Opaque CMS plan identifier, e.g. "15833FL0120007" - not a company name. Only ever used downstream as a COUNT of distinct plans, never surfaced itself. */
-  planId: string;
-  /** Opaque real HIOS issuer identifier, e.g. "15833" - not a company name. Only ever used downstream as a COUNT of distinct issuers, never surfaced itself. */
   issuerId: string;
-  individualRate: number;
+  metal: string;
+  planType: string;
+  /** In-network individual deductible of the standard on-exchange variant, dollars; null when not stated. */
+  deductible: number | null;
+  /** In-network individual out-of-pocket maximum, same variant. */
+  moop: number | null;
 }
 
-export interface MarketplaceRatePufSnapshot {
+export interface RatingAreaSummary {
+  state: string;
+  area: string;
+  issuers: number;
+  plans: number;
+  /** Second-lowest-cost silver premium at the reference age (the only silver plan when there is one). */
+  benchmark: number | null;
+  lowestBronze: number | null;
+}
+
+export interface StateSummary {
+  state: string;
+  /** Opaque HIOS ids of issuers with an on-exchange medical plan rated in the state; used for counts and entry/exit only. */
+  issuerIds: string[];
+  plans: number;
+  plansByMetal: Record<string, number>;
+  plansByType: Record<string, number>;
+  ratingAreas: number;
+  /** Median across the state's rating areas (unweighted; rating areas, not counties). */
+  benchmarkMedian: number | null;
+  lowestBronzeMedian: number | null;
+  silverDeductibleMedian: number | null;
+  bronzeDeductibleMedian: number | null;
+  silverMoopMedian: number | null;
+}
+
+export interface MarketplaceYearSummary {
   dataset: string;
   planYear: number;
-  sourceUrl: string;
-  pulledAt: string;
-  sampledStates: string[];
   referenceAge: string;
-  tobaccoFilter: string;
-  rowCount: number;
-  rows: MarketplaceRateRow[];
+  pulledAt: string;
+  sourceUrls: string[];
+  counts: {
+    rateLines: number;
+    /** Reference-age, January-1 rows of on-exchange individual medical plans. */
+    keptRows: number;
+    /** Such rows with a rate of 0 or 9999, excluded as implausible. */
+    implausibleRates: number;
+    malformedLines: number;
+  };
+  states: StateSummary[];
+  ratingAreas: RatingAreaSummary[];
 }
 
-async function findLatestRateZipUrl(): Promise<{ year: number; url: string }> {
-  const res = await fetch(PUF_PAGE_URL, { headers: FETCH_HEADERS });
-  if (!res.ok) throw new Error(`CMS Marketplace PUF index page fetch failed: ${res.status} ${res.statusText} (${PUF_PAGE_URL})`);
-  const html = await res.text();
+export const median = (values: number[]): number | null => {
+  if (values.length === 0) return null;
+  const s = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+};
+const round2 = (n: number | null) => (n === null ? null : Math.round(n * 100) / 100);
 
-  let best: { year: number; url: string } | null = null;
-  for (const m of html.matchAll(YEAR_LINK_PATTERN)) {
-    const [, url, yearStr] = m;
-    const year = Number(yearStr);
-    if (!best || year > best.year) best = { year, url };
-  }
-  if (!best) throw new Error(`No rate-puf.zip links found on CMS Marketplace PUF page (${PUF_PAGE_URL}) - page structure may have changed`);
-  return best;
+/** "$4,500 " -> 4500; "Not Applicable" or blank -> null. Exported for tests. */
+export function parseDollars(value: string | undefined): number | null {
+  if (!value) return null;
+  const m = value.replace(/,/g, "").match(/\$?\s*(\d+(?:\.\d+)?)/);
+  return m ? Number(m[1]) : null;
 }
+
+const isBronze = (metal: string) => metal === "Bronze" || metal === "Expanded Bronze";
 
 /**
- * Fast path for this specific, inspected file (no quoted/embedded-comma
- * fields) - scans line by line without materializing an array of all
- * ~2.2M split rows, only keeping the ones that pass the state/age/
- * tobacco filter. See file header for why this doesn't use the shared
- * parseCsv().
+ * StandardComponentId -> plan, for on-exchange individual-market medical
+ * plans only. Deductible and out-of-pocket maximum come from the
+ * "Standard <metal> On Exchange Plan" variant; the combined medical+drug
+ * (TEHB) figure when deductibles are integrated, else the medical (MEHB)
+ * one. Exported for tests.
  */
-function parseAndFilter(csvText: string): MarketplaceRateRow[] {
-  const firstNewline = csvText.indexOf("\n");
-  if (firstNewline === -1) throw new Error("CMS Rate PUF CSV appears empty or malformed");
-  const header = csvText.slice(0, firstNewline).replace(/\r$/, "").split(",");
-  const idx = (name: string) => header.indexOf(name);
-  const stateIdx = idx("StateCode");
-  const ratingAreaIdx = idx("RatingAreaId");
-  const planIdIdx = idx("PlanId");
-  const issuerIdIdx = idx("IssuerId");
-  const tobaccoIdx = idx("Tobacco");
-  const ageIdx = idx("Age");
-  const rateIdx = idx("IndividualRate");
-  if ([stateIdx, ratingAreaIdx, planIdIdx, issuerIdIdx, tobaccoIdx, ageIdx, rateIdx].some((i) => i === -1)) {
-    throw new Error(`CMS Rate PUF CSV is missing an expected column - real header was: ${header.join(", ")}`);
+export function buildPlanMap(table: string[][]): Map<string, PlanInfo> {
+  const header = table[0].map((h) => h.replace(/^﻿/, "").trim());
+  const col = (name: string) => header.indexOf(name);
+  const need = ["StateCode", "IssuerId", "MarketCoverage", "DentalOnlyPlan", "StandardComponentId", "PlanType", "MetalLevel", "CSRVariationType"];
+  const missing = need.filter((n) => col(n) === -1);
+  if (missing.length) throw new Error(`Plan Attributes PUF is missing ${missing.join(", ")}`);
+  const get = (row: string[], name: string) => (col(name) === -1 ? undefined : row[col(name)]?.trim());
+
+  const plans = new Map<string, PlanInfo>();
+  for (const row of table.slice(1)) {
+    if (get(row, "MarketCoverage") !== "Individual" || get(row, "DentalOnlyPlan") !== "No") continue;
+    const variant = get(row, "CSRVariationType") ?? "";
+    if (!/On Exchange|Cost Sharing|AV Level/.test(variant)) continue; // off-exchange-only plans don't set the benchmark
+    const id = get(row, "StandardComponentId")!;
+    const plan = plans.get(id) ?? {
+      state: get(row, "StateCode")!,
+      issuerId: get(row, "IssuerId")!,
+      metal: get(row, "MetalLevel")!,
+      planType: get(row, "PlanType") || "Unknown",
+      deductible: null,
+      moop: null,
+    };
+    if (/^Standard .* On Exchange Plan$/.test(variant)) {
+      const integrated = get(row, "MedicalDrugDeductiblesIntegrated") === "Yes";
+      plan.deductible = parseDollars(get(row, integrated ? "TEHBDedInnTier1Individual" : "MEHBDedInnTier1Individual"));
+      plan.moop = parseDollars(get(row, integrated ? "TEHBInnTier1IndividualMOOP" : "MEHBInnTier1IndividualMOOP"));
+    }
+    plans.set(id, plan);
   }
-
-  const rows: MarketplaceRateRow[] = [];
-  let pos = firstNewline + 1;
-  const len = csvText.length;
-  while (pos < len) {
-    let end = csvText.indexOf("\n", pos);
-    if (end === -1) end = len;
-    let line = csvText.slice(pos, end);
-    pos = end + 1;
-    if (line.endsWith("\r")) line = line.slice(0, -1);
-    if (line.length === 0) continue;
-
-    const fields = line.split(",");
-    const state = fields[stateIdx];
-    if (!SAMPLED_STATES.has(state) || fields[ageIdx] !== REFERENCE_AGE || fields[tobaccoIdx] !== TOBACCO_FILTER) continue;
-
-    const individualRate = Number(fields[rateIdx]);
-    if (Number.isNaN(individualRate)) continue;
-    rows.push({ state, ratingArea: fields[ratingAreaIdx], planId: fields[planIdIdx], issuerId: fields[issuerIdIdx], individualRate });
-  }
-  return rows;
+  return plans;
 }
 
-/** Live pull + snapshot to disk - run manually/on schedule, never from a page load (COST_AND_OPERATING_MODEL.md). Downloads the full ~280MB national file transiently to filter it; only the bounded, filtered result is ever persisted to this repo. */
-export async function fetchAndSnapshot(): Promise<string> {
-  const { year, url } = await findLatestRateZipUrl();
+/** Streaming state for one Rate PUF: feed it lines, then summarize. Exported for tests. */
+export function createRateSummarizer(planYear: number, plans: Map<string, PlanInfo>) {
+  let header: string[] | null = null;
+  const idx: Record<string, number> = {};
+  const counts = { rateLines: 0, keptRows: 0, implausibleRates: 0, malformedLines: 0 };
+  /** state|area -> planId -> rate */
+  const areaRates = new Map<string, Map<string, number>>();
+  const effective = `${planYear}-01-01`;
 
-  const zipRes = await fetch(url, { headers: FETCH_HEADERS });
-  if (!zipRes.ok) throw new Error(`CMS Rate PUF zip download failed: ${zipRes.status} ${zipRes.statusText} (${url})`);
-  const zipBytes = new Uint8Array(await zipRes.arrayBuffer());
-  const files = unzipSync(zipBytes);
+  const split = (line: string) => line.split(",").map((f) => (f.length >= 2 && f.startsWith('"') && f.endsWith('"') ? f.slice(1, -1) : f));
 
-  const csvEntryName = Object.keys(files).find((n) => n.toLowerCase().endsWith(".csv"));
-  if (!csvEntryName) throw new Error(`No .csv entry found inside the downloaded zip (${url})`);
-  const csvText = Buffer.from(files[csvEntryName]).toString("utf-8");
+  function addLine(raw: string) {
+    const line = raw.endsWith("\r") ? raw.slice(0, -1) : raw;
+    if (!line) return;
+    if (!header) {
+      header = split(line).map((h) => h.replace(/^﻿/, "").trim());
+      for (const name of ["StateCode", "PlanId", "RatingAreaId", "Age", "IndividualRate", "RateEffectiveDate"]) {
+        idx[name] = header.indexOf(name);
+        if (idx[name] === -1) throw new Error(`Rate PUF is missing ${name} - header was: ${header.join(", ")}`);
+      }
+      return;
+    }
+    counts.rateLines++;
+    const fields = split(line);
+    if (fields.length !== header.length) {
+      counts.malformedLines++;
+      return;
+    }
+    if (fields[idx.Age] !== REFERENCE_AGE || !fields[idx.RateEffectiveDate].startsWith(effective)) return;
+    const planId = fields[idx.PlanId];
+    if (!plans.has(planId)) return;
+    counts.keptRows++;
+    const rate = Number(fields[idx.IndividualRate]);
+    if (!(rate > 0) || rate >= 9999) {
+      counts.implausibleRates++;
+      return;
+    }
+    const key = `${fields[idx.StateCode]}|${fields[idx.RatingAreaId]}`;
+    if (!areaRates.has(key)) areaRates.set(key, new Map());
+    areaRates.get(key)!.set(planId, rate);
+  }
 
-  const rows = parseAndFilter(csvText);
+  function summarize(sourceUrls: string[]): MarketplaceYearSummary {
+    if (counts.rateLines > 0 && counts.malformedLines / counts.rateLines > MAX_MALFORMED_SHARE) {
+      throw new Error(`Rate PUF ${planYear}: ${counts.malformedLines} of ${counts.rateLines} lines had the wrong field count - the file format may have changed`);
+    }
+    const ratingAreas: RatingAreaSummary[] = [];
+    const statePlans = new Map<string, Set<string>>();
+    for (const [key, rates] of areaRates) {
+      const [state, area] = key.split("|");
+      const silver: number[] = [];
+      const bronze: number[] = [];
+      const issuers = new Set<string>();
+      for (const [planId, rate] of rates) {
+        const plan = plans.get(planId)!;
+        issuers.add(plan.issuerId);
+        if (plan.metal === "Silver") silver.push(rate);
+        if (isBronze(plan.metal)) bronze.push(rate);
+        if (!statePlans.has(state)) statePlans.set(state, new Set());
+        statePlans.get(state)!.add(planId);
+      }
+      silver.sort((a, b) => a - b);
+      ratingAreas.push({
+        state,
+        area,
+        issuers: issuers.size,
+        plans: rates.size,
+        benchmark: silver.length ? silver[Math.min(1, silver.length - 1)] : null,
+        lowestBronze: bronze.length ? Math.min(...bronze) : null,
+      });
+    }
+    ratingAreas.sort((a, b) => a.state.localeCompare(b.state) || a.area.localeCompare(b.area, undefined, { numeric: true }));
 
-  fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true });
-  const stamp = new Date().toISOString().slice(0, 10);
-  const file = path.join(SNAPSHOTS_DIR, `${stamp}.json`);
-  const snapshot: MarketplaceRatePufSnapshot = {
-    dataset: DATASET_NAME,
-    planYear: year,
-    sourceUrl: url,
-    pulledAt: new Date().toISOString(),
-    sampledStates: Array.from(SAMPLED_STATES),
-    referenceAge: REFERENCE_AGE,
-    tobaccoFilter: TOBACCO_FILTER,
-    rowCount: rows.length,
-    rows,
+    const states: StateSummary[] = [...statePlans.entries()]
+      .map(([state, ids]) => {
+        const list = [...ids].map((id) => plans.get(id)!);
+        const areas = ratingAreas.filter((a) => a.state === state);
+        const tally = (key: (p: PlanInfo) => string) => list.reduce<Record<string, number>>((acc, p) => ((acc[key(p)] = (acc[key(p)] ?? 0) + 1), acc), {});
+        const deductibles = (test: (m: string) => boolean) => list.filter((p) => test(p.metal) && p.deductible !== null).map((p) => p.deductible!);
+        return {
+          state,
+          issuerIds: [...new Set(list.map((p) => p.issuerId))].sort(),
+          plans: list.length,
+          plansByMetal: tally((p) => p.metal),
+          plansByType: tally((p) => p.planType),
+          ratingAreas: areas.length,
+          benchmarkMedian: round2(median(areas.flatMap((a) => (a.benchmark === null ? [] : [a.benchmark])))),
+          lowestBronzeMedian: round2(median(areas.flatMap((a) => (a.lowestBronze === null ? [] : [a.lowestBronze])))),
+          silverDeductibleMedian: median(deductibles((m) => m === "Silver")),
+          bronzeDeductibleMedian: median(deductibles(isBronze)),
+          silverMoopMedian: median(list.filter((p) => p.metal === "Silver" && p.moop !== null).map((p) => p.moop!)),
+        };
+      })
+      .sort((a, b) => a.state.localeCompare(b.state));
+
+    return { dataset: DATASET_NAME, planYear, referenceAge: REFERENCE_AGE, pulledAt: new Date().toISOString(), sourceUrls, counts, states, ratingAreas };
+  }
+
+  return { addLine, summarize };
+}
+
+async function fetchWithRetry(url: string, attempt = 1): Promise<Response> {
+  try {
+    const res = await fetch(url, { headers: FETCH_HEADERS });
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    return res;
+  } catch (err) {
+    if (attempt >= 5) throw new Error(`CMS Marketplace download failed after ${attempt} attempts (${url}): ${err}`, { cause: err });
+    await new Promise((r) => setTimeout(r, 5000 * 2 ** (attempt - 1)));
+    return fetchWithRetry(url, attempt + 1);
+  }
+}
+
+/** Plan years with a Rate PUF link on CMS's index page. */
+export async function listPlanYears(): Promise<number[]> {
+  const html = await (await fetchWithRetry(PUF_PAGE_URL)).text();
+  const years = [...new Set([...html.matchAll(YEAR_LINK_PATTERN)].map((m) => Number(m[1])))].sort();
+  if (years.length === 0) throw new Error(`No rate-puf.zip links found on ${PUF_PAGE_URL} - page structure may have changed`);
+  return years;
+}
+
+async function loadPlanMap(year: number): Promise<Map<string, PlanInfo>> {
+  const bytes = new Uint8Array(await (await fetchWithRetry(zipUrl(year, "plan-attributes-puf"))).arrayBuffer());
+  const files = unzipSync(bytes);
+  const name = Object.keys(files).find((n) => n.toLowerCase().endsWith(".csv"));
+  if (!name) throw new Error(`No CSV inside the ${year} Plan Attributes PUF`);
+  return buildPlanMap(parseCsv(Buffer.from(files[name]).toString("utf-8")));
+}
+
+/** Streams the zip's CSV through `onLine` without holding the file in memory. */
+async function streamZipLines(url: string, onLine: (line: string) => void): Promise<void> {
+  const res = await fetchWithRetry(url);
+  if (!res.body) throw new Error(`Empty response body (${url})`);
+  const decoder = new TextDecoder("utf-8");
+  let carry = "";
+  let found = false;
+  const unzip = new Unzip();
+  unzip.register(UnzipInflate);
+  unzip.onfile = (file) => {
+    if (found || !file.name.toLowerCase().endsWith(".csv")) return;
+    found = true;
+    file.ondata = (err, chunk, final) => {
+      if (err) throw err;
+      const text = carry + decoder.decode(chunk, { stream: !final });
+      const lines = text.split("\n");
+      carry = final ? "" : lines.pop()!;
+      for (const line of lines) onLine(line);
+    };
+    file.start();
   };
-  fs.writeFileSync(file, JSON.stringify(snapshot, null, 2));
+  for await (const chunk of res.body as unknown as AsyncIterable<Uint8Array>) unzip.push(chunk);
+  unzip.push(new Uint8Array(0), true);
+  if (!found) throw new Error(`No CSV inside ${url}`);
+}
+
+export async function summarizePlanYear(year: number): Promise<MarketplaceYearSummary> {
+  const plans = await loadPlanMap(year);
+  const summarizer = createRateSummarizer(year, plans);
+  await streamZipLines(zipUrl(year, "rate-puf"), summarizer.addLine);
+  return summarizer.summarize([zipUrl(year, "rate-puf"), zipUrl(year, "plan-attributes-puf")]);
+}
+
+const yearFile = (year: number) => path.join(YEARS_DIR, `${year}.json`);
+const hashFile = (file: string) => crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+
+/**
+ * Summarizes every plan year not yet on disk, and always re-summarizes the
+ * newest year (CMS republishes it with corrections during the year). The
+ * content hashes, not pulledAt, decide whether anything changed.
+ */
+export async function fetchAndSnapshot(log: (msg: string) => void = console.log): Promise<string> {
+  const years = await listPlanYears();
+  const newest = years[years.length - 1];
+  fs.mkdirSync(YEARS_DIR, { recursive: true });
+  for (const year of years) {
+    if (year !== newest && fs.existsSync(yearFile(year))) continue;
+    const summary = await summarizePlanYear(year);
+    const previous = fs.existsSync(yearFile(year)) ? loadYear(yearFile(year)) : null;
+    // Keep the earlier pulledAt when nothing else changed, so an unchanged republish leaves the file (and its hash) alone.
+    if (previous && JSON.stringify({ ...previous, pulledAt: "" }) === JSON.stringify({ ...summary, pulledAt: "" })) {
+      log(`[marketplace] ${year}: unchanged`);
+      continue;
+    }
+    fs.writeFileSync(yearFile(year), JSON.stringify(summary));
+    log(`[marketplace] ${year}: ${summary.states.length} states, ${summary.ratingAreas.length} rating areas, ${summary.counts.keptRows} plan-area rates (${summary.counts.implausibleRates} implausible)`);
+  }
+  const manifest = {
+    dataset: DATASET_NAME,
+    pulledAt: new Date().toISOString(),
+    years: Object.fromEntries(years.filter((y) => fs.existsSync(yearFile(y))).map((y) => [String(y), hashFile(yearFile(y))])),
+  };
+  fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true });
+  const file = path.join(SNAPSHOTS_DIR, `${manifest.pulledAt.slice(0, 10)}.json`);
+  fs.writeFileSync(file, JSON.stringify(manifest, null, 2));
   return file;
 }
 
-export function listSnapshotFiles(): string[] {
-  if (!fs.existsSync(SNAPSHOTS_DIR)) return [];
+function loadYear(file: string): MarketplaceYearSummary {
+  return JSON.parse(fs.readFileSync(file, "utf-8")) as MarketplaceYearSummary;
+}
+
+/** Every summarized plan year on disk, oldest first. */
+export function loadAllPlanYears(dir: string = YEARS_DIR): MarketplaceYearSummary[] {
+  if (!fs.existsSync(dir)) return [];
   return fs
-    .readdirSync(SNAPSHOTS_DIR)
-    .filter((f) => f.endsWith(".json"))
+    .readdirSync(dir)
+    .filter((f) => /^\d{4}\.json$/.test(f))
     .sort()
-    .map((f) => path.join(SNAPSHOTS_DIR, f));
-}
-
-export function latestSnapshotFile(): string | null {
-  const files = listSnapshotFiles();
-  return files.length ? files[files.length - 1] : null;
-}
-
-export function loadSnapshot(file: string): MarketplaceRatePufSnapshot {
-  return JSON.parse(fs.readFileSync(file, "utf-8")) as MarketplaceRatePufSnapshot;
-}
-
-export function loadLatestSnapshot(): MarketplaceRatePufSnapshot | null {
-  const file = latestSnapshotFile();
-  if (!file) return null;
-  return loadSnapshot(file);
+    .map((f) => loadYear(path.join(dir, f)));
 }
