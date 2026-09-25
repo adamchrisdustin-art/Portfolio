@@ -69,7 +69,7 @@ export default function BarChart({ chart }: { chart: ChartBar }) {
             const barWidth = maxValue > 0 ? (bar.value / maxValue) * plotWidth : 0;
             const y = i * rowHeight;
             return (
-              <g key={bar.label}>
+              <g key={`${i}-${bar.label}`}>
                 <title>{`${bar.label}: ${bar.value.toLocaleString()} ${chart.unit}`}</title>
                 <text x={labelWidth - 8} y={y + barHeight / 2 + 4} textAnchor="end" fontSize={fontSize} fill={INK_SECONDARY}>
                   {bar.label}
@@ -142,7 +142,7 @@ function ColumnChart({ chart }: { chart: ChartBar }) {
             const x = left + i * slot + gap / 2;
             const cx = x + columnWidth / 2;
             return (
-              <g key={bar.label}>
+              <g key={`${i}-${bar.label}`}>
                 <title>{`${bar.label}: ${bar.value.toLocaleString()} ${chart.unit}`}</title>
                 <rect x={x} y={top} width={columnWidth} height={plotHeight} fill={GRIDLINE} opacity={0.3} rx={4} />
                 {h > 0 && <rect x={x} y={baseline - h} width={columnWidth} height={h} fill={MAGNITUDE_HUE} rx={4} />}
