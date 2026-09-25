@@ -13,7 +13,7 @@ function fakeAnalyst(): ModelProvider & { calls: number } {
     calls: 0,
     generate: async ({ user }: { user: string }) => {
       provider.calls++;
-      const facts = JSON.parse(user.slice(user.indexOf("Facts (JSON):\n") + 14, user.indexOf("\n\nRespond with"))) as { id: string; agent: string }[];
+      const facts = JSON.parse(user.slice(user.indexOf("Facts (JSON):\n") + 14, user.indexOf("\n\nPeriod comparisons (JSON):"))) as { id: string; agent: string }[];
       const a = facts[0];
       const b = facts.find((f) => f.agent !== a.agent)!;
       return JSON.stringify({
@@ -53,6 +53,8 @@ describe("runMonthlyReasoning", () => {
     expect(run.analyst.topFindings).toHaveLength(1);
     expect(run.analyst.patterns).toHaveLength(1);
     expect(run.sweep.allInsights.length).toBeGreaterThan(0);
+    // The code-computed period comparisons the analyst saw are saved with the run.
+    expect(run.periodFacts?.length).toBeGreaterThan(0);
     // First run ever: every source counts as new.
     expect(run.changedDatasets.length).toBe(Object.keys(run.sourceFingerprints).length);
   });

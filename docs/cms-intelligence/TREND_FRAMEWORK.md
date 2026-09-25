@@ -45,6 +45,37 @@ metric with known or suspected seasonality (see Seasonality below) —
 comparing YoY instead of period-over-period is this framework's primary
 defense against mistaking a seasonal pattern for a real trend.
 
+## Choosing the period length (implemented 2026-09-25)
+
+Month-over-month is often flat for this system's sources, so no single
+period length is fixed in advance. For each dated event-count metric,
+`cms-intelligence/intelligence/trends/periodComparison.ts` computes every
+view the history supports: month-over-month, quarter-over-quarter,
+half-over-half, and year-over-year (by quarter, by half, and trailing 12
+months). It marks each view notable or not, and the executive analyst
+names a shift only where a view is notable, at the period length where
+it shows up. The rules come from this document:
+
+- **Complete periods only.** Both periods must lie fully inside the
+  data's coverage window and end before the pull date. A view without
+  that history is omitted, never estimated.
+- **Significance.** For counts a and b, a change beyond 2·√(a+b) is
+  notable. This is the 2-standard-deviation anomaly rule in its Poisson
+  form, which works from two periods and needs no 12-period history.
+- **Sample floor.** If both counts are under 11, the comparison is never
+  notable.
+- **Seasonality.** For seasonal metrics (CMS rules, 8-K filings), only
+  year-over-year views can be notable.
+- **Not a trend.** A notable comparison is anomaly-level. It becomes a
+  trend only under the Persistence rule below.
+
+Known limits: event counts can cluster (for example, batches of notices
+published together), which makes the Poisson threshold somewhat lenient.
+About 35 comparisons run each cycle, so one or two can come out notable
+by chance. The analyst is told to treat a notable view as a shift to
+watch, not a conclusion. The metrics covered, and why NIH RePORTER is
+left out, are listed in `cms-intelligence/reasoning/periodFacts.ts`.
+
 ## Acceleration
 
 Per `METRIC_DICTIONARY.md`: the change in the growth rate itself between

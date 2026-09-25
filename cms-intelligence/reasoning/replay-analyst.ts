@@ -3,12 +3,15 @@
  * latest committed reasoned run's real insights and prints the result next
  * to what was published. Writes nothing. One analyst call (~$0.05-0.10 on
  * the default Opus 5.5); needs that provider's API key in the environment.
+ * Period comparisons are rebuilt from the committed snapshots, so they match
+ * the run's data as long as no newer pull has landed since.
  *
  *   npx tsx cms-intelligence/reasoning/replay-analyst.ts
  */
 import { createProviderFromSpec } from "../providers";
 import { runExecutiveAnalyst } from "./executiveAnalyst";
 import { loadLatestReasonedRun } from "./monthlyRun";
+import { buildPeriodFacts } from "./periodFacts";
 import { toSourceIds } from "./sourceFingerprints";
 
 // Not imported from run-monthly-reasoning.ts: importing it runs its main(), a full billed monthly run.
@@ -21,7 +24,7 @@ async function main() {
   const provider = createProviderFromSpec(spec);
   if (!provider) throw new Error(`No API key for ${spec}.`);
 
-  const replay = await runExecutiveAnalyst(run.sweep.allInsights, toSourceIds(run.changedDatasets), provider);
+  const replay = await runExecutiveAnalyst(run.sweep.allInsights, toSourceIds(run.changedDatasets), provider, buildPeriodFacts());
   console.log(JSON.stringify({ replayingRunFrom: run.generatedAt, published: run.analyst, replay }, null, 2));
 }
 

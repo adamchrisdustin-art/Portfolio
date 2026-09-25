@@ -47,8 +47,26 @@ reads; if either secret is missing, reasoning skips at $0.
    salience rejections, so there is no live evidence for it yet. The
    benchmark note below still stands; revisit it if a monthly run logs
    fallbacks.
-3. **Richer stats for the analyst.** Add code-computed candidates
-   (month-over-month deltas, outliers) as monthly history accumulates.
+3. **Period comparisons for the analyst: built 2026-09-25.** Adam
+   expected little month-over-month change, so the system doesn't fix one
+   period length. Code computes month, quarter, half-year and
+   year-over-year views for 7 dated metrics across the Federal Register,
+   FDA, SEC and ClinicalTrials.gov, and marks each view notable or not
+   (TREND_FRAMEWORK.md, "Choosing the period length"). The analyst names
+   a shift only at the period length where one is notable. Each reasoned
+   run saves these comparisons in `periodFacts`. On the current data:
+   - CMS Federal Register documents: notable year-over-year (131 in
+     2026-H1 vs 81 in 2025-H1) and month-over-month (14 in August vs 30
+     in July).
+   - Phase 3 results postings: notable at the half-year views only.
+   - Everything else: steady.
+   The trailing-12-month view starts at the Oct 1 pull, the first with 24
+   complete months of data. **Still open:** the snapshot-level CMS sources
+   (enrollment, hospitals, home health) have no dated history of their
+   own, so they need monthly pulls to build up first. Their comparisons
+   will need a level-based rule, because the Poisson count test doesn't
+   fit them. Outlier detection is also still open. **Next:** run
+   `replay-analyst.ts` to see the analyst use the comparisons.
 4. **Salience benchmark note.** Every rejected salience answer
    in the benchmark was a model calculating a number itself (day spans,
    counts, sums). Telling the salience prompt "copy numbers exactly, never

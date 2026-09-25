@@ -14,6 +14,7 @@ import path from "node:path";
 import { runFullSweep, type FullSweepResult } from "../agents/orchestrator/fullSweep";
 import type { ModelProvider } from "../providers/types";
 import { runExecutiveAnalyst, type AnalystResult } from "./executiveAnalyst";
+import { buildPeriodFacts, type MetricPeriodFacts } from "./periodFacts";
 import { changedSources, currentFingerprints, toSourceIds, type Fingerprints } from "./sourceFingerprints";
 
 export const REASONED_DIR = path.resolve(process.cwd(), "data", "healthcare-intelligence", "reasoned");
@@ -26,6 +27,8 @@ export interface ReasonedRun {
   sourceFingerprints: Fingerprints;
   changedDatasets: string[];
   sweep: FullSweepResult;
+  /** Period comparisons the analyst was given. Absent on runs before 2026-09-25's second release. */
+  periodFacts?: MetricPeriodFacts[];
   analyst: AnalystResult;
 }
 
@@ -77,7 +80,8 @@ export async function runMonthlyReasoning(options: {
   if (previous && changed.length === 0 && !force) return { status: "skipped-unchanged" };
 
   const sweep = await runFullSweep({ modelProvider: salience });
-  const analystResult = await runExecutiveAnalyst(sweep.allInsights, toSourceIds(changed), analyst);
+  const periodFacts = buildPeriodFacts();
+  const analystResult = await runExecutiveAnalyst(sweep.allInsights, toSourceIds(changed), analyst, periodFacts);
 
   const run: ReasonedRun = {
     schemaVersion: 1,
@@ -86,6 +90,7 @@ export async function runMonthlyReasoning(options: {
     sourceFingerprints: fingerprints,
     changedDatasets: changed,
     sweep,
+    periodFacts,
     analyst: analystResult,
   };
 

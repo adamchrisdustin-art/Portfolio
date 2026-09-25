@@ -107,7 +107,7 @@ describe("runExecutiveAnalyst", () => {
       return "{}";
     });
     await runExecutiveAnalyst(insights, ["cms:marketplace-rate-puf"], provider);
-    const factsJson = prompt.slice(prompt.indexOf("Facts (JSON):\n") + "Facts (JSON):\n".length, prompt.indexOf("\n\nRespond with"));
+    const factsJson = prompt.slice(prompt.indexOf("Facts (JSON):\n") + "Facts (JSON):\n".length, prompt.indexOf("\n\nPeriod comparisons (JSON):"));
     const facts = JSON.parse(factsJson) as { agent: string; newThisCycle: boolean }[];
     expect(facts.some((f) => f.newThisCycle)).toBe(true);
     expect(facts.filter((f) => f.newThisCycle).every((f) => f.agent === "commercial-marketplace-intelligence")).toBe(true);
@@ -117,5 +117,52 @@ describe("runExecutiveAnalyst", () => {
     const result = await runExecutiveAnalyst(insights, [], fakeProvider(() => "Here is my analysis in prose."));
     expect(result.source).toBe("none");
     expect(result.note).toMatch(/not a JSON object/);
+  });
+});
+
+describe("runExecutiveAnalyst with period comparisons", () => {
+  const periodFacts = [
+    {
+      metric: "Phase 3 trial results first posted on ClinicalTrials.gov",
+      sourceId: "clinicaltrials-gov:phase3-results",
+      seasonal: false,
+      comparisons: [
+        {
+          view: "year-over-year" as const,
+          current: { period: "2026-H1", count: 270 },
+          prior: { period: "2025-H1", count: 349 },
+          change: -79,
+          percentChange: -22.6,
+          notable: true,
+          basis: "the change of 79 is beyond 2 standard deviations of chance variation (49.8)",
+        },
+      ],
+    },
+  ];
+
+  it("gives the model the comparisons and accepts text citing their numbers", async () => {
+    const [a] = twoFromDifferentAgents();
+    const provider = fakeProvider((user) => {
+      expect(user).toContain("Period comparisons (JSON):");
+      expect(user).toContain('"2025-H1"');
+      return JSON.stringify({
+        topFindings: [{ insightId: a.id, whyItMatters: "Phase 3 results postings fell 22.6% year-over-year, 270 in 2026-H1 against 349 in 2025-H1." }],
+        patterns: [],
+        briefing: "Phase 3 results postings fell 22.6% year-over-year in the first half.",
+      });
+    });
+    const result = await runExecutiveAnalyst(insights, [], provider, periodFacts);
+    expect(result.rejected).toEqual([]);
+    expect(result.topFindings).toHaveLength(1);
+    expect(result.briefing).toMatch(/22.6%/);
+  });
+
+  it("still rejects a period number the code never computed", async () => {
+    const provider = fakeProvider(() =>
+      JSON.stringify({ topFindings: [], patterns: [], briefing: "Phase 3 results postings fell 31.4% year-over-year in the first half." })
+    );
+    const result = await runExecutiveAnalyst(insights, [], provider, periodFacts);
+    expect(result.briefing).toBeNull();
+    expect(result.rejected[0].reason).toMatch(/31.4/);
   });
 });
