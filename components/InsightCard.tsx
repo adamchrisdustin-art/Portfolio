@@ -4,7 +4,8 @@ import Sparkline from "./Sparkline";
 
 const confidenceColor: Record<Insight["confidence"], string> = {
   high: "#1a7f4b",
-  medium: "#b5730a",
+  // The site's --accent-strong (5.8:1 on white). The lighter --accent failed 4.5:1 once a medium-confidence insight first rendered (2026-09-25).
+  medium: "#8f5a06",
   low: "#8a3a3a",
 };
 
