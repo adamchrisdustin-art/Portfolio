@@ -54,8 +54,7 @@ export const SPECIALISTS: TeamMember[] = [
     agentId: "medicaid-chip-dual-eligible-intelligence",
     title: "Medicaid Program Analyst",
     domain: "Medicaid, CHIP & Duals",
-    role: "Reserved for state Medicaid, CHIP and dual-eligible trends; not yet wired to data, since state Medicaid data is the most fragmented CMS source.",
-    status: "deliberate stub",
+    role: "Tracks Medicaid and CHIP enrollment by state from the states' monthly reports, labeling each state's report month and status, since states report on their own schedules.",
   },
   {
     agentId: "commercial-marketplace-intelligence",

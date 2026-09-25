@@ -18,6 +18,8 @@ import type { MarketplaceYearSummary } from "../data/adapters/marketplaceRatePuf
 import { loadAllPlanYears } from "../data/adapters/marketplaceRatePuf";
 import type { HomeHealthSnapshot } from "../data/adapters/homeHealthCareAgencies";
 import { loadLatestSnapshot, parseNumericCell } from "../data/adapters/homeHealthCareAgencies";
+import type { MedicaidEnrollmentSnapshot } from "../data/adapters/medicaidEnrollment";
+import { comparableValue, loadLatestSnapshot as loadLatestMedicaid } from "../data/adapters/medicaidEnrollment";
 import { byState, US_STATES } from "../intelligence/metrics/physicianTrends";
 import { findOutliers, type GroupMember } from "../intelligence/trends/outliers";
 import { SUPPRESSION_FLOOR } from "../intelligence/trends/trend";
@@ -51,6 +53,7 @@ export interface OutlierInputs {
   oepYears: OepYear[];
   planYears: MarketplaceYearSummary[];
   homeHealth: HomeHealthSnapshot | null;
+  medicaid: MedicaidEnrollmentSnapshot | null;
 }
 
 /** Service codes must pay at least this much (standardized) in both years to be compared - small codes swing by large percentages on little money. */
@@ -233,6 +236,29 @@ function homeHealthFacts(snapshot: HomeHealthSnapshot | null): MetricOutlierFact
   );
 }
 
+/** Newest preliminary month against the preliminary report a year earlier (preliminary runs below final, so never mixed). */
+function medicaidFacts(snapshot: MedicaidEnrollmentSnapshot | null): MetricOutlierFacts | null {
+  if (!snapshot) return null;
+  const month = snapshot.reports.filter((r) => r.status === "P").map((r) => r.month).sort().at(-1);
+  if (!month) return null;
+  const prior = `${Number(month.slice(0, 4)) - 1}${month.slice(4)}`;
+  const states = [...new Set(snapshot.reports.map((r) => r.state))].filter((s) => US_STATES.has(s));
+  return toFacts(
+    {
+      metric: "Year-over-year change in Medicaid and CHIP enrollment (states' preliminary reports)",
+      dataset: "medicaid-state-enrollment",
+      period: `${prior} to ${month}`,
+      group: "50 states and DC",
+      format: pct,
+    },
+    states.flatMap((s) => {
+      const now = comparableValue(snapshot.reports, s, month, "P", "totalEnrollment");
+      const then = comparableValue(snapshot.reports, s, prior, "P", "totalEnrollment");
+      return now !== null && then !== null && then >= SUPPRESSION_FLOOR ? [stateMember(s, now / then - 1)] : [];
+    })
+  );
+}
+
 export function outlierFactsFrom(inputs: OutlierInputs): MetricOutlierFacts[] {
   return [
     ...physicianFacts(inputs.physicianYears),
@@ -240,6 +266,7 @@ export function outlierFactsFrom(inputs: OutlierInputs): MetricOutlierFacts[] {
     ...enrollmentFacts(inputs.oepYears),
     ...premiumFacts(inputs.planYears),
     homeHealthFacts(inputs.homeHealth),
+    medicaidFacts(inputs.medicaid),
   ].filter((f): f is MetricOutlierFacts => f !== null);
 }
 
@@ -250,5 +277,6 @@ export function buildOutlierFacts(): MetricOutlierFacts[] {
     oepYears: loadAllOepYears(),
     planYears: loadAllPlanYears(),
     homeHealth: loadLatestSnapshot(),
+    medicaid: loadLatestMedicaid(),
   });
 }

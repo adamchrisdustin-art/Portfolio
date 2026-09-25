@@ -138,7 +138,8 @@ executive analyst.
   payment and provider-count growth; Marketplace consumers and new
   consumers year over year; the benchmark premium level and its
   year-over-year change (HealthCare.gov states); and home health's
-  episode-weighted spending ratio. Also, by service code, year-over-year
+  episode-weighted spending ratio; and Medicaid and CHIP enrollment year
+  over year (preliminary against preliminary). Also, by service code, year-over-year
   standardized payment change.
 - **Reading an outlier:** it is different from its peers, not a change
   over time and not a cause. A metric with an empty list is reported as

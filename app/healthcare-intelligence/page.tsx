@@ -361,8 +361,9 @@ export default async function HealthcareIntelligencePage() {
             </p>
             <ul style={{ margin: 0, paddingLeft: 20, color: "var(--text-muted)", display: "flex", flexDirection: "column", gap: 6 }}>
               <li>
-                Medicaid/CHIP/Duals is a deliberate stub, not a gap being actively chased — Medicaid data (T-MSIS) is
-                the most fragmented CMS source and was deprioritized on purpose.
+                Medicaid coverage uses the states&apos; public monthly enrollment reports. The claim-level T-MSIS
+                research files need a CMS data use agreement and aren&apos;t used, so Medicaid churn, provider
+                networks and service use aren&apos;t covered.
               </li>
               <li>
                 The model evaluation&apos;s own scorer was wrong on its first live runs. It counted &quot;not the full

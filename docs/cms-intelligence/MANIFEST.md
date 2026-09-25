@@ -84,7 +84,23 @@ completion, whichever comes first. **Next, pick with Adam:**
   2017-2025 pattern (median yearly change +9.0%), not a break: plan
   selections also fell in 2018, 2019 and 2020. 2015-2016 have no
   state-level file.
-- **Medicaid/T-MSIS:** still deprioritized as the most fragmented source.
+- **Medicaid: first source wired 2026-09-25.** Claim-level T-MSIS (TAF)
+  needs a CMS data use agreement, so the Medicaid agent uses public data
+  from data.medicaid.gov. First source: each state's monthly Medicaid and
+  CHIP enrollment report (`cms:medicaid-state-enrollment`, June 2017 to
+  June 2026, added to the monthly workflow). States file each month as
+  preliminary, then final; preliminary runs lower, so comparisons never
+  mix the two. Each state figure names its report month and status (the
+  agent spec's per-state vintage rule). What it shows:
+  - Enrollment fell 5.9% year over year to 73.17M (June 2026,
+    preliminary), in 49 of 51 states; the peak was 94.66M in April 2023.
+  - Adults fell 7.0% in expansion states and 2.4% in non-expansion states.
+  - Indiana (-18.5%) and Louisiana (-14.0%) stand apart from the -3.8%
+    median state; California lost the most people (1,650,639).
+  Next candidates, also public: managed care enrollment by plan and
+  parent organization (annual, through 2024; Q064), and TAF-derived
+  monthly dual-status counts (through December 2022; Q060). Churn (Q057)
+  has no current public source.
 **After Oct 1:** check the monthly run's log. New steps (physician by
 provider and by service, Marketplace rates and open enrollment) have
 only run locally; physician steps should take seconds, NIH about 6

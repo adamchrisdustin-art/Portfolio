@@ -5,7 +5,7 @@ import type { ServiceRow, ServiceYearData } from "../data/adapters/physicianServ
 import { buildOutlierFacts, MAX_SERVICE_OUTLIERS, outlierFactsFrom, SERVICE_MIN_DOLLAR_CHANGE, type OutlierInputs } from "./outlierFacts";
 
 const STATES = "AL AK AZ AR CA CO CT DE FL GA HI ID".split(" ");
-const empty: OutlierInputs = { physicianYears: [], serviceYears: [], oepYears: [], planYears: [], homeHealth: null };
+const empty: OutlierInputs = { physicianYears: [], serviceYears: [], oepYears: [], planYears: [], homeHealth: null, medicaid: null };
 
 function planYear(planYear: number, benchmarks: Record<string, number>): MarketplaceYearSummary {
   return {
@@ -96,7 +96,7 @@ describe("buildOutlierFacts over the committed data", () => {
   it("builds facts from every wired source", () => {
     const facts = buildOutlierFacts();
     const sources = new Set(facts.map((f) => f.sourceId));
-    for (const id of ["cms:medicare-physician-by-provider", "cms:medicare-physician-by-service", "cms:marketplace-oep-state", "cms:marketplace-rate-puf", "cms:home-health-care-agencies"]) {
+    for (const id of ["cms:medicare-physician-by-provider", "cms:medicare-physician-by-service", "cms:marketplace-oep-state", "cms:marketplace-rate-puf", "cms:home-health-care-agencies", "cms:medicaid-state-enrollment"]) {
       expect(sources).toContain(id);
     }
     for (const f of facts) expect(f.outliers.length).toBeLessThanOrEqual(f.flaggedCount);
