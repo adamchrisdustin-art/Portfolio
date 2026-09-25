@@ -37,9 +37,12 @@ reads; if either secret is missing, reasoning skips at $0.
    same run's facts (`npx tsx cms-intelligence/reasoning/replay-analyst.ts`,
    one Opus call, writes nothing) fixed all three with 0 rejections and
    no new errors. It kept 1 pattern instead of 3, a real one: high-volume
-   home health states run above the 0.97 national spending ratio. The
-   next live test is the Oct 1 cron. Use the replay tool for any future
-   prompt change.
+   home health states run above the 0.97 national spending ratio. Use
+   the replay tool for any future prompt change.
+   **No separate rerun for these three errors (Adam, 2026-09-25).** The
+   live briefing still shows them. It gets corrected by whichever comes
+   first: the next live agent test in a later phase, the Oct 1 cron, or a
+   final rerun once the remaining work is complete.
 2. **Salience prompt tightening: deferred.** The real run showed no
    salience rejections, so there is no live evidence for it yet. The
    benchmark note below still stands; revisit it if a monthly run logs
