@@ -43,6 +43,9 @@ jobs:
         # Past data years are already committed; this only pulls a year CMS has newly published (~5 min each).
         run: npx tsx cms-intelligence/data/adapters/pull-physician-by-provider-summary.ts
 
+      - name: Summarize CMS Medicare Physician & Other Practitioners by service (national, new data years only)
+        run: npx tsx cms-intelligence/data/adapters/pull-physician-service-summary.ts
+
       - name: Pull Federal Register CMS documents
         run: npx tsx cms-intelligence/data/adapters/pull-federal-register.ts
 

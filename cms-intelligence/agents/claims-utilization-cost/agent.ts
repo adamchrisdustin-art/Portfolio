@@ -24,7 +24,9 @@
  */
 import { listSnapshotFiles, loadSnapshot, SOURCE_ID } from "../../data/adapters/homeHealthCareAgencies";
 import { loadAllYears } from "../../data/adapters/physicianByProviderSummary";
+import { loadAllServiceYears } from "../../data/adapters/physicianServiceSummary";
 import { buildPhysicianTrendInsights } from "./physicianTrendInsights";
+import { buildServiceTrendInsights } from "./serviceTrendInsights";
 import { assessSnapshotHistory, dateFromSnapshotFilename, directionsAcrossSnapshots } from "../../data/sources/snapshotHistory";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
@@ -119,7 +121,11 @@ export const claimsUtilizationCostAgent: DomainAgent = {
   questionIds: ["Q011", "Q012", "Q013", "Q014", "Q015", "Q016", "Q017", "Q018", "Q019", "Q020", "Q021", "Q022", "Q023", "Q024", "Q025"],
 
   async run(ctx: AgentContext): Promise<Insight[]> {
-    return [...(await homeHealthInsights(ctx)), ...(await buildPhysicianTrendInsights(loadAllYears(), ctx))];
+    return [
+      ...(await homeHealthInsights(ctx)),
+      ...(await buildPhysicianTrendInsights(loadAllYears(), ctx)),
+      ...(await buildServiceTrendInsights(loadAllServiceYears(), ctx)),
+    ];
   },
 };
 

@@ -31,6 +31,16 @@ describe("claimsUtilizationCostAgent", () => {
     for (const insight of insights) expect(() => validateInsight(insight)).not.toThrow();
   });
 
+  it("produces service-category, service-code and Part B drug-share insights from the per-code data", async () => {
+    const insights = (await claimsUtilizationCostAgent.run({ modelProvider: null })).filter((i) => i.sourceIds.includes("cms:medicare-physician-by-service"));
+    expect(insights.map((i) => i.id.replace(/^sig-claims-cost-\d{4}-/, "")).sort()).toEqual(["part-b-drug-share", "service-category-growth", "service-code-growth"]);
+    for (const insight of insights) expect(() => validateInsight(insight)).not.toThrow();
+    // Near-new codes are reported separately, so no established-service growth rate reaches absurd percentages
+    const codes = insights.find((i) => i.id.endsWith("service-code-growth"))!;
+    expect(codes.headline).toMatch(/established service/);
+    expect(codes.headline).not.toMatch(/\+\d{4,}\.\d%/);
+  });
+
   it("carries a real per-state boxplot with correctly ordered Tukey whiskers, not raw min/max", async () => {
     const insight = homeHealth(await claimsUtilizationCostAgent.run({ modelProvider: null }));
     expect(insight.chart?.type).toBe("boxplot");
@@ -56,8 +66,8 @@ describe("claimsUtilizationCostAgent", () => {
     const provider = bottomPickingProvider();
     const insight = homeHealth(await claimsUtilizationCostAgent.run({ modelProvider: provider }));
 
-    // One salience call for home health states, one each for physician provider types and states
-    expect(provider.prompts).toHaveLength(3);
+    // One salience call for home health states, one each for physician provider types and states, and service categories and codes
+    expect(provider.prompts).toHaveLength(5);
     expect(() => validateInsight(insight)).not.toThrow();
     expect(insight.headline).toBe(baseline.headline);
     expect(insight.magnitude).toEqual(baseline.magnitude);

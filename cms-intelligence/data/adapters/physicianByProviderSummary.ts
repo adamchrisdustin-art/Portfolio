@@ -240,13 +240,13 @@ export function summarizeRows(rows: Iterable<RawRow>, dataYear: number, datasetI
   return summarizer.finish(pulledAt);
 }
 
-/** Data year -> dataset id, from CMS's live catalog. */
-export async function fetchYearDatasetIds(): Promise<Map<number, string>> {
+/** Data year -> dataset id for a CMS catalog title (default: this adapter's), from CMS's live catalog. */
+export async function fetchYearDatasetIds(title: string = CATALOG_TITLE): Promise<Map<number, string>> {
   const res = await fetch(CATALOG_URL);
   if (!res.ok) throw new Error(`CMS catalog fetch failed: ${res.status} ${res.statusText}`);
   const catalog = (await res.json()) as { dataset: { title: string; distribution?: { format?: string; accessURL?: string; temporal?: string }[] }[] };
-  const entry = catalog.dataset.find((d) => d.title === CATALOG_TITLE);
-  if (!entry) throw new Error(`"${CATALOG_TITLE}" not found in the CMS catalog`);
+  const entry = catalog.dataset.find((d) => d.title === title);
+  if (!entry) throw new Error(`"${title}" not found in the CMS catalog`);
 
   const ids = new Map<number, string>();
   for (const dist of entry.distribution ?? []) {

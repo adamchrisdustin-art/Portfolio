@@ -97,7 +97,7 @@ reads; if either secret is missing, reasoning skips at $0.
    The revoked Anthropic key must be replaced in the
    `HEALTHCARE_INTEL_ANTH` secret before then, or the analyst step fails
    and the page keeps the fixed ranking.
-5. **MA/Part D monthly history: built 2026-09-25, not yet pushed.**
+5. **MA/Part D monthly history: built and pushed 2026-09-25.**
    All 37 months CMS lists (2023-08 to 2026-09) are summarized by
    segment, parent organization and plan type. The MA agent gained three
    insights: the national enrollment trend, the year-over-year share
@@ -118,7 +118,25 @@ reads; if either secret is missing, reasoning skips at $0.
    check still catches invented company names and most invented
    numbers, but it gets weaker as data grows. The analyst prompt's rules
    are the other line of defense.
-6. **Salience benchmark note.** Every rejected salience answer
+6. **Service-level physician data: built 2026-09-25, not yet pushed.**
+   National Medicare Part B totals for every procedure code, 2013-2024
+   (CMS's "by Geography and Service", national rows only: 3 requests a
+   year), with CMS's RBCS service categories. Stored compactly, about
+   7.7MB (the first version was 31MB). The totals match the provider data
+   ($120.8B against $120.1B for 2024; the files suppress small cells
+   differently). The claims agent gained three insights:
+   - Growth by service category (Q011). Skin and soft tissue substitutes
+     went from $3.58B to $8.08B in 2024, and from $0.03B in 2013.
+   - Largest growth by individual service (Q012). Membrane-graft skin
+     substitutes rose from $270M to $1.15B and faricimab (an eye
+     injection) from $997M to $1.48B. 24 near-new services passed $50M
+     in a year and are reported separately, because percentage growth
+     from a near-zero base (a flu vaccine went from $0M to $291M) is
+     meaningless.
+   - Part B drug share: 10.7% of payment in 2013, 24.5% in 2024. This is
+     also why the 2024 ophthalmology and ASC service counts jumped: drugs
+     are counted in dose units (for example, aflibercept HD, new in 2024).
+7. **Salience benchmark note.** Every rejected salience answer
    in the benchmark was a model calculating a number itself (day spans,
    counts, sums). Telling the salience prompt "copy numbers exactly, never
    calculate new ones", as the analyst prompt already does, would likely

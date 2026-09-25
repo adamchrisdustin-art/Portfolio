@@ -22,6 +22,7 @@ unverified rather than filled in with a guessed dataset ID or URL.
 |---|---|---|---|---|
 | `cms:hospital-general-information` | Hospital General Information | `data.cms.gov/provider-data/api/1/datastore/query/xubh-q36u/0` | 2026-09-23 | Q001, Q004, Q006, Q036, Q037, Q038 |
 | `cms:home-health-care-agencies` | Home Health Care Agencies | `data.cms.gov/provider-data/api/1/datastore/query/6jpm-sxkc/0` | 2026-09-23 | Q011, Q012, Q021, Q036 |
+| `cms:medicare-physician-by-service` | Medicare Physician & Other Practitioners - by Geography and Service (national, every code, 2013 onward) | `data.cms.gov/data-api/v1/dataset/{per-year id}/data` | 2026-09-25 | Q011, Q012, Q013, Q014, Q028 |
 | `cms:medicare-physician-by-provider` | Medicare Physician & Other Practitioners - by Provider (every provider, 2013 onward, summarized) | `data.cms.gov/data-api/v1/dataset/{per-year id}/data` | 2026-09-25 | Q011, Q012, Q013, Q014, Q026, Q027, Q031, Q088 |
 | `federal-register:cms-documents` | Federal Register - CMS documents | `federalregister.gov/api/v1/documents.json` | 2026-09-23 | Q073, Q074, Q075, Q076 |
 | `cms:ma-part-d-enrollment` | MA/Part D Monthly Enrollment by Plan | `cms.gov/.../medicare-advantagepart-d-contract-and-enrollment-data/monthly-enrollment-plan` | 2026-09-23 | Q049, Q053 |
@@ -61,6 +62,16 @@ and sorting by `appl_id` (returned when requested as "ApplId") gives
 stable pages. The adapter pages one month at a time and halves any range
 over the cap. August 2025 had 15,138 awards and needed the split. The
 first pull captured 140,718 notices, $79.47B.
+
+**Medicare Physician & Other Practitioners by service** (`data/adapters/physicianServiceSummary.ts`)
+pulls only the national rows of CMS's "by Geography and Service" file for
+every data year. Verified live 2026-09-25: `filter[Rndrng_Prvdr_Geo_Lvl]=National`
+returns 13,463 of 268,350 rows for 2024, so a year is 3 requests. Service
+categories come from CMS's Restructured BETOS Classification System (RBCS,
+20,081 rows); each code's latest assignment is used for every year. The
+first object-based storage came to 31MB for 12 years, so rows are stored
+as arrays in whole dollars, with descriptions once in `codes.json`, about
+7.7MB in total.
 
 **MA/Part D Monthly Enrollment by Plan** (`data/adapters/maPartDHistory.ts`)
 keeps its latest-month snapshot and adds a summary for every month CMS

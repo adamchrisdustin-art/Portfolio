@@ -98,6 +98,14 @@ export interface GrowthDecomposition {
 /** Splits payment growth into volume and price (payment per service). Null when either year is too small to compare. */
 export function decompose(current: SumTotals, prior: SumTotals): GrowthDecomposition | null {
   if (current.providers < SUPPRESSION_FLOOR || prior.providers < SUPPRESSION_FLOOR) return null;
+  return splitGrowth(current, prior);
+}
+
+/** The volume/price split on any payment-and-services pair (a provider type, a service code, a category). Null when either year is empty. */
+export function splitGrowth(
+  current: { medicarePayment: number; services: number },
+  prior: { medicarePayment: number; services: number }
+): GrowthDecomposition | null {
   if (prior.services <= 0 || current.services <= 0 || prior.medicarePayment <= 0) return null;
   const payment = current.medicarePayment / prior.medicarePayment - 1;
   const volume = current.services / prior.services - 1;
