@@ -181,7 +181,7 @@ const VERIFIED_ENTRIES: SourceRegistryEntry[] = [
     expectedNextUpdate: null,
     identifiers: [],
     joinKeys: ["organizationType", "planType"],
-    historicalCoverage: "CMS keeps a per-month archive back to 2006 on the same page (this project only pulls the latest available month) - this project builds its own history by re-pulling on its own cadence, same pattern as every other source here.",
+    historicalCoverage: "The index page (paginated with ?page=N) listed 37 months, 2023-08 through 2026-09, when checked live on 2026-09-25. data/adapters/maPartDHistory.ts backfills every listed month into a small summary file (by segment, parent organization and plan type) and adds each new month as CMS publishes it. An earlier note said the archive reaches back to 2006; those older months were not in the paginated index and have not been located.",
     restrictions: "none - public, unauthenticated, but requires a User-Agent header (cms.gov rejects requests without one - a real, observed requirement)",
     knownSuppression: "CMS marks enrollment <=10 as \"*\" (real HIPAA small-cell suppression, documented in the file's own real README) - excluded, never imputed.",
     knownLimitations: [

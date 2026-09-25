@@ -62,6 +62,15 @@ stable pages. The adapter pages one month at a time and halves any range
 over the cap. August 2025 had 15,138 awards and needed the split. The
 first pull captured 140,718 notices, $79.47B.
 
+**MA/Part D Monthly Enrollment by Plan** (`data/adapters/maPartDHistory.ts`)
+keeps its latest-month snapshot and adds a summary for every month CMS
+lists. Verified live 2026-09-25: the index paginates with `?page=N` and
+listed 37 months, 2023-08 through 2026-09, each a zip in the same format.
+Each month is stored as totals by segment (Medicare Advantage, standalone
+Part D, other), by parent organization and by plan type, about 10 KB per
+month. One 2024 file's header read `Enrollment ` with a trailing space,
+so header matching now trims whitespace and a byte-order mark.
+
 ### The 4 newest sources (added 2026-09-24, for the 12th agent - Market/Catalyst Intelligence)
 
 All 4 are a fundamentally different source family from the six above -

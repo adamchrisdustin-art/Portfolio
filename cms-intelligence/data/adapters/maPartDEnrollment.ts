@@ -52,15 +52,15 @@ import { unzipSync } from "fflate";
 import { parseCsv } from "./csv";
 
 export const SOURCE_ID = "cms:ma-part-d-enrollment";
-const INDEX_URL =
+export const INDEX_URL =
   "https://www.cms.gov/data-research/statistics-trends-and-reports/medicare-advantagepart-d-contract-and-enrollment-data/monthly-enrollment-plan";
-const INDEX_LINK_PATTERN =
+export const INDEX_LINK_PATTERN =
   /href="(\/data-research\/statistics-trends-and-reports\/medicare-advantagepart-d-contract-and-enrollment-data\/monthly-enrollment-plan\/monthly-enrollment-plan-(\d{4}-\d{2}))"/g;
 const ZIP_LINK_PATTERN = /href="(\/files\/zip\/[^"]+\.zip)"/;
 const DATASET_NAME = "ma-part-d-enrollment";
 const SNAPSHOTS_DIR = path.resolve(process.cwd(), "data", "healthcare-intelligence", DATASET_NAME, "snapshots");
 // cms.gov rejects requests with no User-Agent - a real, observed requirement, not a guess.
-const FETCH_HEADERS = { "User-Agent": "Mozilla/5.0 (compatible; healthcare-intelligence-dashboard/1.0)" };
+export const FETCH_HEADERS = { "User-Agent": "Mozilla/5.0 (compatible; healthcare-intelligence-dashboard/1.0)" };
 
 export interface MaPartDPlanRow {
   organizationType: string;
@@ -99,7 +99,7 @@ async function findLatestReportPeriod(): Promise<{ period: string; pageUrl: stri
   return { period: best.period, pageUrl: `https://www.cms.gov${best.href}` };
 }
 
-async function findZipUrl(pageUrl: string): Promise<string> {
+export async function findZipUrl(pageUrl: string): Promise<string> {
   const res = await fetch(pageUrl, { headers: FETCH_HEADERS });
   if (!res.ok) throw new Error(`CMS MA/Part D report page fetch failed: ${res.status} ${res.statusText} (${pageUrl})`);
   const html = await res.text();
@@ -108,11 +108,12 @@ async function findZipUrl(pageUrl: string): Promise<string> {
   return `https://www.cms.gov${match[1]}`;
 }
 
-function parseRows(csvText: string): { rows: MaPartDPlanRow[]; suppressedRowCount: number } {
+export function parseRows(csvText: string): { rows: MaPartDPlanRow[]; suppressedRowCount: number } {
   const table = parseCsv(csvText);
   if (table.length === 0) return { rows: [], suppressedRowCount: 0 };
 
-  const header = table[0];
+  // Some months' headers carry stray whitespace (seen live: "Enrollment " in a 2024 file) or a byte-order mark.
+  const header = table[0].map((h) => h.replace(/^﻿/, "").trim());
   const idx = (name: string) => header.indexOf(name);
   const orgTypeIdx = idx("Organization Type");
   const planTypeIdx = idx("Plan Type");
@@ -147,11 +148,9 @@ function parseRows(csvText: string): { rows: MaPartDPlanRow[]; suppressedRowCoun
   return { rows, suppressedRowCount };
 }
 
-/** Live pull + snapshot to disk - run manually/on schedule, never from a page load (COST_AND_OPERATING_MODEL.md). */
-export async function fetchAndSnapshot(): Promise<string> {
-  const { period, pageUrl } = await findLatestReportPeriod();
+/** Downloads one report period's zip and parses its plan rows. Shared with maPartDHistory.ts. */
+export async function downloadPlanRows(pageUrl: string): Promise<{ zipUrl: string; rows: MaPartDPlanRow[]; suppressedRowCount: number }> {
   const zipUrl = await findZipUrl(pageUrl);
-
   const zipRes = await fetch(zipUrl, { headers: FETCH_HEADERS });
   if (!zipRes.ok) throw new Error(`CMS MA/Part D zip download failed: ${zipRes.status} ${zipRes.statusText} (${zipUrl})`);
   const zipBytes = new Uint8Array(await zipRes.arrayBuffer());
@@ -161,7 +160,13 @@ export async function fetchAndSnapshot(): Promise<string> {
   if (!csvEntryName) throw new Error(`No .csv entry found inside the downloaded zip (${zipUrl})`);
   const csvText = Buffer.from(files[csvEntryName]).toString("utf-8");
 
-  const { rows, suppressedRowCount } = parseRows(csvText);
+  return { zipUrl, ...parseRows(csvText) };
+}
+
+/** Live pull + snapshot to disk - run manually/on schedule, never from a page load (COST_AND_OPERATING_MODEL.md). */
+export async function fetchAndSnapshot(): Promise<string> {
+  const { period, pageUrl } = await findLatestReportPeriod();
+  const { zipUrl, rows, suppressedRowCount } = await downloadPlanRows(pageUrl);
 
   fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true });
   const stamp = new Date().toISOString().slice(0, 10);

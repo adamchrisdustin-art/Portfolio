@@ -31,8 +31,15 @@
  * choose the most noteworthy subset - deterministic top-N by enrollment
  * when no model is configured (true today, so this ships with identical
  * real-number output either way), model-reasoned when one is.
+ *
+ * Month-over-month and year-over-year changes (added 2026-09-25) come from
+ * the monthly history in data/adapters/maPartDHistory.ts - see
+ * maTrendInsights.ts. The snapshot insights below stay as the current-month
+ * baseline.
  */
 import { loadLatestSnapshot, SOURCE_ID, type MaPartDPlanRow } from "../../data/adapters/maPartDEnrollment";
+import { loadAllMonths } from "../../data/adapters/maPartDHistory";
+import { buildMaTrendInsights } from "./maTrendInsights";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
 import { selectNoteworthy, type Candidate } from "../../intelligence/salience/selectNoteworthy";
@@ -80,6 +87,7 @@ export const medicareAdvantagePartDAgent: DomainAgent = {
       ctx
     );
     if (parentOrgInsight) insights.push(parentOrgInsight);
+    insights.push(...(await buildMaTrendInsights(loadAllMonths(), ctx)));
 
     return insights;
   },

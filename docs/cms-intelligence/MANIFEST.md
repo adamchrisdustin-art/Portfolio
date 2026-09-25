@@ -97,7 +97,28 @@ reads; if either secret is missing, reasoning skips at $0.
    The revoked Anthropic key must be replaced in the
    `HEALTHCARE_INTEL_ANTH` secret before then, or the analyst step fails
    and the page keeps the fixed ranking.
-5. **Salience benchmark note.** Every rejected salience answer
+5. **MA/Part D monthly history: built 2026-09-25, not yet pushed.**
+   All 37 months CMS lists (2023-08 to 2026-09) are summarized by
+   segment, parent organization and plan type. The MA agent gained three
+   insights: the national enrollment trend, the year-over-year share
+   shift by parent organization, and the plan-type mix shift (Q046,
+   Q049). Year-over-year compares the same calendar month, because
+   enrollment jumps every January. What the data shows:
+   - MA growth is slowing: +2.6% to 35.97M in the year to 2026-09,
+     after +3.8% the year before. Standalone Part D grew +8.2%.
+   - January 2026: MA dipped month over month while standalone Part D
+     rose 1.3M.
+   - Humana gained 3.43 points of MA share (5.83M to 6.83M in January
+     2026) and UnitedHealth lost 3.26 points (10.29M to 9.41M).
+     UCare Minnesota left MA.
+   - HMO share rose 3.66 points while PPOs fell.
+   **Grounding limit found along the way:** as the facts carry more
+   numbers, an invented number is more likely to match a real one by
+   chance. A test's made-up "31.4%" now exists in the real data. The
+   check still catches invented company names and most invented
+   numbers, but it gets weaker as data grows. The analyst prompt's rules
+   are the other line of defense.
+6. **Salience benchmark note.** Every rejected salience answer
    in the benchmark was a model calculating a number itself (day spans,
    counts, sums). Telling the salience prompt "copy numbers exactly, never
    calculate new ones", as the analyst prompt already does, would likely

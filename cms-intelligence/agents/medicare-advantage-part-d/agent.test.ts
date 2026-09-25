@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { validateInsight } from "../../intelligence/evidence/validate";
+import { loadAllMonths } from "../../data/adapters/maPartDHistory";
 import { medicareAdvantagePartDAgent } from "./agent";
 
-/** Runs against the real CMS Monthly Enrollment by Plan snapshot already committed to this repo. */
+/** Runs against the real CMS Monthly Enrollment by Plan snapshot and monthly history already committed to this repo. */
 describe("medicareAdvantagePartDAgent", () => {
   it("produces valid, evidence-backed insights from real MA/Part D enrollment data with no model configured", async () => {
     const insights = await medicareAdvantagePartDAgent.run({ modelProvider: null });
@@ -64,5 +65,24 @@ describe("medicareAdvantagePartDAgent", () => {
     const insights = await medicareAdvantagePartDAgent.run({ modelProvider: null });
     const mix = insights.find((i) => i.questionId === "Q049");
     expect(mix?.limitations.join(" ")).toMatch(/suppressed/i);
+  });
+
+  it("reports year-over-year MA change from the monthly history, comparing the same calendar month and keeping PDP separate", async () => {
+    const insights = await medicareAdvantagePartDAgent.run({ modelProvider: null });
+    const trend = insights.find((i) => i.id.endsWith("ma-enrollment-trend"))!;
+    expect(trend.headline).toMatch(/Medicare Advantage enrollment reached [\d.]+M in (\d{4})-(\d{2}), [+-][\d.]+% year over year/);
+    expect(trend.headline).toMatch(/standalone Part D plans/);
+    // One point per real monthly file, never interpolated
+    expect(trend.series?.points.length).toBe(loadAllMonths().length);
+  });
+
+  it("measures parent-organization share shifts on MA enrollment alone, and names only organizations in the real data", async () => {
+    const insights = await medicareAdvantagePartDAgent.run({ modelProvider: null });
+    const shift = insights.find((i) => i.id.endsWith("ma-share-shift"))!;
+    expect(() => validateInsight(shift)).not.toThrow();
+    const names = new Set(loadAllMonths().flatMap((m) => m.byParentOrganization.map((p) => p.parentOrganization)));
+    if (shift.chart?.type !== "bar") throw new Error("expected a bar chart");
+    for (const bar of shift.chart.bars) expect(names.has(bar.label)).toBe(true);
+    expect(insights.find((i) => i.id.endsWith("ma-plan-type-shift"))?.questionId).toBe("Q049");
   });
 });

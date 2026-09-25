@@ -159,10 +159,10 @@ describe("runExecutiveAnalyst with period comparisons", () => {
 
   it("still rejects a period number the code never computed", async () => {
     const provider = fakeProvider(() =>
-      JSON.stringify({ topFindings: [], patterns: [], briefing: "Phase 3 results postings fell 31.4% year-over-year in the first half." })
+      JSON.stringify({ topFindings: [], patterns: [], briefing: "Phase 3 results postings fell 912.7% year-over-year in the first half." })
     );
     const result = await runExecutiveAnalyst(insights, [], provider, periodFacts);
     expect(result.briefing).toBeNull();
-    expect(result.rejected[0].reason).toMatch(/31.4/);
+    expect(result.rejected[0].reason).toMatch(/912.7/);
   });
 });
