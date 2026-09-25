@@ -13,10 +13,29 @@ cross-provider evaluation is done (six models, 2026-09-25), and the
 repository secrets named per-project, `HEALTHCARE_INTEL_ANTH` and
 `HEALTHCARE_INTEL_OAI` (added 2026-09-25). The workflow maps them onto
 the standard `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` variables the code
-reads; if either secret is missing, reasoning skips at $0. Natural next
-step: more
-code-computed candidate stats (month-over-month deltas, outliers) for the
-analyst to reason over as monthly history accumulates.
+reads; if either secret is missing, reasoning skips at $0.
+
+**Next session, in order:**
+1. **First live autonomous run.** It hasn't happened yet as of
+   2026-09-25. Trigger it by hand (Actions → "Healthcare Intelligence Data
+   Pipeline" → Run workflow, or `gh workflow run
+   healthcare-intelligence-pipeline.yml`) rather than waiting for the
+   Oct 1 cron. The first run treats every source as new, so it does a
+   full reasoning pass for about $0.10–0.30.
+2. **Review the first run.** Read the committed
+   `data/healthcare-intelligence/reasoned/*.json`, especially
+   `analyst.rejected` (what grounding blocked, and why) and the briefing's
+   quality, then check the live dashboard's Executive Pulse. Tune prompts
+   from that real output, not from guesses.
+3. **Richer stats for the analyst.** Add code-computed candidates
+   (month-over-month deltas, outliers) as monthly history accumulates.
+4. **Optional salience prompt tightening.** Every rejected salience answer
+   in the benchmark was a model calculating a number itself (day spans,
+   counts, sums). Telling the salience prompt "copy numbers exactly, never
+   calculate new ones", as the analyst prompt already does, would likely
+   raise acceptance for every model.
+
+Model choices, costs, and all evaluation evidence: `MODEL_EVALUATION.md`.
 
 **What's real:**
 - **10 data sources wired**: the original 6 CMS-focused sources (all 3
