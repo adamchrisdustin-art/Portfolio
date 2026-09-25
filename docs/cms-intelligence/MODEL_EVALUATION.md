@@ -222,6 +222,37 @@ What this changed in production code:
   by $109,438,442. Numbers a model calculates itself (day spans, sums,
   counts) are still rejected, by design.
 
+### Rerun after the "copy numbers exactly" prompt fix (2026-09-25)
+
+The salience prompt now says to copy numbers exactly and never calculate
+new ones. Rerun on all six models: `evaluation-runs/2026-09-25T23-27-15-salience-*`.
+It covers 25 prompts, not 16, because the full-data pulls give more
+ranked lists. So it compares acceptance rates, not the same questions.
+
+| Model | Before | After | Remaining rejection |
+|---|---|---|---|
+| `openai:gpt-6-luna` | 100% | **100%** | none |
+| `openai:gpt-6-sol` | 100% | 100% | none |
+| `anthropic:claude-sonnet-5` (low effort) | 94% | 100% | none |
+| `anthropic:claude-haiku-4-5-20251001` | 88% | 96% | calculated a day span ("62 days") |
+| `anthropic:claude-opus-5-5` (low effort) | 81% | 96% | wrote a line of text before the JSON |
+| `openai:gpt-4o-mini` | 81% | 96% | invented a candidate id ("J90966") |
+
+- **The fix worked.** Across this run and an earlier attempt the same
+  hour (`2026-09-25T23-04-33-salience-*`), Opus and Sonnet calculated no
+  numbers of their own in 50 answers each, down from 2-3 in 16. Haiku
+  cited a number its candidates don't contain ("62 days", "244M", "32") 3
+  times in 50, down from 2 in 16.
+- **Routing unchanged.** Luna stays the salience model: still 100%, and
+  still the cheapest ($0.010 per monthly run on the larger prompt set).
+- **The 23-04-33 attempt** has complete Anthropic results but
+  incomplete OpenAI ones. Luna got a 401 on 11 of its 25 calls and Sol
+  on all 25. A connectivity probe
+  (`evaluation/probe-providers.ts`) passed for all six models just
+  afterward, and the 23-27-15 rerun had no failures. The cause wasn't
+  recorded, because the providers logged only the status code. They now
+  log the provider's error message too (`providers/http.ts`).
+
 Known weakness of the benchmark: its "specific reason" metric misses
 single-digit facts ("7 days out") and paraphrased titles. When the metric
 disagreed with the rankings, the raw answers were read directly.

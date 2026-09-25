@@ -39,17 +39,19 @@ only, no agent or data changes):
 because the data changed after the last reasoning run; per Adam, the
 rerun waits for the next live test, the Oct 1 cron, or project
 completion, whichever comes first. **Next, pick with Adam:**
-- **Salience prompt fix: made 2026-09-25, not yet benchmarked.** Both
-  the system prompt and the per-call prompt in
-  `intelligence/salience/selectNoteworthy.ts` now say to copy numbers
-  exactly and never calculate new ones (same rule as the analyst). The
-  benchmark captures production's prompts, so it tests the new wording
-  as is. To prove it at the next live test, rerun
-  `run-salience-evaluation.ts` (a few cents for all six models) and
-  compare acceptance with the 2026-09-25 runs. The production model
-  (gpt-6-luna) was already at 100%, so this is a safety margin for it.
-- **Outlier detection for the analyst: built 2026-09-25, not yet
-  replayed.** The analyst now also gets states and service codes that
+- **Salience prompt fix: done and benchmarked 2026-09-25.** Both
+  prompts in `intelligence/salience/selectNoteworthy.ts` now say to copy
+  numbers exactly and never calculate new ones. On the rerun, 3 models
+  were at 100% and 3 at 96%, up from 81-100%, and Opus and Sonnet no
+  longer calculate numbers. Luna stays the salience model (details in
+  MODEL_EVALUATION.md, "Rerun after the 'copy numbers exactly' prompt
+  fix"). Run `evaluation/probe-providers.ts` (well under a cent) before
+  any billed run to confirm every key and model answers.
+- **Outlier detection for the analyst: built and replayed 2026-09-25.**
+  The replay (one Opus call) had 0 rejections. It cited Arkansas's
+  69.1% against the 21.7% median as an outlier, and read an empty list
+  correctly ("no state stood apart"). The replay reuses the committed
+  run's older insights, so it still quotes the pre-fix "AL, 330". The analyst now also gets states and service codes that
   sit far from the rest of their group in the latest period (rule and
   metrics in TREND_FRAMEWORK.md, "Cross-sectional outliers"; code in
   `intelligence/trends/outliers.ts` and `reasoning/outlierFacts.ts`).
@@ -65,8 +67,6 @@ completion, whichever comes first. **Next, pick with Adam:**
   - Service codes, 2023 to 2024: 36 flagged. Top dollar moves are skin
     substitutes (Q4205 +$878.7M, Q4262 -$870.7M) and eye injections
     (aflibercept -$602.4M, faricimab +$481.3M).
-  To check the prompt, run the replay at the next live test (one Opus
-  call, about $0.05-0.10).
 - **Home health parsing bug: fixed 2026-09-25.** CMS writes episode
   counts of 1,000+ with commas, and `Number()` turned them into NaN, so
   the market-growth agent dropped 2,222 agencies holding 73% of all

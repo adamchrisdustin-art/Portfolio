@@ -5,6 +5,7 @@
  * depend on OpenAI's shape directly. gpt-4o-mini default matches
  * CLAUDE.md's budget guardrail for this provider.
  */
+import { postJson } from "./http";
 import type { GenerateOptions, ModelProvider } from "./types";
 
 const DEFAULT_MODEL = "gpt-4o-mini";
@@ -14,33 +15,26 @@ export function createOpenAIProvider(apiKey: string, model: string = DEFAULT_MOD
   return {
     name: `openai:${model}`,
     async generate(options: GenerateOptions): Promise<string | null> {
-      const res = await fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const body = await postJson(
+        `openai-provider ${model}`,
+        "https://api.openai.com/v1/responses",
+        { Authorization: `Bearer ${apiKey}` },
+        {
           model,
           max_output_tokens: options.maxOutputTokens ?? DEFAULT_MAX_OUTPUT_TOKENS,
           input: [
             { role: "system", content: options.system },
             { role: "user", content: options.user },
           ],
-        }),
-      });
+        }
+      );
+      if (!body) return null;
 
-      if (!res.ok) {
-        console.error(`[openai-provider] call failed: ${res.status} ${res.statusText}`);
-        return null;
-      }
-
-      const body = await res.json();
       // Reasoning models spend hidden reasoning tokens from the same output budget, so a cap can end a response with little or no visible answer.
       if (body.status === "incomplete") {
-        console.warn(`[openai-provider] ${model} response truncated: ${body.incomplete_details?.reason ?? "unknown reason"}`);
+        console.warn(`[openai-provider] ${model} response truncated: ${(body.incomplete_details as { reason?: string } | undefined)?.reason ?? "unknown reason"}`);
       }
-      const text = body.output
+      const text = (body.output as { content?: { text?: string }[] }[] | undefined)
         ?.flatMap((item: { content?: { text?: string }[] }) => item.content ?? [])
         .map((c: { text?: string }) => c.text)
         .filter(Boolean)
