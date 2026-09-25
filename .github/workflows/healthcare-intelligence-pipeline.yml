@@ -68,8 +68,9 @@ jobs:
         continue-on-error: true
         run: npx tsx cms-intelligence/reasoning/run-monthly-reasoning.ts
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Repo secrets are named per-project; the code reads the standard variable names.
+          ANTHROPIC_API_KEY: ${{ secrets.HEALTHCARE_INTEL_ANTH }}
+          OPENAI_API_KEY: ${{ secrets.HEALTHCARE_INTEL_OAI }}
           SALIENCE_MODEL: ${{ vars.SALIENCE_MODEL }}
           ANALYST_MODEL: ${{ vars.ANALYST_MODEL }}
 

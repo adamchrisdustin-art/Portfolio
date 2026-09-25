@@ -9,10 +9,12 @@ the same extended session.** The dashboard runs at
 (auto-deploys from `main` via Vercel — see `DEPLOYMENT.md`). Phase 6's
 cross-provider evaluation is done (six models, 2026-09-25), and the
 **autonomous monthly reasoning pipeline is built**
-(`cms-intelligence/reasoning/`). It goes live once Adam adds
-`ANTHROPIC_API_KEY` and `OPENAI_API_KEY` as GitHub Actions secrets (with
-spend caps set in both consoles first); until then the monthly workflow
-pulls data and skips reasoning at $0. Natural next step after that: more
+(`cms-intelligence/reasoning/`). Its API keys are GitHub Actions
+repository secrets named per-project, `HEALTHCARE_INTEL_ANTH` and
+`HEALTHCARE_INTEL_OAI` (added 2026-09-25). The workflow maps them onto
+the standard `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` variables the code
+reads; if either secret is missing, reasoning skips at $0. Natural next
+step: more
 code-computed candidate stats (month-over-month deltas, outliers) for the
 analyst to reason over as monthly history accumulates.
 
@@ -423,5 +425,6 @@ Routing is from measured results: `gpt-6-luna` for cheap picks,
 and `ROADMAP.md`'s confirm-before-write guardrail were updated to record
 both decisions. The "$100 credit / Nov 4 deadline" premise was also
 corrected: it's Claude Code cloud-session credit, not API credit.
-Not live until `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` are added as
-GitHub Actions secrets.
+API keys are repository secrets `HEALTHCARE_INTEL_ANTH` and
+`HEALTHCARE_INTEL_OAI`, mapped in the workflow onto the standard variable
+names.

@@ -69,7 +69,7 @@
 - **Evaluation:** Phase 6 is complete across six models (Opus 5.5 top at 0.92), after fixing three scorer and harness bugs.
 - **Monthly data:** the refresh moved from quarterly to monthly.
 - **Autonomous reasoning (built):** each month the agents re-run with a model, an executive-analyst agent ranks what matters and finds cross-domain patterns, and the result auto-publishes to `main` behind a code-level grounding check.
-- **To go live:** add `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` as GitHub Actions secrets, with spend caps set first.
+- **API keys:** repository secrets `HEALTHCARE_INTEL_ANTH` and `HEALTHCARE_INTEL_OAI`, added 2026-09-25 and mapped in the workflow onto the standard variable names.
 
 ---
 
