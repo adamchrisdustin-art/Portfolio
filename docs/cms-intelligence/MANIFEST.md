@@ -15,7 +15,29 @@ repository secrets named per-project, `HEALTHCARE_INTEL_ANTH` and
 the standard `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` variables the code
 reads; if either secret is missing, reasoning skips at $0.
 
-**Next session, in order:**
+**Resume here (end of 2026-09-25):** everything is pushed through
+`92c0b9a`, CI green and live. Every data source now uses full data, not
+a sample (steps 4-8). The live Executive Pulse shows the fixed ranking
+because the data changed after the last reasoning run; per Adam, the
+rerun waits for the next live test, the Oct 1 cron, or project
+completion, whichever comes first. **Next, pick with Adam:**
+- **Salience prompt fix** (recommended first, step 2 and the benchmark
+  note): tell the salience prompt to copy numbers exactly and never
+  calculate new ones. Small change; proving it needs a short benchmark
+  run with Adam's API key (well under $1), which can wait for the next
+  live test.
+- **Outlier detection for the analyst:** flag states or services far from
+  the rest in a year, not only breaks from their own history.
+- **Marketplace 2017-2019 open enrollment:** Excel report workbooks with
+  per-year layouts; needs a small xlsx reader. Low priority.
+- **Medicaid/T-MSIS:** still deprioritized as the most fragmented source.
+**After Oct 1:** check the monthly run's log. New steps (physician by
+provider and by service, Marketplace rates and open enrollment) have
+only run locally; physician steps should take seconds, NIH about 6
+minutes, Marketplace rates about 10 seconds. Then review the first
+reasoned run over the full data.
+
+**Earlier steps, in order:**
 1. **First live run reviewed; analyst prompt tuned and verified.** The first live autonomous run
    happened 2026-09-25 (hand-triggered, run 36166201308, bot commit
    `bf0aec2`, live on the Executive Pulse). Opus 5.5 returned 5 findings,
@@ -94,9 +116,8 @@ reads; if either secret is missing, reasoning skips at $0.
    the Oct 1 cron, or project completion. The new workflow steps have
    only run locally, so check the Oct 1 run's log: the physician step
    should take seconds (every year is cached) and NIH about 6 minutes.
-   The revoked Anthropic key must be replaced in the
-   `HEALTHCARE_INTEL_ANTH` secret before then, or the analyst step fails
-   and the page keeps the fixed ranking.
+   The Anthropic key leaked in chat on 2026-09-25 was revoked and the
+   `HEALTHCARE_INTEL_ANTH` secret replaced the same day.
 5. **MA/Part D monthly history: built and pushed 2026-09-25.**
    All 37 months CMS lists (2023-08 to 2026-09) are summarized by
    segment, parent organization and plan type. The MA agent gained three
@@ -166,8 +187,8 @@ reads; if either secret is missing, reasoning skips at $0.
    states and DC run their own exchanges. Every comparison uses only
    states present in the years compared. The Data Explorer shows the 5
    fastest-rising states' benchmark since 2014 as a line chart.
-8. **Marketplace enrollment, every state and DC, 2020-2026: built
-   2026-09-25, not yet pushed.** CMS's Open Enrollment state-level files
+8. **Marketplace enrollment, every state and DC, 2020-2026: built and
+   pushed 2026-09-25.** CMS's Open Enrollment state-level files
    (`cms:marketplace-oep-state`) cover state-run exchanges too, and
    answer Q066. 2017-2019 exist only as Excel report workbooks and are
    skipped. CMS labels state-run exchanges "SBM" in 2021-2024 and "SBE"
