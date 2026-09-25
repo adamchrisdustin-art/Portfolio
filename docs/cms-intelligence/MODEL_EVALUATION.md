@@ -1,11 +1,12 @@
 # Model / Provider Evaluation Framework
 
 Phase 6 deliverable per `06_PHASE_6_MODEL_PROVIDER_EVALUATION.md`. Built
-2026-09-23. **The framework is built and tested; no live evaluation run
-has happened yet** — no `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` is
-configured anywhere for this project (confirmed via `gh secret list`
-returning zero repo secrets, and no local `.env`). That's a deliberate,
-safe state, not an oversight — see "Running it for real" below.
+2026-09-23. **The framework's first live run happened 2026-09-25**,
+through `openai:gpt-4o-mini` only (no `ANTHROPIC_API_KEY` was set for
+that run) — see "Live run results" below for the real numbers. No repo
+secret or committed `.env` was ever used for this; the key was set as a
+local, unstaged shell environment variable for the one command, per the
+safe handling this file already recommended.
 
 ## What exists
 
@@ -24,7 +25,7 @@ so the acceptance criterion below is proven without spending anything:
 | `workloadModel.ts` | The "Claude Max / API decision" workload calculator |
 | `router.ts` | Task-category → model-tier routing |
 | `comparisonReport.ts` | Human-readable comparison report generator |
-| `run-live-evaluation.ts` | The one script that would spend real money — not run yet |
+| `run-live-evaluation.ts` | The one script that spends real money — run once, 2026-09-25 |
 
 The provider adapter interface itself (`providers/types.ts`) predates
 Phase 6 — built in Phase 3 — and already satisfies "only the model
@@ -127,15 +128,49 @@ traced inputs (`REAL_WORKLOAD_INPUTS`):
   no code path anywhere that would call an LLM from a visitor's page
   load, regardless of what env vars exist in the hosting environment.
 
-## Routing strategy — provisional, not yet measured
+## Live run results (2026-09-25)
+
+Real, billed run through `openai:gpt-4o-mini` — full output in
+`data/healthcare-intelligence/evaluation-runs/2026-09-25-results.json`
+and `2026-09-25-comparison-report.md`. No `ANTHROPIC_API_KEY` was set for
+this run, so this is one provider's real measurement, not yet the
+cross-provider comparison Phase 6's acceptance criterion describes —
+that still needs a second live run through Anthropic.
+
+| Metric | Result |
+|---|---|
+| Mean score | 0.59 / 1.0 |
+| Schema compliance | 100% (12/12) |
+| Forbidden-claim rate | 8% (1/12) |
+| Refusal accuracy | 67% |
+| Source citation | 33% |
+| Mean latency | 2,487ms |
+| Real measured cost | $0.00027/question (~$0.003 for the full 12-task suite) — confirms the Economics section's estimate above, not a guess anymore |
+
+Two real, non-mocked findings worth acting on if `gpt-4o-mini` is ever
+routed into a live agent path, not just noise in the aggregate score:
+- **`cms-eval-002-reimbursement-change` scored 0.00 and tripped a
+  forbidden-claim flag**: the model claimed "full national" coverage of
+  data that's actually a real 5-state sample — exactly the overclaim
+  `CLAUDE.md`'s guardrails exist to prevent, caught correctly by the
+  scorer.
+- **`cms-eval-006-site-of-care-change` also scored 0.00**: this task
+  expects a refusal/gap acknowledgment (the underlying data doesn't
+  support an answer) and the model appears to have fabricated one
+  instead of declining.
+- Source citation (33%) is the weakest dimension overall — the model
+  usually got the substance right without naming which real source
+  backed it.
+
+## Routing strategy — still provisional pending a second provider
 
 `router.ts` maps each benchmark category to a tier
-(`deterministic`/`efficient`/`strong`), but **this is the default tier
-mapping this repo's code already commits to (Haiku/gpt-4o-mini defaults,
-per `CLAUDE.md`'s budget guardrail), not a routing decision backed by
-real comparative results** — no live run exists yet to route on. Revisit
-`recommendTier()` once `run-live-evaluation.ts` has actually run against
-real providers and `comparisonReport.ts` reflects real, not mocked, data.
+(`deterministic`/`efficient`/`strong`), and now has one real data point
+behind the `efficient` tier (`gpt-4o-mini`'s 0.59 mean score above) —
+still not a comparative routing decision, since no Anthropic run exists
+yet to compare it against. Revisit `recommendTier()` once a second live
+run through `createAnthropicProvider()` gives `comparisonReport.ts`
+something real to compare, not mocked, data.
 
 ## Running it for real
 

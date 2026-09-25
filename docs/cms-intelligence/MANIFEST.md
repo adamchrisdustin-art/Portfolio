@@ -1,15 +1,17 @@
 # Prompt Pack Manifest
 
-## Start here (2026-09-24)
+## Start here (2026-09-25)
 
 **Phases 1–6 are built and live, plus a 12th agent (Market/Catalyst
 Intelligence) and a full round of dashboard-review fixes, all shipped
 the same extended session.** The dashboard runs at
 `/healthcare-intelligence`, live in production at adamdustin.me
 (auto-deploys from `main` via Vercel — see `DEPLOYMENT.md`). No phase is
-"next" by default — Phase 7's main remaining piece is a live Phase 6
-provider run (blocked on an API key); the salience-layer retrofit is
-done (see below). Pick based on what's asked next.
+"next" by default — the salience-layer retrofit is done, and Phase 6's
+live evaluation has now run once (2026-09-25, OpenAI only, see below);
+the one remaining piece is a matching live run through Anthropic so
+Phase 6's cross-provider comparison has both sides. Pick based on what's
+asked next.
 
 **What's real:**
 - **10 data sources wired**: the original 6 CMS-focused sources (all 3
@@ -104,13 +106,16 @@ done (see below). Pick based on what's asked next.
   distinct issuers per state (Q071's competitive-intensity read), never
   surfaced or resolved to a company name - it's still an opaque numeric
   ID with no verified name crosswalk wired in (see `SOURCE_REGISTRY.md`).
-- **Phase 6 evaluation framework** (`cms-intelligence/evaluation/`)
-  built and tested, **not run live** — no API key is configured anywhere
-  for this project. See `MODEL_EVALUATION.md` for the framework, verified
-  current pricing, the resolved Claude Max/API decision, and a real
-  cadence-vs-cost table (even fully-autonomous reasoning across every
-  agent stays under $10/year at this project's quarterly cadence — the
-  $100 credit is not a tight constraint given what actually got built).
+- **Phase 6 evaluation framework** (`cms-intelligence/evaluation/`) built,
+  tested, and **run live for the first time 2026-09-25** through
+  `openai:gpt-4o-mini` (real, measured mean score 0.59/1.0, real cost
+  $0.00027/question — confirmed, not estimated). No Anthropic run has
+  happened yet, so this is one provider's real numbers, not yet the
+  cross-provider comparison Phase 6's acceptance criterion asks for. See
+  `MODEL_EVALUATION.md`'s "Live run results" for the real findings
+  (including two genuine scoring failures the harness caught), the
+  framework's design, verified pricing, the resolved Claude Max/API
+  decision, and a real cadence-vs-cost table.
 - Confidence/trend detection is computed dynamically from real snapshot
   history (`cms-intelligence/data/sources/snapshotHistory.ts`), never
   hardcoded — currently low across the board because there's genuinely
@@ -342,3 +347,20 @@ would make 16 salience calls + 1 synthesis call. 186 tests passing (28
 test files; each retrofitted agent gained a model-path test and an
 invented-id fallback test via `intelligence/salience/testProviders.ts`),
 clean `tsc`/`lint`/build/e2e.
+
+**First live Phase 6 evaluation run** (2026-09-25): `run-live-evaluation.ts`
+run for real, for the first time, with a fresh OpenAI key set as a local
+shell env var only (never committed, never a repo secret). Real result
+through `openai:gpt-4o-mini`: mean score 0.59/1.0, 100% schema
+compliance, real measured cost $0.00027/question (~$0.003 for the full
+12-task suite) — confirms `costModel.ts`'s estimate rather than just
+testing it. Two real scoring failures worth noting, not swept under the
+aggregate: the reimbursement-change task tripped a forbidden-claim flag
+("full national" claimed against what's actually a real 5-state sample),
+and the site-of-care-change task appears to have fabricated an answer
+where a refusal was expected. No `ANTHROPIC_API_KEY` was used this run,
+so this is one provider's real numbers, not yet the cross-provider
+comparison Phase 6's acceptance criterion describes — see
+`MODEL_EVALUATION.md`'s "Live run results" section for full detail. Real
+output committed at
+`data/healthcare-intelligence/evaluation-runs/2026-09-25-*`.

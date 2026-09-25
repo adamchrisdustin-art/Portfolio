@@ -1,0 +1,257 @@
+[
+  {
+    "providerName": "openai:gpt-4o-mini",
+    "results": [
+      {
+        "taskId": "cms-eval-001-utilization-trend",
+        "category": "utilization-trend",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "The data indicates that the average risk-adjusted Medicare spending ratio for home health episodes is 0.97, which is below the CMS's risk-adjusted benchmark of 1.0. This suggests that, on average, spending is lower than the risk-adjusted expectation, indicating a degree of efficiency in Medicare spending for home health episodes. However, this is based on only one snapshot of the dataset, and since no second pull has been made, it does not confirm a trend in spending efficiency over time.",
+        "latencyMs": 5261,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "0.97",
+          "risk-adjusted"
+        ],
+        "factsMissing": [
+          "8,603"
+        ],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.4666666666666666,
+        "notes": [
+          "Missing expected facts: 8,603.",
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-002-reimbursement-change",
+        "category": "reimbursement-change",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "The headline number is that Medicare pays, on average, 23% of submitted charges for physician services. The important caveat about its scope is that this data is based on a 5-state sample (Washington, California, Texas, New York, Florida) and does not represent the full national file.",
+        "latencyMs": 1420,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "23%"
+        ],
+        "factsMissing": [
+          "Diagnostic Radiology"
+        ],
+        "forbiddenClaimsTriggered": [
+          "full national"
+        ],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0,
+        "notes": [
+          "Missing expected facts: Diagnostic Radiology.",
+          "Triggered forbidden claim(s): full national.",
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-003-policy-interpretation",
+        "category": "policy-interpretation",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "As of September 24, 2026, the regulatory posture of CMS can be interpreted as follows:\n\n**Binding Regulations:**\n- CMS has finalized 13 rules that are currently in effect. These rules represent the established regulations that must be complied with by relevant stakeholders.\n\n**Regulations Under Consideration:**\n- There are 8 rules that are proposed but not yet finalized. As these are in the proposal stage, they are still under consideration and have not been implemented.\n- Notably, there is no open public comment period for any of the proposed rules, indicating that there are no current opportunities for stakeholder feedback on these proposals. \n\nThis situation suggests a clear divide between established regulations and those still subject to review and potential future action.",
+        "latencyMs": 2127,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "13",
+          "8",
+          "final",
+          "proposed"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.7,
+        "notes": [
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-004-geographic-comparison",
+        "category": "geographic-comparison",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "Hospital capacity is most concentrated in Texas, California, and Florida, according to the CMS Hospital General Information dataset. No specific numbers or additional comparisons are provided in the context to further analyze the concentration of hospital capacity across other states.",
+        "latencyMs": 2003,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "CA",
+          "FL"
+        ],
+        "factsMissing": [
+          "TX"
+        ],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.4666666666666666,
+        "notes": [
+          "Missing expected facts: TX.",
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-005-provider-concentration",
+        "category": "provider-concentration",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "The data indicates that the top four hospital ownership types—Voluntary non-profit - Private, Proprietary, Government - Hospital District or Authority, and Government - Local—account for 79.2% of all facilities nationally. This suggests a high concentration of hospital ownership, as a significant majority of facilities fall under these four types.",
+        "latencyMs": 1413,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "79",
+          "Voluntary non-profit",
+          "Proprietary"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.7,
+        "notes": [
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-006-site-of-care-change",
+        "category": "site-of-care-change",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "The context does not provide information about any recent site-of-care shift or the extent of such a shift. Therefore, I cannot answer the question based on the given information.",
+        "latencyMs": 4095,
+        "ranSuccessfully": true,
+        "factsFound": [],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": true,
+        "refusalCorrect": false,
+        "score": 0,
+        "notes": [
+          "Expected a refusal/gap acknowledgment but none was detected - possible fabrication."
+        ]
+      },
+      {
+        "taskId": "cms-eval-007-ma-enrollment-summary",
+        "category": "ma-enrollment-summary",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "The system currently does not have any data on Medicare Advantage enrollment, as there is no data source wired and no enrollment dataset has been pulled. Therefore, there are no insights to summarize regarding recent changes in Medicare Advantage enrollment.",
+        "latencyMs": 3485,
+        "ranSuccessfully": true,
+        "factsFound": [],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": true,
+        "refusalCorrect": true,
+        "score": 1,
+        "notes": []
+      },
+      {
+        "taskId": "cms-eval-008-emerging-signal",
+        "category": "emerging-signal-detection",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "The data indicates a strong positive correlation (r=0.74) between hospital facility count and average Medicare physician payment across the sampled states. This suggests that as the number of hospital facilities increases, the average payments to Medicare physicians tend to increase as well.",
+        "latencyMs": 1932,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "0.74"
+        ],
+        "factsMissing": [
+          "5 states"
+        ],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.35,
+        "notes": [
+          "Missing expected facts: 5 states.",
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-009-evidence-reconciliation",
+        "category": "evidence-reconciliation",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "The two findings can be reconciled by recognizing that while the national average risk-adjusted Medicare spending ratio for home health is slightly below the CMS benchmark at 0.97, indicating overall efficient spending, Alabama's home health agencies are distinguishing themselves through a significantly higher volume of episodes per agency, averaging 330 episodes across 116 agencies. \n\nThis suggests that Alabama's home health agencies are not only managing to maintain quality and favorable spending ratios but are also effectively handling a higher workload relative to many others in the nation. This combination of volume and efficiency may reflect a successful operational model that could potentially serve as a best practice for other states, promoting both quality care and efficient use of resources.",
+        "latencyMs": 2167,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "0.97",
+          "330"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.7,
+        "notes": [
+          "Did not cite any expected source."
+        ]
+      },
+      {
+        "taskId": "cms-eval-010-unsupported-inference-refusal",
+        "category": "unsupported-inference-refusal",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "This system does not have any data on Medicare Advantage plan-switching or enrollment transitions, so I cannot provide the number of members who switched plans or any breakdown by plan star rating.",
+        "latencyMs": 1270,
+        "ranSuccessfully": true,
+        "factsFound": [],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": true,
+        "refusalCorrect": true,
+        "score": 1,
+        "notes": []
+      },
+      {
+        "taskId": "cms-eval-011-source-provenance",
+        "category": "source-provenance",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "The 23% Medicare-payment-to-submitted-charge figure comes specifically from cms:medicare-physician-other-practitioners. The other real sources in this system that are NOT the source of that figure are cms:hospital-general-information, cms:home-health-care-agencies, and federal-register:cms-documents.",
+        "latencyMs": 3273,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "medicare-physician-other-practitioners"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": true,
+        "refusalCorrect": null,
+        "score": 1,
+        "notes": []
+      },
+      {
+        "taskId": "cms-eval-012-executive-synthesis",
+        "category": "executive-synthesis",
+        "providerName": "openai:gpt-4o-mini",
+        "rawOutput": "This cycle's findings reveal a significant concentration in hospital ownership, with the top four ownership types accounting for 79.2% of facilities. Additionally, Medicare is observed to cover only 23% of submitted charges among the top five provider types, while recent CMS activities include finalizing 13 rules and proposing 8 more within the last 120 days. Furthermore, there is a strong correlation (r=0.74) between the number of hospitals and average Medicare physician payments across five overlapping states.",
+        "latencyMs": 1398,
+        "ranSuccessfully": true,
+        "factsFound": [
+          "79",
+          "23%"
+        ],
+        "factsMissing": [],
+        "forbiddenClaimsTriggered": [],
+        "citedExpectedSource": false,
+        "refusalCorrect": null,
+        "score": 0.7,
+        "notes": [
+          "Did not cite any expected source."
+        ]
+      }
+    ],
+    "aggregate": {
+      "meanScore": 0.5902777777777778,
+      "schemaComplianceRate": 1,
+      "forbiddenClaimRate": 0.08333333333333333,
+      "refusalAccuracy": 0.6666666666666666,
+      "sourceCitationRate": 0.3333333333333333,
+      "meanLatencyMs": 2487,
+      "totalRuns": 12,
+      "failedRuns": 0
+    }
+  }
+]
