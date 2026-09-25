@@ -1,0 +1,1048 @@
+{
+  "dataset": "fda-drug-approvals",
+  "pulledAt": "2026-09-25T17:19:13.456Z",
+  "windowStart": "2024-09-25",
+  "lastUpdated": "2026-09-24",
+  "approvals": [
+    {
+      "applicationNumber": "NDA220149",
+      "sponsorName": "JANSSEN BIOTECH",
+      "brandName": "ICOTYDE",
+      "activeIngredient": "ICOTROKINRA HYDROCHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-03-17",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220149"
+    },
+    {
+      "applicationNumber": "NDA220152",
+      "sponsorName": "VANDA PHARMS INC",
+      "brandName": "NEREUS",
+      "activeIngredient": "TRADIPITANT",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-12-30",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220152"
+    },
+    {
+      "applicationNumber": "NDA218881",
+      "sponsorName": "ELI LILLY AND CO",
+      "brandName": "INLURIYO",
+      "activeIngredient": "IMLUNESTRANT TOSYLATE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-09-25",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218881"
+    },
+    {
+      "applicationNumber": "BLA761468",
+      "sponsorName": "GILEAD SCIENCES INC",
+      "brandName": "HEPCLUDEX",
+      "activeIngredient": "BULEVIRTIDE-GMOD",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-05-22",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761468"
+    },
+    {
+      "applicationNumber": "NDA218436",
+      "sponsorName": "NOVARTIS",
+      "brandName": "RHAPSIDO",
+      "activeIngredient": "REMIBRUTINIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-09-30",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218436"
+    },
+    {
+      "applicationNumber": "BLA761485",
+      "sponsorName": "DENALI THERAPEUTICS INC.",
+      "brandName": "AVLAYAH",
+      "activeIngredient": "TIVIDENOFUSP ALFA-EKNM",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-03-24",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761485"
+    },
+    {
+      "applicationNumber": "BLA761486",
+      "sponsorName": "VERA THERAPEUTICS INC.",
+      "brandName": "TRUTAKNA",
+      "activeIngredient": "ATACICEPT-VYMJ",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-07-07",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761486"
+    },
+    {
+      "applicationNumber": "BLA761530",
+      "sponsorName": "VIRIDIAN THERAPEUTICS INC",
+      "brandName": "LUMVOA",
+      "activeIngredient": "VELIGROTUG-VVZE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-06-26",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761530"
+    },
+    {
+      "applicationNumber": "BLA761508",
+      "sponsorName": "REGENERON PHARMACEUTICALS, INC",
+      "brandName": "PASATRU",
+      "activeIngredient": "GARETOSMAB-GRTS",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-08-19",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761508"
+    },
+    {
+      "applicationNumber": "NDA218944",
+      "sponsorName": "SYNDAX",
+      "brandName": "REVUFORJ",
+      "activeIngredient": "REVUMENIB CITRATE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2024-11-15",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218944"
+    },
+    {
+      "applicationNumber": "NDA219469",
+      "sponsorName": "BAYER HLTHCARE",
+      "brandName": "LYNKUET",
+      "activeIngredient": "ELINZANETANT",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-10-24",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219469"
+    },
+    {
+      "applicationNumber": "NDA220106",
+      "sponsorName": "PRIOVANT THERAP",
+      "brandName": "LISRAYA",
+      "activeIngredient": "BREPOCITINIB TOSYLATE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-08-27",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220106"
+    },
+    {
+      "applicationNumber": "NDA219474",
+      "sponsorName": "ACROTECH BIOPHARMA",
+      "brandName": "ADQUEY",
+      "activeIngredient": "DIFAMILAST",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-02-12",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219474"
+    },
+    {
+      "applicationNumber": "NDA217202",
+      "sponsorName": "AOP HLTH US",
+      "brandName": "RAPIBLYK",
+      "activeIngredient": "LANDIOLOL HYDROCHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2024-11-22",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=217202"
+    },
+    {
+      "applicationNumber": "NDA219491",
+      "sponsorName": "ENTASIS THERAP",
+      "brandName": "NUZOLVENCE",
+      "activeIngredient": "ZOLIFLODACIN",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-12-12",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219491"
+    },
+    {
+      "applicationNumber": "NDA220185",
+      "sponsorName": "NUVALENT",
+      "brandName": "JIDEYTRO",
+      "activeIngredient": "ZIDESAMTINIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-07-22",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220185"
+    },
+    {
+      "applicationNumber": "NDA215960",
+      "sponsorName": "GLAXOSMITHKLINE",
+      "brandName": "UTEBZI",
+      "activeIngredient": "TEBIPENEM PIVOXIL HYDROBROMIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-06-17",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=215960"
+    },
+    {
+      "applicationNumber": "NDA219019",
+      "sponsorName": "GENZYME CORP",
+      "brandName": "QFITLIA",
+      "activeIngredient": "FITUSIRAN SODIUM",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-03-28",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219019"
+    },
+    {
+      "applicationNumber": "NDA220210",
+      "sponsorName": "IONIS PHARMS INC",
+      "brandName": "ZANVASTRO",
+      "activeIngredient": "ZILGANERSEN SODIUM",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-09-03",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220210"
+    },
+    {
+      "applicationNumber": "NDA219042",
+      "sponsorName": "BOEHRINGER INGELHEIM",
+      "brandName": "HERNEXEOS",
+      "activeIngredient": "ZONGERTINIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-08-08",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219042"
+    },
+    {
+      "applicationNumber": "NDA217673",
+      "sponsorName": "INSMED INC",
+      "brandName": "BRINSUPRI",
+      "activeIngredient": "BRENSOCATIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-08-12",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=217673"
+    },
+    {
+      "applicationNumber": "BLA761152",
+      "sponsorName": "OMEROS CORP",
+      "brandName": "YARTEMLEA",
+      "activeIngredient": "NARSOPLIMAB-WUUG",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-12-23",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761152"
+    },
+    {
+      "applicationNumber": "NDA219070",
+      "sponsorName": "CRINETICS",
+      "brandName": "PALSONIFY",
+      "activeIngredient": "PALTUSOTINE HYDROCHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-09-25",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219070"
+    },
+    {
+      "applicationNumber": "NDA220295",
+      "sponsorName": "INTERCEPT",
+      "brandName": "LYNAVOY",
+      "activeIngredient": "LINERIXIBAT",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-03-17",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220295"
+    },
+    {
+      "applicationNumber": "NDA218571",
+      "sponsorName": "MILESTONE PHARMS USA",
+      "brandName": "CARDAMYST",
+      "activeIngredient": "ETRIPAMIL",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-12-12",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218571"
+    },
+    {
+      "applicationNumber": "NDA218585",
+      "sponsorName": "LENZ THERAP",
+      "brandName": "VIZZ",
+      "activeIngredient": "ACECLIDINE HYDROCHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-07-31",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218585"
+    },
+    {
+      "applicationNumber": "NDA219083",
+      "sponsorName": "CYTOKINETICS",
+      "brandName": "MYQORZO",
+      "activeIngredient": "AFICAMTEN",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-12-19",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219083"
+    },
+    {
+      "applicationNumber": "NDA220305",
+      "sponsorName": "KURA",
+      "brandName": "KOMZIFTI",
+      "activeIngredient": "ZIFTOMENIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-11-13",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220305"
+    },
+    {
+      "applicationNumber": "NDA216016",
+      "sponsorName": "BRACCO",
+      "brandName": "IOMERVU",
+      "activeIngredient": "IOMEPROL",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2024-11-27",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=216016"
+    },
+    {
+      "applicationNumber": "NDA216017",
+      "sponsorName": "BRACCO",
+      "brandName": "IOMERVU",
+      "activeIngredient": "IOMEPROL",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2024-11-27",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=216017"
+    },
+    {
+      "applicationNumber": "BLA761180",
+      "sponsorName": "LEO PHARMA AS",
+      "brandName": "ADBRY",
+      "activeIngredient": "TRALOKINUMAB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-12-17",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761180"
+    },
+    {
+      "applicationNumber": "NDA215168",
+      "sponsorName": "GE HLTHCARE",
+      "brandName": "FLYRCADO",
+      "activeIngredient": "FLURPIRIDAZ F-18",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2024-09-27",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=215168"
+    },
+    {
+      "applicationNumber": "NDA218592",
+      "sponsorName": "TELIX PHARMACEUTICALS US INC",
+      "brandName": "PIXCLARA",
+      "activeIngredient": "FLORETYROSINE F 18",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-09-11",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218592"
+    },
+    {
+      "applicationNumber": "NDA219616",
+      "sponsorName": "VERASTEM INC",
+      "brandName": "AVMAPKI FAKZYNJA CO-PACK (COPACKAGED)",
+      "activeIngredient": "AVUTOMETINIB POTASSIUM",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-05-08",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219616"
+    },
+    {
+      "applicationNumber": "NDA218145",
+      "sponsorName": "OTSUKA PHARMACEUTICAL CO LTD",
+      "brandName": "SIMTRIYO",
+      "activeIngredient": "CENTANAFADINE HYDROCHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-07-24",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218145"
+    },
+    {
+      "applicationNumber": "NDA219627",
+      "sponsorName": "BAYER HEALTHCARE",
+      "brandName": "AMBELVIST",
+      "activeIngredient": "GADOQUATRANE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-06-12",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219627"
+    },
+    {
+      "applicationNumber": "NDA220358",
+      "sponsorName": "VANDA PHARMS INC",
+      "brandName": "BYSANTI",
+      "activeIngredient": "MILSAPERIDONE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-02-20",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220358"
+    },
+    {
+      "applicationNumber": "NDA214759",
+      "sponsorName": "MEDEXUS",
+      "brandName": "GRAFAPEX",
+      "activeIngredient": "TREOSULFAN",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-01-21",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=214759"
+    },
+    {
+      "applicationNumber": "NDA218614",
+      "sponsorName": "IONIS PHARMS INC",
+      "brandName": "TRYNGOLZA (AUTOINJECTOR)",
+      "activeIngredient": "OLEZARSEN SODIUM",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2024-12-19",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218614"
+    },
+    {
+      "applicationNumber": "NDA220359",
+      "sponsorName": "ASTRAZENECA PHARMACEUTICALS, LP",
+      "brandName": "ETCAMAH",
+      "activeIngredient": "CAMIZESTRANT",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-09-04",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220359"
+    },
+    {
+      "applicationNumber": "NDA219666",
+      "sponsorName": "PTC THERAP",
+      "brandName": "SEPHIENCE",
+      "activeIngredient": "SEPIAPTERIN",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-07-28",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219666"
+    },
+    {
+      "applicationNumber": "NDA218171",
+      "sponsorName": "XCOVERY",
+      "brandName": "ENSACOVE",
+      "activeIngredient": "ENSARTINIB HYDROCHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2024-12-18",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218171"
+    },
+    {
+      "applicationNumber": "BLA761211",
+      "sponsorName": "IMMEDICA PHARMA AB",
+      "brandName": "LOARGYS",
+      "activeIngredient": "PEGZILARGINASE-NBLN",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-02-23",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761211"
+    },
+    {
+      "applicationNumber": "NDA219685",
+      "sponsorName": "GENZYME CORP",
+      "brandName": "WAYRILZ",
+      "activeIngredient": "RILZABRUTINIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-08-29",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219685"
+    },
+    {
+      "applicationNumber": "NDA217370",
+      "sponsorName": "ALCON LABS INC",
+      "brandName": "TRYPTYR",
+      "activeIngredient": "ACOLTREMON",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-05-28",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=217370"
+    },
+    {
+      "applicationNumber": "NDA220442",
+      "sponsorName": "SHIONOGI",
+      "brandName": "XOCOVA",
+      "activeIngredient": "ENSITRELVIR",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-05-29",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220442"
+    },
+    {
+      "applicationNumber": "NDA219155",
+      "sponsorName": "LEO PHARMA AS",
+      "brandName": "ANZUPGO",
+      "activeIngredient": "DELGOCITINIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-07-23",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219155"
+    },
+    {
+      "applicationNumber": "BLA761258",
+      "sponsorName": "AKESO BIOPHARMA",
+      "brandName": "PENPULIMAB-KCQX",
+      "activeIngredient": "PENPULIMAB-KCQX",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-04-23",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761258"
+    },
+    {
+      "applicationNumber": "NDA219164",
+      "sponsorName": "ASCENDIS",
+      "brandName": "YUVIWEL",
+      "activeIngredient": "NAVEPEGRITIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-02-27",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219164"
+    },
+    {
+      "applicationNumber": "NDA219713",
+      "sponsorName": "NUVATION",
+      "brandName": "IBTROZI",
+      "activeIngredient": "TALETRECTINIB ADIPATE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-06-11",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219713"
+    },
+    {
+      "applicationNumber": "NDA215244",
+      "sponsorName": "STEALTH BIOTHERAPS",
+      "brandName": "FORZINITY",
+      "activeIngredient": "ELAMIPRETIDE HYDROCHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-09-19",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=215244"
+    },
+    {
+      "applicationNumber": "NDA220482",
+      "sponsorName": "HAISCO",
+      "brandName": "CYPSEDO",
+      "activeIngredient": "CIPEPOFOL",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-05-29",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220482"
+    },
+    {
+      "applicationNumber": "NDA220496",
+      "sponsorName": "CERVEAU LANTHEUS",
+      "brandName": "TAUKLARIFY",
+      "activeIngredient": "FLORQUINITAU F-18",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-08-13",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220496"
+    },
+    {
+      "applicationNumber": "NDA218230",
+      "sponsorName": "GLAXOSMITHKLINE",
+      "brandName": "BLUJEPA",
+      "activeIngredient": "GEPOTIDACIN MESYLATE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-03-25",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218230"
+    },
+    {
+      "applicationNumber": "BLA761297",
+      "sponsorName": "CHECKPOINT THERAPEUTICS INC",
+      "brandName": "UNLOXCYT",
+      "activeIngredient": "COSIBELIMAB-IPDL",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2024-12-13",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761297"
+    },
+    {
+      "applicationNumber": "NDA216540",
+      "sponsorName": "BRIDGEBIO PHARMA",
+      "brandName": "ATTRUBY",
+      "activeIngredient": "ACORAMIDIS HYDROCHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2024-11-22",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=216540"
+    },
+    {
+      "applicationNumber": "NDA219209",
+      "sponsorName": "VERTEX PHARMS INC",
+      "brandName": "JOURNAVX",
+      "activeIngredient": "SUZETRIGINE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-01-30",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219209"
+    },
+    {
+      "applicationNumber": "NDA219208",
+      "sponsorName": "NOVARTIS",
+      "brandName": "VANRAFIA",
+      "activeIngredient": "ATRASENTAN HYDROCHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-04-02",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219208"
+    },
+    {
+      "applicationNumber": "BLA761315",
+      "sponsorName": "NOVO NORDISK INC",
+      "brandName": "ALHEMO",
+      "activeIngredient": "CONCIZUMAB-MTCI",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2024-12-20",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761315"
+    },
+    {
+      "applicationNumber": "NDA219792",
+      "sponsorName": "UCB INC",
+      "brandName": "KYGEVVI",
+      "activeIngredient": "DOXECITINE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-11-03",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219792"
+    },
+    {
+      "applicationNumber": "NDA220605",
+      "sponsorName": "TAKEDA PHARMS AM",
+      "brandName": "MIMRYLO",
+      "activeIngredient": "RUSFERTIDE ACETATE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-08-28",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220605"
+    },
+    {
+      "applicationNumber": "BLA761326",
+      "sponsorName": "NOVO NORDISK INC",
+      "brandName": "AWIQLI FLEXTOUCH",
+      "activeIngredient": "INSULIN ICODEC",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-03-26",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761326"
+    },
+    {
+      "applicationNumber": "NDA220641",
+      "sponsorName": "CORCEPT THERAP",
+      "brandName": "LIFYORLI (COPACKAGED)",
+      "activeIngredient": "RELACORILANT",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-03-25",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220641"
+    },
+    {
+      "applicationNumber": "NDA218730",
+      "sponsorName": "VERTEX PHARMS INC",
+      "brandName": "ALYFTREK",
+      "activeIngredient": "DEUTIVACAFTOR",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2024-12-20",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218730"
+    },
+    {
+      "applicationNumber": "NDA219839",
+      "sponsorName": "DIZAL",
+      "brandName": "ZEGFROVY",
+      "activeIngredient": "SUNVOZERTINIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-07-02",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219839"
+    },
+    {
+      "applicationNumber": "NDA216158",
+      "sponsorName": "BRISTOL-MYERS",
+      "brandName": "COBENFY",
+      "activeIngredient": "TROSPIUM CHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2024-09-26",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=216158"
+    },
+    {
+      "applicationNumber": "NDA219835",
+      "sponsorName": "RIGEL PHARMS",
+      "brandName": "VEPPANU",
+      "activeIngredient": "VEPDEGESTRANT",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-05-01",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219835"
+    },
+    {
+      "applicationNumber": "NDA220711",
+      "sponsorName": "BEONE MEDICINES USA",
+      "brandName": "BEQALZI",
+      "activeIngredient": "SONROTOCLAX",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-05-13",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220711"
+    },
+    {
+      "applicationNumber": "NDA219249",
+      "sponsorName": "GENENTECH INC",
+      "brandName": "ITOVEBI",
+      "activeIngredient": "INAVOLISIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2024-10-10",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219249"
+    },
+    {
+      "applicationNumber": "BLA761352",
+      "sponsorName": "MERUS N.V.",
+      "brandName": "BIZENGRI",
+      "activeIngredient": "ZENOCUTUZUMAB-ZBCO",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2024-12-04",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761352"
+    },
+    {
+      "applicationNumber": "NDA218764",
+      "sponsorName": "BOEHRINGER INGELHEIM",
+      "brandName": "JASCAYD",
+      "activeIngredient": "NERANDOMILAST",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-10-07",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218764"
+    },
+    {
+      "applicationNumber": "NDA219876",
+      "sponsorName": "CHIMERIX",
+      "brandName": "MODEYSO",
+      "activeIngredient": "DORDAVIPRONE HYDROCHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-08-06",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219876"
+    },
+    {
+      "applicationNumber": "NDA220848",
+      "sponsorName": "MSD",
+      "brandName": "LIPFENDRA",
+      "activeIngredient": "ENLICITIDE DECANOATE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-07-15",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220848"
+    },
+    {
+      "applicationNumber": "BLA761369",
+      "sponsorName": "PFIZER INC",
+      "brandName": "HYMPAVZI",
+      "activeIngredient": "MARSTACIMAB-HNCQ",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2024-10-11",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761369"
+    },
+    {
+      "applicationNumber": "NDA219878",
+      "sponsorName": "ASTRAZENECA AB",
+      "brandName": "BAXFENDY",
+      "activeIngredient": "BAXDROSTAT",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-05-15",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219878"
+    },
+    {
+      "applicationNumber": "NDA220860",
+      "sponsorName": "TAKEDA PHARMS USA",
+      "brandName": "ORZEYFUL",
+      "activeIngredient": "OVEPOREXTON",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-08-05",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220860"
+    },
+    {
+      "applicationNumber": "BLA761365",
+      "sponsorName": "ASTELLAS",
+      "brandName": "VYLOY",
+      "activeIngredient": "ZOLBETUXIMAB-CLZB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2024-10-18",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761365"
+    },
+    {
+      "applicationNumber": "BLA761367",
+      "sponsorName": "CSL BEHRING LLC",
+      "brandName": "ANDEMBRY",
+      "activeIngredient": "GARADACIMAB-GXII",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-06-16",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761367"
+    },
+    {
+      "applicationNumber": "NDA220934",
+      "sponsorName": "ELI LILLY AND CO",
+      "brandName": "FOUNDAYO",
+      "activeIngredient": "ORFORGLIPRON CALCIUM",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2026-04-01",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220934"
+    },
+    {
+      "applicationNumber": "NDA220910",
+      "sponsorName": "REVOLUTION MEDICINES",
+      "brandName": "RASONQUE",
+      "activeIngredient": "DARAXONRASIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-08-26",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220910"
+    },
+    {
+      "applicationNumber": "NDA219908",
+      "sponsorName": "CELCUITY",
+      "brandName": "REVTORPYK",
+      "activeIngredient": "GEDATOLISIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-07-14",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219908"
+    },
+    {
+      "applicationNumber": "BLA761384",
+      "sponsorName": "ABBVIE INC",
+      "brandName": "EMRELIS",
+      "activeIngredient": "TELISOTUZUMAB VEDOTIN-TLLV",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-05-14",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761384"
+    },
+    {
+      "applicationNumber": "NDA219301",
+      "sponsorName": "KALVISTA",
+      "brandName": "EKTERLY",
+      "activeIngredient": "SEBETRALSTAT",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-07-03",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219301"
+    },
+    {
+      "applicationNumber": "NDA221075",
+      "sponsorName": "BRISTOL MYERS SQUIBB",
+      "brandName": "ZENBEXUS",
+      "activeIngredient": "IBERDOMIDE HYDROCHLORIDE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-08-13",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=221075"
+    },
+    {
+      "applicationNumber": "BLA761394",
+      "sponsorName": "DAIICHI SANKYO INC",
+      "brandName": "DATROWAY",
+      "activeIngredient": "DATOPOTAMAB DERUXTECAN-DLNK",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-01-17",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761394"
+    },
+    {
+      "applicationNumber": "BLA761391",
+      "sponsorName": "GALDERMA LABS LP",
+      "brandName": "NEMLUVIO",
+      "activeIngredient": "NEMOLIZUMAB-ILTO",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2024-12-13",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761391"
+    },
+    {
+      "applicationNumber": "NDA219304",
+      "sponsorName": "DECIPHERA PHARMS",
+      "brandName": "ROMVIMZA",
+      "activeIngredient": "VIMSELTINIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-02-14",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219304"
+    },
+    {
+      "applicationNumber": "NDA218808",
+      "sponsorName": "NEUROCRINE",
+      "brandName": "CRENESSITY",
+      "activeIngredient": "CRINECERFONT",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2024-12-13",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218808"
+    },
+    {
+      "applicationNumber": "BLA761400",
+      "sponsorName": "RENGENERON PHARMACEUTICALS, INC.",
+      "brandName": "LYNOZYFIC",
+      "activeIngredient": "LINVOSELTAMAB-GCPT",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-07-02",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761400"
+    },
+    {
+      "applicationNumber": "NDA211241",
+      "sponsorName": "SENTYNL THERAPS INC",
+      "brandName": "ZYCUBO",
+      "activeIngredient": "COPPER HISTIDINATE",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-01-12",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=211241"
+    },
+    {
+      "applicationNumber": "NDA219947",
+      "sponsorName": "ARROWHEAD",
+      "brandName": "REDEMPLO",
+      "activeIngredient": "PLOZASIRAN SODIUM",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-11-18",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219947"
+    },
+    {
+      "applicationNumber": "BLA761416",
+      "sponsorName": "JAZZ PHARMS",
+      "brandName": "ZIIHERA",
+      "activeIngredient": "ZANIDATAMAB-HRII",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2024-11-20",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761416"
+    },
+    {
+      "applicationNumber": "NDA219972",
+      "sponsorName": "BAYER HEALTHCARE",
+      "brandName": "HYRNUO",
+      "activeIngredient": "SEVABERTINIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-11-19",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219972"
+    },
+    {
+      "applicationNumber": "BLA761427",
+      "sponsorName": "LIB THERAPEUTICS, INC.",
+      "brandName": "LEROCHOL",
+      "activeIngredient": "LERODALCIBEP-LIGA",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-12-12",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761427"
+    },
+    {
+      "applicationNumber": "BLA761432",
+      "sponsorName": "MERCK SHARP DOHME",
+      "brandName": "ENFLONSIA",
+      "activeIngredient": "CLESROVIMAB-CFOR",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-06-09",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761432"
+    },
+    {
+      "applicationNumber": "BLA761430",
+      "sponsorName": "JANSSEN BIOTECH",
+      "brandName": "IMAAVY",
+      "activeIngredient": "NIPOCALIMAB-AAHU",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-04-29",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761430"
+    },
+    {
+      "applicationNumber": "BLA761434",
+      "sponsorName": "OTSUKA PHARM CO LTD",
+      "brandName": "VOYXACT",
+      "activeIngredient": "SIBEPRENLIMAB-SZSI",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-11-25",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761434"
+    },
+    {
+      "applicationNumber": "NDA219379",
+      "sponsorName": "SPRINGWORKS",
+      "brandName": "GOMEKLI",
+      "activeIngredient": "MIRDAMETINIB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-02-11",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219379"
+    },
+    {
+      "applicationNumber": "BLA761460",
+      "sponsorName": "ABBVIE INC",
+      "brandName": "DECNUPAZ",
+      "activeIngredient": "PIVEKIMAB SUNIRINE-PVZY",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-05-27",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761460"
+    },
+    {
+      "applicationNumber": "BLA761458",
+      "sponsorName": "GLAXOSMITHKLINE LLC",
+      "brandName": "EXDENSUR",
+      "activeIngredient": "DEPEMOKIMAB-ULAA",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-12-16",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761458"
+    },
+    {
+      "applicationNumber": "BLA761463",
+      "sponsorName": "SCHOLAR ROCK INC",
+      "brandName": "ISEMBYLD",
+      "activeIngredient": "APITEGROMAB-MSTN",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2026-09-11",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761463"
+    },
+    {
+      "applicationNumber": "BLA761464",
+      "sponsorName": "DAIICHI SANKYO INC",
+      "brandName": "DATROWAY",
+      "activeIngredient": "DATOPOTAMAB DERUXTECAN-DLNK",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-06-23",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761464"
+    },
+    {
+      "applicationNumber": "NDA219407",
+      "sponsorName": "IONIS PHARMS INC",
+      "brandName": "DAWNZERA (AUTOINJECTOR)",
+      "activeIngredient": "DONIDALORSEN SODIUM",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "STANDARD",
+      "submissionStatusDate": "2025-08-21",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219407"
+    },
+    {
+      "applicationNumber": "BLA761467",
+      "sponsorName": "MERCK SHARP DOHME",
+      "brandName": "KEYTRUDA QLEX",
+      "activeIngredient": "PEMBROLIZUMAB",
+      "submissionClassCode": "TYPE 1",
+      "reviewPriority": "PRIORITY",
+      "submissionStatusDate": "2025-09-19",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761467"
+    }
+  ]
+}
