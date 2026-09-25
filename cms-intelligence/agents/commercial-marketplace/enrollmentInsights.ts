@@ -1,7 +1,7 @@
 /**
  * Marketplace enrollment insights from CMS's Open Enrollment state-level
  * files (data/adapters/marketplaceEnrollment.ts) - every state and DC,
- * HealthCare.gov and state-run exchanges alike, 2020 onward. These answer
+ * HealthCare.gov and state-run exchanges alike, 2017 onward. These answer
  * Q066 (where enrollment is changing), which the rate files can't, and
  * test whether states where the premium after subsidy rose most lost the
  * most enrollees.
@@ -30,7 +30,7 @@ const planYearEnd = (year: number) => `${year}-12-31`;
 
 const COMMON_LIMITATIONS = [
   "Plan selections during open enrollment, not effectuated enrollment: some people who pick a plan never pay the first premium, and people also enroll outside open enrollment.",
-  "State-level open enrollment files are only machine-readable from 2020 (2017-2019 were published as report workbooks), so history starts in 2020.",
+  "CMS publishes no state-level open enrollment file before 2017, so history starts there. 2017-2019 come from CMS's report workbooks, which carry fewer fields than the 2020+ files.",
   "CMS suppresses small cells and some state-run exchanges don't report every field; those are left out, never treated as zero.",
 ];
 

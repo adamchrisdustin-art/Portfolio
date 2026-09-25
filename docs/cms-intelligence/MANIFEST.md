@@ -76,8 +76,14 @@ completion, whichever comes first. **Next, pick with Adam:**
   above the 0.97 ratio") was built on the undercounted volumes; the next
   reasoned run replaces it. The evaluation suite keeps the old figure as
   a frozen task input.
-- **Marketplace 2017-2019 open enrollment:** Excel report workbooks with
-  per-year layouts; needs a small xlsx reader. Low priority.
+- **Marketplace 2017-2019 open enrollment: added 2026-09-25.** A small
+  xlsx reader (`data/adapters/xlsx.ts`, no new dependency) reads CMS's
+  report workbooks. Each year keeps the 7 columns with a clear 2020+
+  equivalent, and state rows sum exactly to CMS's platform totals. With
+  history from 2017, the 2026 drop (-4.9%) now reads as in line with the
+  2017-2025 pattern (median yearly change +9.0%), not a break: plan
+  selections also fell in 2018, 2019 and 2020. 2015-2016 have no
+  state-level file.
 - **Medicaid/T-MSIS:** still deprioritized as the most fragmented source.
 **After Oct 1:** check the monthly run's log. New steps (physician by
 provider and by service, Marketplace rates and open enrollment) have

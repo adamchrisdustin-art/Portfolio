@@ -13,8 +13,13 @@
  * - 2020 onward the zip holds a CSV: one row per state (51 including DC)
  *   with its platform (HC.gov, or SBE - labeled SBM in 2021-2024), plus Total rows for HC.gov, SBE and
  *   All. 82 columns are common to 2020-2026; 2026 has 108.
- * - 2017-2019 ship only as multi-tab Excel report workbooks with a
- *   different layout; those years are skipped, not guessed at.
+ * - 2017-2019 ship as multi-tab Excel report workbooks (read since
+ *   2026-09-25 by parseStateWorkbook via xlsx.ts). They keep only the 7
+ *   columns with a clear 2020+ equivalent: plan selections, new
+ *   consumers, re-enrollees (total, active, automatic) and average
+ *   premium before and after subsidy. Their totals use "HC.gov Platform"
+ *   and "All Platforms"; the SBE-FP subtotal (a subset of HC.gov) is
+ *   skipped. 2015-2016 publish no state-level file.
  * - Numbers are formatted text ("22,903", "$1,043 "). Cells are marked
  *   "*" (suppressed small count), "+" (not applicable) or "NR" (not
  *   reported, common in SBE totals); all three are stored as null, never 0.
@@ -30,6 +35,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { unzipSync } from "fflate";
 import { parseCsv } from "./csv";
+import { readWorkbook } from "./xlsx";
 
 export const SOURCE_ID = "cms:marketplace-oep-state";
 export const DATASET_NAME = "marketplace-oep-state";
@@ -61,6 +67,69 @@ export interface OepYear {
   columns: string[];
   suppressedCells: number;
   rows: OepRow[];
+}
+
+/**
+ * 2017-2019 workbook columns kept, by tab number and header text (lowercased,
+ * hyphens and extra spaces removed), mapped to the CSV names 2020+ uses.
+ * Only the columns with a clear 2020+ equivalent are kept.
+ */
+const WORKBOOK_COLUMNS: { tab: string; header: RegExp; column: string; decimals?: number }[] = [
+  { tab: "(2)", header: /^total number of consumers who have selected an? (marketplace|exchange) plan$/, column: "Cnsmr" },
+  { tab: "(2)", header: /^new consumers$/, column: "New_Cnsmr" },
+  { tab: "(2)", header: /^total reenrollees$/, column: "Tot_Renrl" },
+  { tab: "(2)", header: /^active reenrollees$/, column: "Actv_Renrl" },
+  { tab: "(2)", header: /^automatic reenrollees$/, column: "Auto_Renrl" },
+  { tab: "(5)", header: /^average premium$/, column: "Avg_Prm", decimals: 2 },
+  { tab: "(5)", header: /^average premium after aptc$/, column: "Avg_Prm_Aftr_APTC", decimals: 2 },
+];
+
+const normalizeHeader = (h: string) => h.toLowerCase().replace(/-/g, "").replace(/\s+/g, " ").trim();
+
+/** Workbook total rows: "HC.gov Platform", "SBM"/"SBE" and "All Platforms". The SBE-FP subtotal is a subset of HC.gov and is skipped. */
+function workbookPlatform(state: string, raw: string): string | null {
+  const text = raw.trim();
+  if (state !== "Total") return normalizePlatform(text);
+  if (/^HC\.gov/.test(text)) return "HC.gov";
+  if (text === "SBM" || text === "SBE") return "SBE";
+  if (text === "All Platforms") return "All";
+  return null;
+}
+
+/** Parses one 2017-2019 state-level report workbook into the same shape as the 2020+ CSVs. Exported for tests. */
+export function parseStateWorkbook(data: Uint8Array, planYear: number, sourceUrl: string): OepYear {
+  const workbook = readWorkbook(data);
+  const columns = WORKBOOK_COLUMNS.map((c) => c.column);
+  const byKey = new Map<string, OepRow>();
+  let suppressedCells = 0;
+  for (const tab of [...new Set(WORKBOOK_COLUMNS.map((c) => c.tab))]) {
+    const sheetName = workbook.sheetNames.find((n) => n.startsWith(tab));
+    if (!sheetName) throw new Error(`OEP ${planYear} workbook has no ${tab} tab - sheets were: ${workbook.sheetNames.join(", ")}`);
+    const [header, ...body] = workbook.sheet(sheetName);
+    const headers = header.map(normalizeHeader);
+    const wanted = WORKBOOK_COLUMNS.filter((c) => c.tab === tab).map((c) => {
+      const index = headers.findIndex((h) => c.header.test(h));
+      if (index === -1) throw new Error(`OEP ${planYear} ${sheetName}: no column matching ${c.header} - header was: ${header.join(", ")}`);
+      return { ...c, index };
+    });
+    for (const row of body) {
+      const state = row[1]?.trim();
+      if (!state || !(/^[A-Z]{2}$/.test(state) || state === "Total")) continue; // footnotes and blank rows
+      const platform = workbookPlatform(state, row[2] ?? "");
+      if (!platform) continue;
+      const key = `${state}|${platform}`;
+      if (!byKey.has(key)) byKey.set(key, { state, platform, values: columns.map(() => null) });
+      for (const c of wanted) {
+        if (SUPPRESSION_MARKERS.has((row[c.index] ?? "").trim())) suppressedCells++;
+        const value = parseCell(row[c.index]);
+        byKey.get(key)!.values[columns.indexOf(c.column)] = value === null || c.decimals === undefined ? value : Number(value.toFixed(c.decimals));
+      }
+    }
+  }
+  const rows = [...byKey.values()];
+  const states = rows.filter((r) => r.state !== "Total");
+  if (states.length < 51) throw new Error(`OEP ${planYear}: expected 51 states and DC, found ${states.length}`);
+  return { dataset: DATASET_NAME, planYear, sourceUrl, pulledAt: new Date().toISOString(), columns, suppressedCells, rows };
 }
 
 /** "22,903" -> 22903, "$1,043 " -> 1043, "12.5%" -> 12.5; markers and blanks -> null. Exported for tests. */
@@ -130,7 +199,7 @@ export async function listYearPages(): Promise<Map<number, string>> {
   return pages;
 }
 
-/** The year's state-level file, or null when the year has none or ships it only as an Excel workbook. */
+/** The year's state-level file (CSV from 2020, report workbook for 2017-2019), or null when the year has none. */
 async function pullYear(year: number, pageUrl: string, log: (msg: string) => void): Promise<OepYear | null> {
   const html = await (await fetchWithRetry(pageUrl)).text();
   const href = html.match(STATE_ZIP_PATTERN)?.[1];
@@ -141,11 +210,11 @@ async function pullYear(year: number, pageUrl: string, log: (msg: string) => voi
   const url = href.startsWith("http") ? href : `${CMS_ORIGIN}${href}`;
   const files = unzipSync(new Uint8Array(await (await fetchWithRetry(url)).arrayBuffer()));
   const csv = Object.keys(files).find((n) => n.toLowerCase().endsWith(".csv"));
-  if (!csv) {
-    log(`[oep] ${year}: state-level file is Excel only, skipped`);
-    return null;
-  }
-  return parseStateCsv(Buffer.from(files[csv]).toString("utf-8"), year, url);
+  if (csv) return parseStateCsv(Buffer.from(files[csv]).toString("utf-8"), year, url);
+  const xlsx = Object.keys(files).find((n) => n.toLowerCase().endsWith(".xlsx"));
+  if (xlsx) return parseStateWorkbook(files[xlsx], year, url);
+  log(`[oep] ${year}: state-level file has no CSV or .xlsx, skipped`);
+  return null;
 }
 
 const yearFile = (year: number) => path.join(YEARS_DIR, `${year}.json`);

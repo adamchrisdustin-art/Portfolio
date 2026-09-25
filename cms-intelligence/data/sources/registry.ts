@@ -242,7 +242,7 @@ const VERIFIED_ENTRIES: SourceRegistryEntry[] = [
     expectedNextUpdate: null,
     identifiers: ["State_Abrvtn"],
     joinKeys: ["State_Abrvtn"],
-    historicalCoverage: "2020 onward as CSV (7 years as of 2026-09-25). 2017-2019 exist only as multi-tab Excel report workbooks with a different layout and are skipped; 2014-2016 have no state-level file.",
+    historicalCoverage: "2017 onward (10 years as of 2026-09-25): 2020+ as CSV, 2017-2019 from CMS's multi-tab Excel report workbooks (7 columns with a clear 2020+ equivalent). 2014-2016 have no state-level file.",
     restrictions: "none - public, unauthenticated, direct file download",
     knownSuppression: "Cells marked * (small-count suppression), + (not applicable) or NR (not reported - common for state-run exchange totals) are stored as null, never 0.",
     knownLimitations: [
