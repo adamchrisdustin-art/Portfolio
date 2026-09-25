@@ -40,6 +40,15 @@
  * ZERO real facility entries or exits - an honest finding given this
  * dataset's quarterly-refresh cadence and this project's real, still-
  * short pull history, not a system limitation.
+ *
+ * Salience layer (intelligence/salience/selectNoteworthy.ts, retrofitted
+ * 2026-09-24) chooses which ownership types the Q038 donut breaks out,
+ * which states the Q126/Q127 boxplots show, and which states Q128 lists -
+ * deterministic top-N when no model is configured (identical to this
+ * agent's original output), model-reasoned when one is. CR4 itself is
+ * NOT routed through it: a concentration ratio is definitionally the top
+ * 4 categories by count, not a judgment call. Q125 and Q042/Q043 have no
+ * ranking step, so they're untouched.
  */
 import {
   listSnapshotFiles,
@@ -53,11 +62,13 @@ import { diffRows } from "../../data/sources/diff";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
 import { concentrationRatio, pearsonCorrelation, tukeyBox } from "../../intelligence/metrics/metrics";
+import { selectNoteworthy, type Candidate } from "../../intelligence/salience/selectNoteworthy";
 import { classifyConfidence, meetsPersistence } from "../../intelligence/trends/trend";
 import type { AgentContext, DomainAgent } from "../types";
 
 const AGENT_ID = "provider-network-intelligence";
 const TOP_N_OWNERSHIP_TYPES = 4;
+const DONUT_TOP_N_OWNERSHIP_TYPES = 5;
 const MIN_HOSPITALS_FOR_STATE_BOX = 20; // same floor as market-growth's home-health per-state read
 const BOXPLOT_TOP_N_STATES = 8;
 const TOP_N_STATES_QUALITY = 5;
@@ -137,7 +148,7 @@ export const providerNetworkAgent: DomainAgent = {
   id: AGENT_ID,
   questionIds: ["Q036", "Q037", "Q038", "Q042", "Q043", "Q125", "Q126", "Q127", "Q128"],
 
-  async run(_ctx: AgentContext): Promise<Insight[]> {
+  async run(ctx: AgentContext): Promise<Insight[]> {
     const files = listSnapshotFiles();
     if (files.length === 0) return [];
 
@@ -163,9 +174,24 @@ export const providerNetworkAgent: DomainAgent = {
     const topTypes = ranked.slice(0, TOP_N_OWNERSHIP_TYPES).map(([type]) => type);
     const cr4 = cr4Series[cr4Series.length - 1];
 
-    const CHART_TOP_N = 5;
-    const chartTop = ranked.slice(0, CHART_TOP_N);
-    const chartOtherCount = ranked.slice(CHART_TOP_N).reduce((sum, [, count]) => sum + count, 0);
+    const totalFacilities = latest.rows.length;
+    const ownershipCandidates: Candidate[] = ranked.map(([type, count]) => ({
+      id: type,
+      label: type,
+      summary: `${count} facilities (${((count / totalFacilities) * 100).toFixed(1)}% of ${totalFacilities} nationally)`,
+      primaryMetric: count,
+    }));
+    const { selections: donutSelections, source: donutSource } = await selectNoteworthy(
+      { candidates: ownershipCandidates, topN: DONUT_TOP_N_OWNERSHIP_TYPES, taskDescription: "hospital ownership types to break out in a share-of-facilities chart this cycle" },
+      ctx
+    );
+    const countByOwnership = new Map(ranked);
+    const chartTop = donutSelections.filter((s) => countByOwnership.has(s.candidateId)).map((s): [string, number] => [s.candidateId, countByOwnership.get(s.candidateId)!]);
+    const chartOtherCount = totalFacilities - chartTop.reduce((sum, [, count]) => sum + count, 0);
+    const donutSelectionNote =
+      donutSource === "llm"
+        ? ` Ownership types broken out in the chart were chosen by model-reasoned salience ranking: ${donutSelections.map((s) => `${s.candidateId} — ${s.rationale}`).join("; ")}.`
+        : "";
 
     const signalType = meetsPersistence(directions) ? "trend" : "baseline";
     const headline =
@@ -184,7 +210,7 @@ export const providerNetworkAgent: DomainAgent = {
       magnitude: { value: cr4, unit: "percent", comparedTo: "total facilities nationally" },
       drivers: [
         {
-          description: `Ownership-type distribution across ${ranked.length} distinct categories. CR${TOP_N_OWNERSHIP_TYPES} across ${history.snapshotCount} real pulls: ${cr4Series.map((v) => v.toFixed(1)).join(" → ")}%.`,
+          description: `Ownership-type distribution across ${ranked.length} distinct categories. CR${TOP_N_OWNERSHIP_TYPES} across ${history.snapshotCount} real pulls: ${cr4Series.map((v) => v.toFixed(1)).join(" → ")}%.${donutSelectionNote}`,
           supportingEvidenceIds: ["ev-hgi-snapshot"],
           relationship: "correlation",
         },
@@ -237,11 +263,11 @@ export const providerNetworkAgent: DomainAgent = {
     const qualityRows = extractQualityRows(latest.rows);
     const correlationInsight = buildQualityCorrelationSignal(qualityRows, history);
     if (correlationInsight) insights.push(correlationInsight);
-    const starByStateInsight = buildStarRatingByStateSignal(qualityRows, history);
+    const starByStateInsight = await buildStarRatingByStateSignal(qualityRows, history, ctx);
     if (starByStateInsight) insights.push(starByStateInsight);
-    const outcomeByStateInsight = buildQualityOutcomeByStateSignal(qualityRows, history);
+    const outcomeByStateInsight = await buildQualityOutcomeByStateSignal(qualityRows, history, ctx);
     if (outcomeByStateInsight) insights.push(outcomeByStateInsight);
-    const qualityTrendInsight = buildQualityByGeographyTrendSignal(snapshots.map((s) => s.snapshot.rows), history);
+    const qualityTrendInsight = await buildQualityByGeographyTrendSignal(snapshots.map((s) => s.snapshot.rows), history, ctx);
     if (qualityTrendInsight) insights.push(qualityTrendInsight);
 
     const facilityChanges = accumulateFacilityChanges(snapshots);
@@ -335,24 +361,58 @@ function buildQualityCorrelationSignal(qualityRows: HospitalQualityRow[], histor
   return validateInsight(insight);
 }
 
-function buildStarRatingByStateSignal(qualityRows: HospitalQualityRow[], history: SnapshotHistoryAssessment): Insight | null {
+type StateBox = { label: string } & ReturnType<typeof tukeyBox>;
+
+/**
+ * Deterministic fallback = the top BOXPLOT_TOP_N_STATES states by hospital
+ * sample size (this agent's original rule). Boxes come back sorted by
+ * median, highest first, so boxes[0]/boxes[last] are the true highest/
+ * lowest among whatever states were selected.
+ */
+async function selectStateBoxes(
+  qualityRows: HospitalQualityRow[],
+  value: (r: HospitalQualityRow) => number,
+  formatMedian: (v: number) => string,
+  taskDescription: string,
+  ctx: AgentContext
+): Promise<{ boxes: StateBox[]; source: "llm" | "deterministic"; eligibleCount: number; rationales: Map<string, string> }> {
   const byState = new Map<string, number[]>();
   for (const r of qualityRows) {
     if (!byState.has(r.state)) byState.set(r.state, []);
-    byState.get(r.state)!.push(r.starRating);
+    byState.get(r.state)!.push(value(r));
   }
   const withEnough = Array.from(byState.entries()).filter(([, values]) => values.length >= MIN_HOSPITALS_FOR_STATE_BOX);
-  const top = withEnough.sort((a, b) => b[1].length - a[1].length).slice(0, BOXPLOT_TOP_N_STATES);
-  if (top.length === 0) return null;
+  const allBoxes = new Map(withEnough.map(([state, values]): [string, StateBox] => [state, { label: state, ...tukeyBox(values) }]));
+  const candidates: Candidate[] = Array.from(allBoxes.values()).map((b) => ({
+    id: b.label,
+    label: b.label,
+    summary: `${b.sampleSize} hospitals, median ${formatMedian(b.median)} (IQR ${formatMedian(b.q1)} to ${formatMedian(b.q3)})`,
+    primaryMetric: b.sampleSize,
+  }));
+  const { selections, source } = await selectNoteworthy({ candidates, topN: BOXPLOT_TOP_N_STATES, taskDescription }, ctx);
+  const picked = selections.filter((s) => allBoxes.has(s.candidateId));
+  const boxes = picked.map((s) => allBoxes.get(s.candidateId)!).sort((a, b) => b.median - a.median);
+  return { boxes, source, eligibleCount: candidates.length, rationales: new Map(picked.map((s) => [s.candidateId, s.rationale])) };
+}
 
-  const boxes = top.map(([state, values]) => ({ label: state, ...tukeyBox(values) })).sort((a, b) => b.median - a.median);
+async function buildStarRatingByStateSignal(qualityRows: HospitalQualityRow[], history: SnapshotHistoryAssessment, ctx: AgentContext): Promise<Insight | null> {
+  const { boxes, source, eligibleCount, rationales } = await selectStateBoxes(
+    qualityRows,
+    (r) => r.starRating,
+    (v) => `${v.toFixed(1)}★`,
+    "hospital overall star rating distribution by state this cycle",
+    ctx
+  );
+  if (boxes.length === 0) return null;
+  const llm = source === "llm";
+
   const highest = boxes[0];
   const lowest = boxes[boxes.length - 1];
   const totalHospitals = boxes.reduce((s, b) => s + b.sampleSize, 0);
 
   const insight: Insight = {
     id: `sig-provider-network-${history.latestDate}-star-rating-by-state`,
-    headline: `Among the ${boxes.length} states with the most hospitals reporting a real overall star rating, ${highest.label} has the highest median (${highest.median.toFixed(1)}★) and ${lowest.label} the lowest (${lowest.median.toFixed(1)}★).`,
+    headline: `Among the ${boxes.length} ${llm ? "states selected as most noteworthy" : "states with the most hospitals reporting a real overall star rating"}, ${highest.label} has the highest median (${highest.median.toFixed(1)}★) and ${lowest.label} the lowest (${lowest.median.toFixed(1)}★).`,
     questionId: "Q126",
     signalType: "baseline",
     period: { start: history.earliestDate, end: history.latestDate },
@@ -366,7 +426,7 @@ function buildStarRatingByStateSignal(qualityRows: HospitalQualityRow[], history
     },
     drivers: [
       {
-        description: `Real per-hospital CMS overall star ratings (1-5), grouped by state, top ${boxes.length} states by hospital sample size (>=${MIN_HOSPITALS_FOR_STATE_BOX} hospitals each): ${boxes.map((b) => `${b.label} median ${b.median.toFixed(1)} (n=${b.sampleSize})`).join("; ")}.`,
+        description: `Real per-hospital CMS overall star ratings (1-5), grouped by state, ${stateScope(boxes.length, eligibleCount, llm)} (>=${MIN_HOSPITALS_FOR_STATE_BOX} hospitals each): ${boxes.map((b) => withStateRationale(`${b.label} median ${b.median.toFixed(1)} (n=${b.sampleSize})`, rationales.get(b.label), llm)).join("; ")}.`,
         supportingEvidenceIds: ["ev-star-by-state"],
         relationship: "correlation",
       },
@@ -377,7 +437,7 @@ function buildStarRatingByStateSignal(qualityRows: HospitalQualityRow[], history
       {
         id: "ev-star-by-state",
         sourceId: SOURCE_ID,
-        description: `CMS Hospital General Information, real hospital_overall_rating field across ${totalHospitals} hospitals in the top ${boxes.length} states by sample size, ${history.latestDate}`,
+        description: `CMS Hospital General Information, real hospital_overall_rating field across ${totalHospitals} hospitals in ${llm ? `the ${boxes.length} selected states` : `the top ${boxes.length} states by sample size`}, ${history.latestDate}`,
         datasetVintage: history.latestDate,
       },
     ],
@@ -396,7 +456,7 @@ function buildStarRatingByStateSignal(qualityRows: HospitalQualityRow[], history
     generatingAgent: AGENT_ID,
     chart: {
       type: "boxplot",
-      title: `Hospital overall star rating distribution, top ${boxes.length} states by hospital count`,
+      title: `Hospital overall star rating distribution, ${llm ? `${boxes.length} states selected as most noteworthy` : `top ${boxes.length} states by hospital count`}`,
       unit: "stars",
       boxes,
     },
@@ -405,24 +465,32 @@ function buildStarRatingByStateSignal(qualityRows: HospitalQualityRow[], history
   return validateInsight(insight);
 }
 
-function buildQualityOutcomeByStateSignal(qualityRows: HospitalQualityRow[], history: SnapshotHistoryAssessment): Insight | null {
-  const byState = new Map<string, number[]>();
-  for (const r of qualityRows) {
-    if (!byState.has(r.state)) byState.set(r.state, []);
-    byState.get(r.state)!.push(r.netQualityPct);
-  }
-  const withEnough = Array.from(byState.entries()).filter(([, values]) => values.length >= MIN_HOSPITALS_FOR_STATE_BOX);
-  const top = withEnough.sort((a, b) => b[1].length - a[1].length).slice(0, BOXPLOT_TOP_N_STATES);
-  if (top.length === 0) return null;
+function stateScope(shown: number, eligible: number, llm: boolean): string {
+  return llm ? `${shown} states selected by model-reasoned salience ranking over all ${eligible} eligible states` : `top ${shown} states by hospital sample size`;
+}
 
-  const boxes = top.map(([state, values]) => ({ label: state, ...tukeyBox(values) })).sort((a, b) => b.median - a.median);
+function withStateRationale(text: string, rationale: string | undefined, llm: boolean): string {
+  return llm && rationale ? `${text} — ${rationale}` : text;
+}
+
+async function buildQualityOutcomeByStateSignal(qualityRows: HospitalQualityRow[], history: SnapshotHistoryAssessment, ctx: AgentContext): Promise<Insight | null> {
+  const { boxes, source, eligibleCount, rationales } = await selectStateBoxes(
+    qualityRows,
+    (r) => r.netQualityPct,
+    (v) => `${v.toFixed(1)}%`,
+    "hospital net quality-outcome score distribution by state this cycle",
+    ctx
+  );
+  if (boxes.length === 0) return null;
+  const llm = source === "llm";
+
   const highest = boxes[0];
   const lowest = boxes[boxes.length - 1];
   const totalHospitals = boxes.reduce((s, b) => s + b.sampleSize, 0);
 
   const insight: Insight = {
     id: `sig-provider-network-${history.latestDate}-quality-outcome-by-state`,
-    headline: `Among the ${boxes.length} states with the most assessable hospitals, ${highest.label} has the best median net quality-outcome score (${highest.median.toFixed(1)}%) and ${lowest.label} the worst (${lowest.median.toFixed(1)}%).`,
+    headline: `Among the ${boxes.length} ${llm ? "states selected as most noteworthy" : "states with the most assessable hospitals"}, ${highest.label} has the best median net quality-outcome score (${highest.median.toFixed(1)}%) and ${lowest.label} the worst (${lowest.median.toFixed(1)}%).`,
     questionId: "Q127",
     signalType: "baseline",
     period: { start: history.earliestDate, end: history.latestDate },
@@ -436,7 +504,7 @@ function buildQualityOutcomeByStateSignal(qualityRows: HospitalQualityRow[], his
     },
     drivers: [
       {
-        description: `Real per-hospital net quality-outcome score (share of mortality/safety/readmission measures rated "better than national" minus "worse", as a percent), grouped by state, top ${boxes.length} states by hospital sample size (>=${MIN_HOSPITALS_FOR_STATE_BOX} hospitals each): ${boxes.map((b) => `${b.label} median ${b.median.toFixed(1)}% (n=${b.sampleSize})`).join("; ")}.`,
+        description: `Real per-hospital net quality-outcome score (share of mortality/safety/readmission measures rated "better than national" minus "worse", as a percent), grouped by state, ${stateScope(boxes.length, eligibleCount, llm)} (>=${MIN_HOSPITALS_FOR_STATE_BOX} hospitals each): ${boxes.map((b) => withStateRationale(`${b.label} median ${b.median.toFixed(1)}% (n=${b.sampleSize})`, rationales.get(b.label), llm)).join("; ")}.`,
         supportingEvidenceIds: ["ev-outcome-by-state"],
         relationship: "correlation",
       },
@@ -447,7 +515,7 @@ function buildQualityOutcomeByStateSignal(qualityRows: HospitalQualityRow[], his
       {
         id: "ev-outcome-by-state",
         sourceId: SOURCE_ID,
-        description: `CMS Hospital General Information, real count_of_{mort,safety,readm}_measures_{better,worse,no_different} fields across ${totalHospitals} hospitals in the top ${boxes.length} states by sample size, ${history.latestDate}`,
+        description: `CMS Hospital General Information, real count_of_{mort,safety,readm}_measures_{better,worse,no_different} fields across ${totalHospitals} hospitals in ${llm ? `the ${boxes.length} selected states` : `the top ${boxes.length} states by sample size`}, ${history.latestDate}`,
         datasetVintage: history.latestDate,
       },
     ],
@@ -466,7 +534,7 @@ function buildQualityOutcomeByStateSignal(qualityRows: HospitalQualityRow[], his
     generatingAgent: AGENT_ID,
     chart: {
       type: "boxplot",
-      title: `Net quality-outcome score distribution, top ${boxes.length} states by hospital count`,
+      title: `Net quality-outcome score distribution, ${llm ? `${boxes.length} states selected as most noteworthy` : `top ${boxes.length} states by hospital count`}`,
       unit: "%",
       boxes,
     },
@@ -475,7 +543,11 @@ function buildQualityOutcomeByStateSignal(qualityRows: HospitalQualityRow[], his
   return validateInsight(insight);
 }
 
-function buildQualityByGeographyTrendSignal(rowsPerSnapshot: HospitalRow[][], history: SnapshotHistoryAssessment): Insight | null {
+async function buildQualityByGeographyTrendSignal(
+  rowsPerSnapshot: HospitalRow[][],
+  history: SnapshotHistoryAssessment,
+  ctx: AgentContext
+): Promise<Insight | null> {
   const perSnapshotStateMedians = rowsPerSnapshot.map((rows) => {
     const qualityRows = extractQualityRows(rows);
     const byState = new Map<string, number[]>();
@@ -510,7 +582,25 @@ function buildQualityByGeographyTrendSignal(rowsPerSnapshot: HospitalRow[][], hi
   const rankedCurrent = Array.from(latestMedians.entries())
     .filter(([state]) => statesInEvery.includes(state))
     .sort((a, b) => b[1] - a[1]);
-  const top = rankedCurrent.slice(0, TOP_N_STATES_QUALITY);
+  const candidates: Candidate[] = rankedCurrent.map(([state, median]) => ({
+    id: state,
+    label: state,
+    summary: `current median net quality-outcome score ${median.toFixed(1)}%; across ${history.snapshotCount} real pull(s): ${perSnapshotStateMedians.map((m) => m.get(state)!.toFixed(1)).join(" → ")}%${improvingStates.includes(state) ? " (meets the persistence rule for real improvement)" : ""}`,
+    primaryMetric: median,
+  }));
+  const { selections, source } = await selectNoteworthy(
+    { candidates, topN: TOP_N_STATES_QUALITY, taskDescription: "state-level hospital quality outcomes (current level and change across pulls) this cycle" },
+    ctx
+  );
+  const llm = source === "llm";
+  const medianByState = new Map(rankedCurrent);
+  const picked = selections.filter((s) => medianByState.has(s.candidateId));
+  const top = picked.map((s): [string, number] => [s.candidateId, medianByState.get(s.candidateId)!]);
+  const rationaleByState = new Map(picked.map((s) => [s.candidateId, s.rationale]));
+  // "Best current score" claims must hold regardless of which states the selection picked.
+  const best = rankedCurrent[0];
+  const topList = top.map(([s, v]) => withStateRationale(`${s} (${v.toFixed(1)}%)`, rationaleByState.get(s), llm)).join(", ");
+  const topLabel = llm ? "States selected as most noteworthy by model-reasoned salience ranking" : "Current top states";
   const confidence = classifyConfidence({
     persistenceMet: improvingStates.length > 0,
     hasFullBaseline: history.hasFullBaseline,
@@ -519,8 +609,8 @@ function buildQualityByGeographyTrendSignal(rowsPerSnapshot: HospitalRow[][], hi
 
   const headline =
     improvingStates.length > 0
-      ? `${improvingStates.join(", ")} show a real, persistent improvement in net quality-outcome score across the last ${history.snapshotCount} real pulls; currently, ${top[0][0]} has the best net quality-outcome score (${top[0][1].toFixed(1)}%) among states with enough hospitals to assess.`
-      : `No state has yet shown a persistent real improvement in net quality-outcome score across the ${history.snapshotCount} real pull(s) collected so far (this CMS dataset refreshes quarterly, and only ${history.daysOfHistory} real day(s) of history exist); currently, ${top[0][0]} has the best net quality-outcome score (${top[0][1].toFixed(1)}%) among states with enough hospitals to assess.`;
+      ? `${improvingStates.join(", ")} show a real, persistent improvement in net quality-outcome score across the last ${history.snapshotCount} real pulls; currently, ${best[0]} has the best net quality-outcome score (${best[1].toFixed(1)}%) among states with enough hospitals to assess.`
+      : `No state has yet shown a persistent real improvement in net quality-outcome score across the ${history.snapshotCount} real pull(s) collected so far (this CMS dataset refreshes quarterly, and only ${history.daysOfHistory} real day(s) of history exist); currently, ${best[0]} has the best net quality-outcome score (${best[1].toFixed(1)}%) among states with enough hospitals to assess.`;
 
   const insight: Insight = {
     id: `sig-provider-network-${history.latestDate}-quality-by-geography-trend`,
@@ -530,13 +620,13 @@ function buildQualityByGeographyTrendSignal(rowsPerSnapshot: HospitalRow[][], hi
     period: { start: history.earliestDate, end: history.latestDate },
     population: "medicare-ffs",
     geography: { level: "state", code: top.map(([s]) => s).join("/"), label: top.map(([s]) => s).join(", ") },
-    magnitude: { value: top[0][1], unit: "percent", comparedTo: `${rankedCurrent.length} states assessed` },
+    magnitude: { value: best[1], unit: "percent", comparedTo: `${rankedCurrent.length} states assessed` },
     drivers: [
       {
         description:
           improvingStates.length > 0
-            ? `States meeting the 2-consecutive-pull persistence rule for an improving real net quality-outcome median: ${improvingStates.join(", ")}. Current top states by net quality-outcome score: ${top.map(([s, v]) => `${s} (${v.toFixed(1)}%)`).join(", ")}.`
-            : `Current top states by real net quality-outcome score (single-snapshot cross-sectional ranking, not yet a confirmed trend): ${top.map(([s, v]) => `${s} (${v.toFixed(1)}%)`).join(", ")}. Real per-state median net quality-outcome score across ${history.snapshotCount} real pull(s): ${statesInEvery
+            ? `States meeting the 2-consecutive-pull persistence rule for an improving real net quality-outcome median: ${improvingStates.join(", ")}. ${topLabel} by net quality-outcome score: ${topList}.`
+            : `${topLabel} by real net quality-outcome score (single-snapshot cross-sectional ranking, not yet a confirmed trend): ${topList}. Real per-state median net quality-outcome score across ${history.snapshotCount} real pull(s): ${statesInEvery
                 .slice(0, 5)
                 .map((s) => `${s}: ${perSnapshotStateMedians.map((m) => m.get(s)!.toFixed(1)).join(" → ")}`)
                 .join("; ")}.`,
@@ -569,7 +659,9 @@ function buildQualityByGeographyTrendSignal(rowsPerSnapshot: HospitalRow[][], hi
     generatingAgent: AGENT_ID,
     chart: {
       type: "bar",
-      title: `States with the best current net quality-outcome score (top ${top.length})`,
+      title: llm
+        ? `Current net quality-outcome score, ${top.length} states selected as most noteworthy`
+        : `States with the best current net quality-outcome score (top ${top.length})`,
       unit: "%",
       bars: top.map(([s, v]) => ({ label: s, value: Math.round(v * 10) / 10 })),
     },

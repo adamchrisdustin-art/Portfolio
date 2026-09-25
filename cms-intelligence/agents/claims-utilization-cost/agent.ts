@@ -16,12 +16,18 @@
  * adding a new dated snapshot - see pull-home-health.ts), so this
  * correctly reports "baseline"/"low" until a second real pull on a
  * later calendar day exists - not a code limitation.
+ *
+ * Which states get a boxplot goes through the salience layer
+ * (intelligence/salience/selectNoteworthy.ts, retrofitted 2026-09-24):
+ * deterministic top-N by agency sample size when no model is configured
+ * (identical to boxplotByState below), model-reasoned when one is.
  */
 import { listSnapshotFiles, loadSnapshot, SOURCE_ID } from "../../data/adapters/homeHealthCareAgencies";
 import { assessSnapshotHistory, dateFromSnapshotFilename, directionsAcrossSnapshots } from "../../data/sources/snapshotHistory";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
 import { tukeyBox } from "../../intelligence/metrics/metrics";
+import { selectNoteworthy, type Candidate } from "../../intelligence/salience/selectNoteworthy";
 import { classifyConfidence, meetsPersistence } from "../../intelligence/trends/trend";
 import type { AgentContext, DomainAgent } from "../types";
 
@@ -53,8 +59,9 @@ export interface BoxplotState {
   sampleSize: number;
 }
 
-/** Exported for reuse by the Data Explorer analytics section - see cms-intelligence/analytics/overview.ts. */
-export function boxplotByState(rows: { state: string; [key: string]: unknown }[]): BoxplotState[] {
+type StateRow = { state: string; [key: string]: unknown };
+
+function ratioValuesByState(rows: StateRow[]): [string, number[]][] {
   const byState = new Map<string, number[]>();
   for (const row of rows) {
     if (!row.state) continue;
@@ -65,20 +72,51 @@ export function boxplotByState(rows: { state: string; [key: string]: unknown }[]
     if (!byState.has(row.state)) byState.set(row.state, []);
     byState.get(row.state)!.push(parsed);
   }
+  return Array.from(byState.entries()).filter(([, values]) => values.length >= MIN_AGENCIES_FOR_BOXPLOT);
+}
 
-  const withEnoughData = Array.from(byState.entries()).filter(([, values]) => values.length >= MIN_AGENCIES_FOR_BOXPLOT);
-  const topByCount = withEnoughData.sort((a, b) => b[1].length - a[1].length).slice(0, BOXPLOT_TOP_N_STATES);
+function toBoxes(entries: [string, number[]][]): BoxplotState[] {
+  return entries.map(([state, values]) => ({ label: state, ...tukeyBox(values) })).sort((a, b) => a.median - b.median);
+}
 
-  return topByCount
-    .map(([state, values]) => ({ label: state, ...tukeyBox(values) }))
-    .sort((a, b) => a.median - b.median);
+/** Exported for reuse by the Data Explorer analytics section - see cms-intelligence/analytics/overview.ts. */
+export function boxplotByState(rows: StateRow[]): BoxplotState[] {
+  const topByCount = ratioValuesByState(rows)
+    .sort((a, b) => b[1].length - a[1].length)
+    .slice(0, BOXPLOT_TOP_N_STATES);
+  return toBoxes(topByCount);
+}
+
+async function selectBoxplotStates(
+  rows: StateRow[],
+  ctx: AgentContext
+): Promise<{ boxes: BoxplotState[]; source: "llm" | "deterministic"; eligibleCount: number }> {
+  const entries = ratioValuesByState(rows);
+  const candidates: Candidate[] = entries.map(([state, values]) => {
+    const box = tukeyBox(values);
+    return {
+      id: state,
+      label: state,
+      summary: `${values.length} agencies reporting, median spending ratio ${box.median.toFixed(2)} (IQR ${box.q1.toFixed(2)}-${box.q3.toFixed(2)}, ${box.outliers.length} outlier agencies)`,
+      primaryMetric: values.length,
+    };
+  });
+  const { selections, source } = await selectNoteworthy(
+    { candidates, topN: BOXPLOT_TOP_N_STATES, taskDescription: "home health risk-adjusted spending-ratio distribution by state this cycle" },
+    ctx
+  );
+  const byState = new Map(entries);
+  const picked = selections
+    .filter((s) => byState.has(s.candidateId))
+    .map((s): [string, number[]] => [s.candidateId, byState.get(s.candidateId)!]);
+  return { boxes: toBoxes(picked), source, eligibleCount: candidates.length };
 }
 
 export const claimsUtilizationCostAgent: DomainAgent = {
   id: AGENT_ID,
   questionIds: ["Q011", "Q012", "Q013", "Q014", "Q015", "Q016", "Q017", "Q018", "Q019", "Q020", "Q021", "Q022", "Q023", "Q024", "Q025"],
 
-  async run(_ctx: AgentContext): Promise<Insight[]> {
+  async run(ctx: AgentContext): Promise<Insight[]> {
     const files = listSnapshotFiles();
     if (files.length === 0) return [];
 
@@ -98,6 +136,8 @@ export const claimsUtilizationCostAgent: DomainAgent = {
       hasFullBaseline: history.hasFullBaseline,
       hasExternalCorroboration: false,
     });
+
+    const { boxes, source: boxSource, eligibleCount } = await selectBoxplotStates(latest.rows as unknown as StateRow[], ctx);
 
     const signalType = meetsPersistence(directions) ? "trend" : "baseline";
     const headline =
@@ -121,7 +161,7 @@ export const claimsUtilizationCostAgent: DomainAgent = {
       },
       drivers: [
         {
-          description: `Computed from ${latestStats.validCount} agencies reporting this measure; ${latestStats.suppressedCount} excluded (suppressed/unavailable), never imputed. Mean across ${history.snapshotCount} real pull(s): ${meanSeries.map((v) => v.toFixed(2)).join(" → ")}.`,
+          description: `Computed from ${latestStats.validCount} agencies reporting this measure; ${latestStats.suppressedCount} excluded (suppressed/unavailable), never imputed. Mean across ${history.snapshotCount} real pull(s): ${meanSeries.map((v) => v.toFixed(2)).join(" → ")}.${boxSource === "llm" ? ` Boxplot states chosen by model-reasoned salience ranking over all ${eligibleCount} states with at least ${MIN_AGENCIES_FOR_BOXPLOT} reporting agencies.` : ""}`,
           supportingEvidenceIds: ["ev-hh-snapshot"],
           relationship: "correlation",
         },
@@ -161,12 +201,18 @@ export const claimsUtilizationCostAgent: DomainAgent = {
                 .map((s, i) => ({ date: s.date, value: meanSeries[i] })),
             }
           : undefined,
-      chart: (() => {
-        const boxes = boxplotByState(latest.rows as unknown as { state: string; [key: string]: unknown }[]);
-        return boxes.length > 0
-          ? { type: "boxplot" as const, title: `Spending-ratio distribution by state, top ${boxes.length} by sample size`, unit: "ratio", boxes }
-          : undefined;
-      })(),
+      chart:
+        boxes.length > 0
+          ? {
+              type: "boxplot" as const,
+              title:
+                boxSource === "llm"
+                  ? `Spending-ratio distribution by state, ${boxes.length} states selected as most noteworthy`
+                  : `Spending-ratio distribution by state, top ${boxes.length} by sample size`,
+              unit: "ratio",
+              boxes,
+            }
+          : undefined,
     };
 
     return [validateInsight(insight)];

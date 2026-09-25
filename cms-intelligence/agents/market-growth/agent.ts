@@ -26,6 +26,14 @@
  * Confidence and signalType are computed dynamically from actual
  * snapshot history (cms-intelligence/data/sources/snapshotHistory.ts),
  * never hardcoded.
+ *
+ * Which states each chart shows goes through the salience layer
+ * (intelligence/salience/selectNoteworthy.ts, retrofitted 2026-09-24):
+ * deterministic top-N when no model is configured (identical to this
+ * agent's original output), model-reasoned when one is. Headline claims
+ * like "most concentrated in" or "highest episodes per agency" are
+ * computed from the full real ranking, never from the selection, so they
+ * stay true regardless of which states the model picked to chart.
  */
 import {
   listSnapshotFiles,
@@ -41,6 +49,7 @@ import { assessSnapshotHistory, dateFromSnapshotFilename, directionsAcrossSnapsh
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
 import { mixShare } from "../../intelligence/metrics/metrics";
+import { selectNoteworthy, type Candidate } from "../../intelligence/salience/selectNoteworthy";
 import { classifyConfidence, meetsPersistence } from "../../intelligence/trends/trend";
 import type { AgentContext, DomainAgent } from "../types";
 
@@ -114,7 +123,7 @@ export const marketGrowthAgent: DomainAgent = {
   id: AGENT_ID,
   questionIds: ["Q001", "Q004", "Q006"],
 
-  async run(_ctx: AgentContext): Promise<Insight[]> {
+  async run(ctx: AgentContext): Promise<Insight[]> {
     const files = listSnapshotFiles();
     if (files.length === 0) return [];
 
@@ -144,6 +153,23 @@ export const marketGrowthAgent: DomainAgent = {
     const top = ranked.slice(0, TOP_N_STATES);
     const topDescription = top.map(([state, count]) => `${state} (${count}, ${mixShare(count, total).toFixed(1)}%)`).join(", ");
 
+    const chartCandidates: Candidate[] = ranked.map(([state, count]) => ({
+      id: state,
+      label: state,
+      summary: `${count} hospitals (${mixShare(count, total).toFixed(1)}% of ${total} nationally)`,
+      primaryMetric: count,
+    }));
+    const { selections: chartSelections, source: chartSource } = await selectNoteworthy(
+      { candidates: chartCandidates, topN: CHART_TOP_N_STATES, taskDescription: "hospital facility count by state this cycle" },
+      ctx
+    );
+    const countByState = new Map(ranked);
+    const chartPicks = chartSelections.filter((s) => countByState.has(s.candidateId));
+    const chartSelectionNote =
+      chartSource === "llm"
+        ? ` Charted states chosen by model-reasoned salience ranking over all ${ranked.length} states/territories: ${chartPicks.map((s) => `${s.candidateId} — ${s.rationale}`).join("; ")}.`
+        : "";
+
     const signalType = meetsPersistence(directions) ? "trend" : "baseline";
     const headline =
       signalType === "trend"
@@ -166,7 +192,7 @@ export const marketGrowthAgent: DomainAgent = {
       },
       drivers: [
         {
-          description: `Top ${TOP_N_STATES} states by facility count: ${topDescription}. Total facility count across ${history.snapshotCount} real pulls: ${rowCounts.join(" → ")}.`,
+          description: `Top ${TOP_N_STATES} states by facility count: ${topDescription}. Total facility count across ${history.snapshotCount} real pulls: ${rowCounts.join(" → ")}.${chartSelectionNote}`,
           supportingEvidenceIds: ["ev-hgi-snapshot"],
           relationship: "correlation",
         },
@@ -205,22 +231,25 @@ export const marketGrowthAgent: DomainAgent = {
           : undefined,
       chart: {
         type: "bar",
-        title: `Hospital facility count, top ${CHART_TOP_N_STATES} states`,
+        title:
+          chartSource === "llm"
+            ? `Hospital facility count, ${chartPicks.length} states selected as most noteworthy`
+            : `Hospital facility count, top ${CHART_TOP_N_STATES} states`,
         unit: "facilities",
-        bars: ranked.slice(0, CHART_TOP_N_STATES).map(([state, count]) => ({ label: state, value: count })),
+        bars: chartPicks.map((s) => ({ label: s.candidateId, value: countByState.get(s.candidateId)! })),
       },
     };
 
     const insights = [validateInsight(insight)];
 
-    const homeHealthInsight = buildHomeHealthCapacitySignal();
+    const homeHealthInsight = await buildHomeHealthCapacitySignal(ctx);
     if (homeHealthInsight) insights.push(homeHealthInsight);
 
     return insights;
   },
 };
 
-function buildHomeHealthCapacitySignal(): Insight | null {
+async function buildHomeHealthCapacitySignal(ctx: AgentContext): Promise<Insight | null> {
   const snapshot = loadHomeHealthSnapshot();
   if (!snapshot || snapshot.rows.length === 0) return null;
 
@@ -235,21 +264,30 @@ function buildHomeHealthCapacitySignal(): Insight | null {
   // "Opportunity" candidates: above-median quality AND spending ratio not
   // meaningfully above the CMS benchmark of 1.0 (<=1.1) - transparent,
   // fixed thresholds, not a tuned/black-box score.
-  const candidates = stateStats.filter(
+  const eligible = stateStats.filter(
     (s) => s.avgStarRating !== null && s.avgStarRating >= medianStarRating && s.avgSpendingRatio !== null && s.avgSpendingRatio <= 1.1
   );
-  const ranked = candidates.sort((a, b) => b.episodesPerAgency - a.episodesPerAgency).slice(0, TOP_N_STATES);
-  if (ranked.length === 0) return null;
+  if (eligible.length === 0) return null;
+
+  const describe = (s: StateHomeHealthStats) =>
+    `${s.episodesPerAgency.toFixed(0)} episodes/agency across ${s.agencyCount} agencies, ${s.avgStarRating!.toFixed(1)}★ quality, ${s.avgSpendingRatio!.toFixed(2)} spending ratio, ${s.fullServiceAgencyPct.toFixed(0)}% full-service-line agencies`;
+  const candidates: Candidate[] = eligible.map((s) => ({ id: s.state, label: s.state, summary: describe(s), primaryMetric: s.episodesPerAgency }));
+  const { selections, source } = await selectNoteworthy(
+    { candidates, topN: TOP_N_STATES, taskDescription: "home health capacity-pressure signals by state this cycle" },
+    ctx
+  );
+  const statsByState = new Map(eligible.map((s) => [s.state, s]));
+  const selected = selections.filter((s) => statsByState.has(s.candidateId)).map((s) => ({ rationale: s.rationale, stats: statsByState.get(s.candidateId)! }));
+  if (selected.length === 0) return null;
+  const ranked = selected.map((x) => x.stats);
 
   const stamp = snapshot.pulledAt.slice(0, 10);
-  const summary = ranked
-    .map(
-      (s) =>
-        `${s.state}: ${s.episodesPerAgency.toFixed(0)} episodes/agency across ${s.agencyCount} agencies, ${s.avgStarRating!.toFixed(1)}★ quality, ${s.avgSpendingRatio!.toFixed(2)} spending ratio, ${s.fullServiceAgencyPct.toFixed(0)}% full-service-line agencies`
-    )
+  const summary = selected
+    .map(({ stats, rationale }) => `${stats.state}: ${describe(stats)}${source === "llm" ? ` — ${rationale}` : ""}`)
     .join("; ");
 
-  const top = ranked[0];
+  // The headline's "highest" claim must hold regardless of how the selection was ordered.
+  const top = eligible.reduce((a, b) => (b.episodesPerAgency > a.episodesPerAgency ? b : a));
   const insight: Insight = {
     id: `sig-market-growth-${stamp}-home-health-capacity-signal`,
     headline: `${top.state} shows the highest home-health episode volume per agency (${top.episodesPerAgency.toFixed(0)}) among states with above-median quality and favorable spending efficiency — a capacity-pressure signal, not a confirmed growth trend.`,
@@ -261,7 +299,10 @@ function buildHomeHealthCapacitySignal(): Insight | null {
     magnitude: { value: top.episodesPerAgency, unit: "episodes-per-agency", comparedTo: `${top.state} agency count (${top.agencyCount})` },
     drivers: [
       {
-        description: `Ranked by real episodes-per-agency among states with above-median quality (≥${medianStarRating.toFixed(1)}★) and spending ratio ≤1.10: ${summary}.`,
+        description:
+          source === "llm"
+            ? `Selected by model-reasoned salience ranking over all ${eligible.length} states with above-median quality (≥${medianStarRating.toFixed(1)}★) and spending ratio ≤1.10: ${summary}.`
+            : `Ranked by real episodes-per-agency among states with above-median quality (≥${medianStarRating.toFixed(1)}★) and spending ratio ≤1.10: ${summary}.`,
         supportingEvidenceIds: ["ev-hh-capacity"],
         relationship: "correlation",
       },

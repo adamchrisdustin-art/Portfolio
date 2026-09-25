@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { validateInsight } from "../../intelligence/evidence/validate";
+import { bottomPickingProvider, inventingProvider, TEST_RATIONALE, withoutGeneratedAt } from "../../intelligence/salience/testProviders";
 import { policyRegulationCmsAgent } from "./agent";
 
 /** Runs against the real Federal Register CMS-document snapshot already committed to this repo. */
@@ -41,5 +42,40 @@ describe("policyRegulationCmsAgent", () => {
     expect(finalized).toBeDefined();
     // Q077-Q080 (which domain a rule routes to) is explicitly the LLM step this agent hasn't run yet.
     expect(finalized?.limitations.join(" ")).toMatch(/routing|LLM/i);
+  });
+
+  it("ranks by recency/proximity with direction 'lowest' - the model is told fewer days is the noteworthy signal", async () => {
+    const provider = bottomPickingProvider();
+    await policyRegulationCmsAgent.run({ modelProvider: provider });
+    expect(provider.prompts.length).toBeGreaterThan(0);
+    for (const prompt of provider.prompts) expect(prompt).toMatch(/LOWER primary-metric value is the noteworthy signal/);
+  });
+
+  it("with a model configured, lists only real rules the model picked, while 'most recently'/'nearest' headline claims still come from the full sorted list", async () => {
+    const baseline = await policyRegulationCmsAgent.run({ modelProvider: null });
+    const provider = bottomPickingProvider();
+    const insights = await policyRegulationCmsAgent.run({ modelProvider: provider });
+
+    expect(insights).toHaveLength(baseline.length);
+    for (const [i, insight] of insights.entries()) {
+      expect(() => validateInsight(insight)).not.toThrow();
+      expect(insight.headline).toBe(baseline[i].headline);
+      expect(insight.magnitude).toEqual(baseline[i].magnitude);
+    }
+
+    const upcoming = insights.find((i) => i.questionId === "Q076");
+    const upcomingBaseline = baseline.find((i) => i.questionId === "Q076");
+    if (upcoming?.chart?.type !== "list" || upcomingBaseline?.chart?.type !== "list") throw new Error("expected list charts");
+    if (provider.prompts.some((p) => p.includes("operational-readiness calendar"))) {
+      expect(upcoming.chart.items.map((x) => x.url)).not.toEqual(upcomingBaseline.chart.items.map((x) => x.url));
+      expect(upcoming.drivers[0].description).toContain(TEST_RATIONALE);
+    }
+    for (const item of upcoming.chart.items) expect(item.url).toMatch(/^https:\/\//);
+  });
+
+  it("falls back to its exact no-model output when the model invents a candidate", async () => {
+    const baseline = await policyRegulationCmsAgent.run({ modelProvider: null });
+    const insights = await policyRegulationCmsAgent.run({ modelProvider: inventingProvider() });
+    expect(withoutGeneratedAt(insights)).toEqual(withoutGeneratedAt(baseline));
   });
 });

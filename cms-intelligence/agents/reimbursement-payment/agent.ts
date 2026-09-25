@@ -18,11 +18,19 @@
  * read, directly real and non-fabricated. Dynamic confidence/signalType
  * via snapshotHistory.ts, same pattern as the other real agents - only
  * one real snapshot exists so far, so this is honestly a baseline.
+ *
+ * Which provider types to show goes through the salience layer
+ * (intelligence/salience/selectNoteworthy.ts, retrofitted 2026-09-24):
+ * deterministic top-N by row volume when no model is configured (identical
+ * to this agent's original output), model-reasoned when one is. The
+ * headline's "largest volume" claim is computed independently of that
+ * selection, so it stays true either way.
  */
 import { loadLatestSnapshot, SOURCE_ID, type PhysicianServiceRow } from "../../data/adapters/physicianOtherPractitioners";
 import { assessSnapshotHistory } from "../../data/sources/snapshotHistory";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
+import { selectNoteworthy, type Candidate } from "../../intelligence/salience/selectNoteworthy";
 import { classifyConfidence } from "../../intelligence/trends/trend";
 import type { AgentContext, DomainAgent } from "../types";
 
@@ -71,37 +79,60 @@ export const reimbursementPaymentAgent: DomainAgent = {
   id: AGENT_ID,
   questionIds: ["Q026", "Q027", "Q028", "Q029", "Q030", "Q031", "Q032", "Q033", "Q034", "Q035"],
 
-  async run(_ctx: AgentContext): Promise<Insight[]> {
+  async run(ctx: AgentContext): Promise<Insight[]> {
     const snapshot = loadLatestSnapshot();
     if (!snapshot || snapshot.rows.length === 0) return [];
 
     const allStats = computeStatsByProviderType(snapshot.rows);
     if (allStats.length === 0) return [];
-    const topStats = allStats.slice(0, TOP_N_PROVIDER_TYPES);
+
+    const describe = (s: ProviderTypeStats) =>
+      `submitted $${s.avgSubmittedCharge.toFixed(0)} → paid $${s.avgMedicarePayment.toFixed(0)} (${(s.paymentToChargeRatio * 100).toFixed(0)}% of charge)`;
+    const candidates: Candidate[] = allStats.map((s) => ({
+      id: s.providerType,
+      label: s.providerType,
+      summary: `${describe(s)}, ${s.rowCount} sampled claims lines`,
+      primaryMetric: s.rowCount,
+    }));
+    const { selections, source } = await selectNoteworthy(
+      { candidates, topN: TOP_N_PROVIDER_TYPES, taskDescription: "Medicare payment-to-charge ratio by provider type this cycle" },
+      ctx
+    );
+    const statsByType = new Map(allStats.map((s) => [s.providerType, s]));
+    const selected = selections
+      .map((sel) => ({ rationale: sel.rationale, stats: statsByType.get(sel.candidateId)! }))
+      .filter((x) => x.stats);
+    if (selected.length === 0) return [];
+    const topStats = selected.map((x) => x.stats);
+    // allStats is sorted by rowCount desc, so [0] is the true largest-volume type regardless of what the selection picked.
+    const largestVolume = allStats[0];
 
     const history = assessSnapshotHistory([snapshot.pulledAt.slice(0, 10)]);
     const confidence = classifyConfidence({ persistenceMet: false, hasFullBaseline: false, hasExternalCorroboration: false });
 
-    const summary = topStats
-      .map((s) => `${s.providerType}: submitted $${s.avgSubmittedCharge.toFixed(0)} → paid $${s.avgMedicarePayment.toFixed(0)} (${(s.paymentToChargeRatio * 100).toFixed(0)}% of charge)`)
+    const summary = selected
+      .map(({ stats, rationale }) => `${stats.providerType}: ${describe(stats)}${source === "llm" ? ` — ${rationale}` : ""}`)
       .join("; ");
+    const selectionNote =
+      source === "llm" ? ` Candidate selection method: model-reasoned salience ranking over all ${allStats.length} real provider types.` : "";
+    const scope = source === "llm" ? `the ${topStats.length} provider types selected as most noteworthy` : `the top ${topStats.length} provider types`;
 
     const insight: Insight = {
       id: `sig-reimbursement-${history.latestDate}-payment-vs-charge-by-provider-type`,
-      headline: `Across the top ${topStats.length} provider types in this sample, Medicare pays ${(topStats.reduce((s, t) => s + t.paymentToChargeRatio, 0) / topStats.length * 100).toFixed(0)}% of submitted charges on average — ${topStats[0].providerType} shows the largest volume.`,
+      headline: `Across ${scope} in this sample, Medicare pays ${(topStats.reduce((s, t) => s + t.paymentToChargeRatio, 0) / topStats.length * 100).toFixed(0)}% of submitted charges on average — ${largestVolume.providerType} shows the largest volume.`,
       questionId: "Q031",
       signalType: "baseline",
       period: { start: history.latestDate, end: history.latestDate },
       population: "medicare-ffs",
       geography: { level: "state", code: snapshot.sampledStates.join("/"), label: `${snapshot.sampledStates.join(", ")} (5-state sample, not national)` },
       magnitude: {
-        value: topStats[0].paymentToChargeRatio * 100,
+        value: largestVolume.paymentToChargeRatio * 100,
         unit: "percent",
-        comparedTo: `${topStats[0].providerType} average submitted charge`,
+        comparedTo: `${largestVolume.providerType} average submitted charge`,
       },
       drivers: [
         {
-          description: `Per-provider-type averages from ${snapshot.rowCount} real claims lines: ${summary}.`,
+          description: `Per-provider-type averages from ${snapshot.rowCount} real claims lines: ${summary}.${selectionNote}`,
           supportingEvidenceIds: ["ev-phy-snapshot"],
           relationship: "correlation",
         },

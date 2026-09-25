@@ -7,9 +7,9 @@ Intelligence) and a full round of dashboard-review fixes, all shipped
 the same extended session.** The dashboard runs at
 `/healthcare-intelligence`, live in production at adamdustin.me
 (auto-deploys from `main` via Vercel — see `DEPLOYMENT.md`). No phase is
-"next" by default — Phase 7's remaining pieces (a live Phase 6 provider
-run, retrofitting the salience layer into the remaining agents) are the
-main open options; pick based on what's asked next.
+"next" by default — Phase 7's main remaining piece is a live Phase 6
+provider run (blocked on an API key); the salience-layer retrofit is
+done (see below). Pick based on what's asked next.
 
 **What's real:**
 - **10 data sources wired**: the original 6 CMS-focused sources (all 3
@@ -79,9 +79,18 @@ main open options; pick based on what's asked next.
   only choose among and explain given candidates, never invent one).
   Falls back to the prior deterministic top-N ranking whenever no model
   is configured (true today — zero behavior change, zero cost by
-  default). Used in the MA/Part D, Marketplace, and Market/Catalyst
-  agents so far; the other 6 real agents still use their original fixed
-  top-N logic pending a go-ahead to retrofit them.
+  default). Runs in 8 of the 9 real agents as of 2026-09-24: MA/Part D,
+  Marketplace, and Market/Catalyst from the start, then retrofitted into
+  Market Growth, Claims/Utilization/Cost, Reimbursement & Payment,
+  Policy/Regulation/CMS, and Provider & Network (verified byte-identical
+  no-model output before/after). Emerging Trends is the one real agent
+  without it, deliberately — its single insight is one correlation value,
+  not a ranked candidate list. Headline claims like "largest"/"most
+  recent"/"best" are always computed from the full real ranking, never
+  from the selection; Policy's selections use `direction: "lowest"`
+  (fewest days since publication / until effective). CR4 in Provider &
+  Network is deliberately NOT routed through it (definitionally the top
+  4 by count).
 - **Naming-privacy pattern, revised 2026-09-24**: MA/Part D and
   Marketplace source files both name a real carrier/plan on every row.
   The rule is no longer "drop every named field unconditionally" — a real
@@ -316,3 +325,20 @@ genuinely new agent capability, and a live-verified feasibility finding.
   fields in `app/layout.tsx` (`metadataBase` set so the image URL
   resolves absolutely, required for external crawlers like LinkedIn's).
 - 175 tests passing (28 test files), clean `tsc`/`lint`/build/e2e.
+
+**Salience-layer retrofit** (2026-09-24, same extended session): routed
+the remaining fixed top-N selections in Market Growth, Claims/Utilization/
+Cost, Reimbursement & Payment, Policy/Regulation/CMS, and Provider &
+Network through `selectNoteworthy()` — 8 of 9 real agents now use it.
+Verified as a true zero-visible-change refactor: the full no-model output
+of all 5 agents (plus the Data Explorer overview) was snapshotted before
+the change and compared byte-for-byte afterwards — identical. Every
+"largest"/"most recent"/"best" headline claim is computed from the full
+ranking, never from the selection, so it stays true whatever a model
+picks. Policy's rule lists use `direction: "lowest"` (recency/proximity
+is the signal). CR4 deliberately stays outside the layer (it's
+definitionally the top 4). Measured: a full sweep with a model configured
+would make 16 salience calls + 1 synthesis call. 186 tests passing (28
+test files; each retrofitted agent gained a model-path test and an
+invented-id fallback test via `intelligence/salience/testProviders.ts`),
+clean `tsc`/`lint`/build/e2e.

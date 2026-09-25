@@ -21,10 +21,20 @@
  * new-program monitoring, claims-lag bridging) need semantic
  * interpretation this dataset's structured fields don't support on
  * their own, so they stay unaddressed rather than guessed at.
+ *
+ * Which rules each insight lists goes through the salience layer
+ * (intelligence/salience/selectNoteworthy.ts, retrofitted 2026-09-24).
+ * Every selection here is recency/proximity-based, so each call uses
+ * direction "lowest" (fewest days since publication, or fewest days
+ * until effective) - with no model configured that reproduces this
+ * agent's original most-recent-first / nearest-first lists exactly.
+ * Headline facts ("most recently X", "the nearest is Y") are computed
+ * from the full sorted list, never from the selection.
  */
 import { loadLatestSnapshot, SOURCE_ID, type FederalRegisterDocument } from "../../data/adapters/federalRegisterDocuments";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
+import { selectNoteworthy, type Candidate } from "../../intelligence/salience/selectNoteworthy";
 import { classifyConfidence } from "../../intelligence/trends/trend";
 import type { AgentContext, DomainAgent } from "../types";
 
@@ -49,27 +59,60 @@ function baselineConfidence() {
   return classifyConfidence({ persistenceMet: false, hasFullBaseline: false, hasExternalCorroboration: false });
 }
 
+interface SelectedRule {
+  doc: FederalRegisterDocument;
+  rationale: string;
+}
+
+/**
+ * `docs` must already be in the original display order (most recent /
+ * nearest first) - the deterministic fallback's stable sort on `metric`
+ * then leaves same-day ties in exactly that order.
+ */
+async function selectRules(
+  docs: FederalRegisterDocument[],
+  metric: (d: FederalRegisterDocument) => number,
+  describe: (d: FederalRegisterDocument) => string,
+  taskDescription: string,
+  ctx: AgentContext
+): Promise<{ selected: SelectedRule[]; source: "llm" | "deterministic" }> {
+  const candidates: Candidate[] = docs.map((d) => ({ id: d.documentNumber, label: d.title, summary: describe(d), primaryMetric: metric(d) }));
+  const { selections, source } = await selectNoteworthy({ candidates, topN: TOP_N, taskDescription, direction: "lowest" }, ctx);
+  const byId = new Map(docs.map((d) => [d.documentNumber, d]));
+  const selected = selections.filter((s) => byId.has(s.candidateId)).map((s) => ({ doc: byId.get(s.candidateId)!, rationale: s.rationale }));
+  return { selected, source };
+}
+
+function withRationale(text: string, rationale: string, source: "llm" | "deterministic"): string {
+  return source === "llm" ? `${text} — ${rationale}` : text;
+}
+
 export const policyRegulationCmsAgent: DomainAgent = {
   id: AGENT_ID,
   questionIds: ["Q073", "Q074", "Q075", "Q076", "Q077", "Q078", "Q079", "Q080", "Q081", "Q082", "Q083", "Q084"],
 
-  async run(_ctx: AgentContext): Promise<Insight[]> {
+  async run(ctx: AgentContext): Promise<Insight[]> {
     const snapshot = loadLatestSnapshot();
     if (!snapshot || snapshot.documents.length === 0) return [];
 
     const insights: Insight[] = [];
-    const finalized = buildFinalizedRulesSignal(snapshot.documents, snapshot.pulledAt, snapshot.windowStart);
+    const finalized = await buildFinalizedRulesSignal(snapshot.documents, snapshot.pulledAt, snapshot.windowStart, ctx);
     if (finalized) insights.push(finalized);
-    const proposed = buildProposedRulesSignal(snapshot.documents, snapshot.pulledAt, snapshot.windowStart);
+    const proposed = await buildProposedRulesSignal(snapshot.documents, snapshot.pulledAt, snapshot.windowStart, ctx);
     if (proposed) insights.push(proposed);
-    const effective = buildUpcomingEffectiveSignal(snapshot.documents, snapshot.pulledAt, snapshot.windowStart);
+    const effective = await buildUpcomingEffectiveSignal(snapshot.documents, snapshot.pulledAt, snapshot.windowStart, ctx);
     if (effective) insights.push(effective);
 
     return insights;
   },
 };
 
-function buildFinalizedRulesSignal(documents: FederalRegisterDocument[], pulledAt: string, windowStart: string): Insight | null {
+async function buildFinalizedRulesSignal(
+  documents: FederalRegisterDocument[],
+  pulledAt: string,
+  windowStart: string,
+  ctx: AgentContext
+): Promise<Insight | null> {
   const stamp = pulledAt.slice(0, 10);
   const rules = documents.filter((d) => d.type === "Rule").sort((a, b) => (a.publicationDate < b.publicationDate ? 1 : -1));
   if (rules.length === 0) return null;
@@ -78,8 +121,15 @@ function buildFinalizedRulesSignal(documents: FederalRegisterDocument[], pulledA
   for (const r of rules) byMonth.set(monthKey(r.publicationDate), (byMonth.get(monthKey(r.publicationDate)) ?? 0) + 1);
   const monthBars = Array.from(byMonth.entries()).sort((a, b) => (a[0] < b[0] ? -1 : 1));
 
-  const top = rules.slice(0, TOP_N);
-  const summary = top.map((r) => `"${r.title}" (published ${r.publicationDate}, effective ${r.effectiveOn ?? "date not yet set"})`).join("; ");
+  const describe = (r: FederalRegisterDocument) => `published ${r.publicationDate}, effective ${r.effectiveOn ?? "date not yet set"}`;
+  const { selected, source } = await selectRules(
+    rules,
+    (r) => daysBetween(stamp, r.publicationDate),
+    describe,
+    "recently finalized CMS rules this cycle",
+    ctx
+  );
+  const summary = selected.map(({ doc, rationale }) => withRationale(`"${doc.title}" (${describe(doc)})`, rationale, source)).join("; ");
   const confidence = baselineConfidence();
 
   const insight: Insight = {
@@ -97,7 +147,10 @@ function buildFinalizedRulesSignal(documents: FederalRegisterDocument[], pulledA
     },
     drivers: [
       {
-        description: `Real finalized rules from the Federal Register, most recent first: ${summary}.`,
+        description:
+          source === "llm"
+            ? `Real finalized rules from the Federal Register, selected by model-reasoned salience ranking over all ${rules.length}: ${summary}.`
+            : `Real finalized rules from the Federal Register, most recent first: ${summary}.`,
         supportingEvidenceIds: ["ev-fr-rules"],
         relationship: "correlation",
       },
@@ -134,16 +187,32 @@ function buildFinalizedRulesSignal(documents: FederalRegisterDocument[], pulledA
   return validateInsight(insight);
 }
 
-function buildProposedRulesSignal(documents: FederalRegisterDocument[], pulledAt: string, windowStart: string): Insight | null {
+async function buildProposedRulesSignal(
+  documents: FederalRegisterDocument[],
+  pulledAt: string,
+  windowStart: string,
+  ctx: AgentContext
+): Promise<Insight | null> {
   const stamp = pulledAt.slice(0, 10);
   const proposed = documents.filter((d) => d.type === "Proposed Rule").sort((a, b) => (a.publicationDate < b.publicationDate ? 1 : -1));
   if (proposed.length === 0) return null;
 
   const stillOpen = proposed.filter((d) => d.commentsCloseOn && d.commentsCloseOn >= stamp);
-  const summary = proposed
-    .slice(0, TOP_N)
-    .map((r) => `"${r.title}" (comment period ${r.commentsCloseOn ? (r.commentsCloseOn >= stamp ? `open through ${r.commentsCloseOn}` : `closed ${r.commentsCloseOn}`) : "date not published"})`)
-    .join("; ");
+  const commentStatus = (r: FederalRegisterDocument) =>
+    `comment period ${r.commentsCloseOn ? (r.commentsCloseOn >= stamp ? `open through ${r.commentsCloseOn}` : `closed ${r.commentsCloseOn}`) : "date not published"}`;
+  const daysSincePublished = (r: FederalRegisterDocument) => daysBetween(stamp, r.publicationDate);
+  const describe = (r: FederalRegisterDocument) => `published ${r.publicationDate}, ${commentStatus(r)}`;
+  const task = "proposed (not yet final) CMS rules this cycle";
+  const { selected, source } = await selectRules(proposed, daysSincePublished, describe, task, ctx);
+  // The chart only plots rules with a real comment-close date, so it draws from that narrower candidate pool.
+  const { selected: chartSelected, source: chartSource } = await selectRules(
+    proposed.filter((r) => r.commentsCloseOn),
+    daysSincePublished,
+    describe,
+    `${task}, by comment-period status`,
+    ctx
+  );
+  const summary = selected.map(({ doc, rationale }) => withRationale(`"${doc.title}" (${commentStatus(doc)})`, rationale, source)).join("; ");
   const confidence = baselineConfidence();
 
   const insight: Insight = {
@@ -161,7 +230,10 @@ function buildProposedRulesSignal(documents: FederalRegisterDocument[], pulledAt
     },
     drivers: [
       {
-        description: `Real proposed (not yet final) rules from the Federal Register, most recent first: ${summary}.`,
+        description:
+          source === "llm"
+            ? `Real proposed (not yet final) rules from the Federal Register, selected by model-reasoned salience ranking over all ${proposed.length}: ${summary}.`
+            : `Real proposed (not yet final) rules from the Federal Register, most recent first: ${summary}.`,
         supportingEvidenceIds: ["ev-fr-proposed"],
         relationship: "correlation",
       },
@@ -191,29 +263,34 @@ function buildProposedRulesSignal(documents: FederalRegisterDocument[], pulledAt
     generatingAgent: AGENT_ID,
     chart: {
       type: "bar",
-      title: "Days since comment period closed (negative = still open), proposed CMS rules",
+      title:
+        chartSource === "llm"
+          ? "Days since comment period closed (negative = still open), proposed CMS rules selected as most noteworthy"
+          : "Days since comment period closed (negative = still open), proposed CMS rules",
       unit: "days",
-      bars: proposed
-        .filter((r) => r.commentsCloseOn)
-        .slice(0, TOP_N)
-        .map((r) => ({ label: r.documentNumber, value: daysBetween(stamp, r.commentsCloseOn as string) })),
+      bars: chartSelected.map(({ doc }) => ({ label: doc.documentNumber, value: daysBetween(stamp, doc.commentsCloseOn as string) })),
     },
   };
 
   return validateInsight(insight);
 }
 
-function buildUpcomingEffectiveSignal(documents: FederalRegisterDocument[], pulledAt: string, windowStart: string): Insight | null {
+async function buildUpcomingEffectiveSignal(
+  documents: FederalRegisterDocument[],
+  pulledAt: string,
+  windowStart: string,
+  ctx: AgentContext
+): Promise<Insight | null> {
   const stamp = pulledAt.slice(0, 10);
   const upcoming = documents
     .filter((d) => d.effectiveOn && d.effectiveOn >= stamp)
     .sort((a, b) => ((a.effectiveOn as string) < (b.effectiveOn as string) ? -1 : 1));
   if (upcoming.length === 0) return null;
 
-  const summary = upcoming
-    .slice(0, TOP_N)
-    .map((r) => `"${r.title}" (effective ${r.effectiveOn}, ${daysBetween(r.effectiveOn as string, stamp)} days out)`)
-    .join("; ");
+  const daysOut = (r: FederalRegisterDocument) => daysBetween(r.effectiveOn as string, stamp);
+  const describe = (r: FederalRegisterDocument) => `effective ${r.effectiveOn}, ${daysOut(r)} days out`;
+  const { selected, source } = await selectRules(upcoming, daysOut, describe, "upcoming CMS rule effective dates (operational-readiness calendar) this cycle", ctx);
+  const summary = selected.map(({ doc, rationale }) => withRationale(`"${doc.title}" (${describe(doc)})`, rationale, source)).join("; ");
   const confidence = baselineConfidence();
 
   const insight: Insight = {
@@ -231,7 +308,10 @@ function buildUpcomingEffectiveSignal(documents: FederalRegisterDocument[], pull
     },
     drivers: [
       {
-        description: `Real finalized rules with a future effective date, nearest first: ${summary}.`,
+        description:
+          source === "llm"
+            ? `Real finalized rules with a future effective date, selected by model-reasoned salience ranking over all ${upcoming.length}: ${summary}.`
+            : `Real finalized rules with a future effective date, nearest first: ${summary}.`,
         supportingEvidenceIds: ["ev-fr-effective"],
         relationship: "correlation",
       },
@@ -266,11 +346,11 @@ function buildUpcomingEffectiveSignal(documents: FederalRegisterDocument[], pull
       // title, its real effective date, and a real link to the Federal
       // Register's own page for it - never a fabricated summary.
       type: "list",
-      title: "Upcoming finalized CMS rules, by effective date",
-      items: upcoming.slice(0, TOP_N).map((r) => ({
-        label: r.title,
-        detail: `Effective ${r.effectiveOn} (${daysBetween(r.effectiveOn as string, stamp)} days out)`,
-        url: r.htmlUrl,
+      title: source === "llm" ? "Upcoming finalized CMS rules selected as most noteworthy" : "Upcoming finalized CMS rules, by effective date",
+      items: selected.map(({ doc }) => ({
+        label: doc.title,
+        detail: `Effective ${doc.effectiveOn} (${daysOut(doc)} days out)`,
+        url: doc.htmlUrl,
       })),
     },
   };

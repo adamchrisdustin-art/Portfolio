@@ -654,7 +654,9 @@ pulled snapshot; the salience/triage layer
 (`intelligence/salience/selectNoteworthy.ts`) is used for the ranked
 NIH-award and per-company SEC selections, same pattern as MA/Part D and
 Marketplace — it may only choose among and briefly explain real
-candidates, never invent one.
+candidates, never invent one. (As of 2026-09-24 this layer runs in 8 of
+the 9 real agents — every one except Emerging Trends, which has no
+ranked candidate list to select from.)
 
 **Four honesty rules unique to this agent (binding, verified live
 2026-09-24, not assumed):**

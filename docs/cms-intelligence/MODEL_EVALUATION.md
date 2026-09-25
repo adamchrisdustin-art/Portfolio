@@ -65,8 +65,10 @@ places can call an LLM as of 2026-09-23** — `synthesis.ts`'s
 executive-narrative step (gated, 300-token output cap, once per
 `fullSweep()`) and the new salience/triage layer
 (`intelligence/salience/selectNoteworthy.ts`, gated, 500-token output
-cap, called once per agent that's been retrofitted to use it — currently
-just the MA/Part D agent's plan-type mix insight). No agent computes a
+cap, called once per ranked selection that has more real candidates
+than it shows — as of 2026-09-24, 8 of the 9 real agents use it, for
+16 selection calls per full sweep, measured against the real committed
+data). No agent computes a
 *number* via an LLM call; every real fact is still deterministic code -
 the LLM step only selects among and explains real, already-computed
 candidates. At current verified pricing that's still a fraction of a
@@ -85,10 +87,14 @@ not about running out.
 
 Answering Adam's direct question (2026-09-23): once a key is connected
 and the pipeline runs unattended, the real cost driver is **run
-frequency**, not per-call price — even a hypothetical future where every
-one of the 11 agents does its own salience-reasoning call (not just
-MA/Part D today), plus the existing synthesis call, stays cheap at this
-project's committed cadence:
+frequency**, not per-call price — even with every agent doing its own
+salience-reasoning call (8 of 9 real agents already can, as of
+2026-09-24), plus the existing synthesis call, this stays cheap at this
+project's committed cadence. The table below was sized at ~12 calls per
+sweep (one per agent plus synthesis); the real measured count after the
+retrofit is 17 (16 salience + 1 synthesis — some insights have more than
+one ranked list), so scale these figures by ~1.4× — still well under the
+recommended budget below:
 
 | Cadence | Calls/year (≈11 agents + 1 synthesis) | Est. cost/year (Haiku) | Est. cost/year (Sonnet) |
 |---|---|---|---|

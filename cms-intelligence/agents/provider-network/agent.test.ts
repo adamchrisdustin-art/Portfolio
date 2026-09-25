@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { validateInsight } from "../../intelligence/evidence/validate";
+import { bottomPickingProvider, inventingProvider, TEST_RATIONALE, withoutGeneratedAt } from "../../intelligence/salience/testProviders";
 import { providerNetworkAgent } from "./agent";
 
 describe("providerNetworkAgent", () => {
@@ -74,5 +75,51 @@ describe("providerNetworkAgent", () => {
     if (trendInsight?.signalType === "trend") {
       expect(trendInsight.headline).toMatch(/persistent improvement/);
     }
+  });
+
+  it("with a model configured, only the donut breakout and state selections change - CR4, Q125 and Q042/Q043 are untouched", async () => {
+    const baseline = await providerNetworkAgent.run({ modelProvider: null });
+    const provider = bottomPickingProvider();
+    const insights = await providerNetworkAgent.run({ modelProvider: provider });
+    const byQ = (list: typeof insights, q: string) => list.find((i) => i.questionId === q)!;
+
+    expect(provider.prompts).toHaveLength(4); // Q038 donut, Q126, Q127, Q128
+    for (const insight of insights) expect(() => validateInsight(insight)).not.toThrow();
+    for (const q of ["Q125", "Q042", "Q043"]) expect(withoutGeneratedAt([byQ(insights, q)])).toEqual(withoutGeneratedAt([byQ(baseline, q)]));
+
+    // CR4 is definitionally the top 4 by count - never a model judgment.
+    const ownership = byQ(insights, "Q038");
+    expect(ownership.headline).toBe(byQ(baseline, "Q038").headline);
+    expect(ownership.magnitude).toEqual(byQ(baseline, "Q038").magnitude);
+    const donutBefore = byQ(baseline, "Q038").chart;
+    if (ownership.chart?.type !== "donut" || donutBefore?.type !== "donut") throw new Error("expected donuts");
+    const sum = (slices: { value: number }[]) => slices.reduce((s, v) => s + v.value, 0);
+    expect(sum(ownership.chart.slices)).toBe(sum(donutBefore.slices)); // "Other" absorbs whatever wasn't broken out
+    expect(ownership.chart.slices.map((s) => s.label)).not.toEqual(donutBefore.slices.map((s) => s.label));
+
+    for (const q of ["Q126", "Q127"]) {
+      const insight = byQ(insights, q);
+      const before = byQ(baseline, q).chart;
+      if (insight.chart?.type !== "boxplot" || before?.type !== "boxplot") throw new Error("expected boxplots");
+      expect(insight.headline).toMatch(/selected as most noteworthy/);
+      expect(new Set(insight.chart.boxes.map((b) => b.label))).not.toEqual(new Set(before.boxes.map((b) => b.label)));
+      for (const box of insight.chart.boxes) expect(box.sampleSize).toBeGreaterThanOrEqual(20);
+      // Boxes stay sorted by median so the headline's highest/lowest labels are true of what's shown.
+      const medians = insight.chart.boxes.map((b) => b.median);
+      expect(medians).toEqual([...medians].sort((a, b) => b - a));
+      expect(insight.drivers[0].description).toContain(TEST_RATIONALE);
+    }
+
+    // "Best current score" in Q128's headline comes from the full ranking, not the selection.
+    const trend = byQ(insights, "Q128");
+    expect(trend.headline).toBe(byQ(baseline, "Q128").headline);
+    expect(trend.magnitude).toEqual(byQ(baseline, "Q128").magnitude);
+    expect(trend.drivers[0].description).toContain(TEST_RATIONALE);
+  });
+
+  it("falls back to its exact no-model output when the model invents a candidate", async () => {
+    const baseline = await providerNetworkAgent.run({ modelProvider: null });
+    const insights = await providerNetworkAgent.run({ modelProvider: inventingProvider() });
+    expect(withoutGeneratedAt(insights)).toEqual(withoutGeneratedAt(baseline));
   });
 });

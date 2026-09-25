@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { validateInsight } from "../../intelligence/evidence/validate";
+import { bottomPickingProvider, inventingProvider, withoutGeneratedAt } from "../../intelligence/salience/testProviders";
 import { claimsUtilizationCostAgent } from "./agent";
 
 /** Runs against the real CMS Home Health Care Agencies snapshot already committed to this repo. */
@@ -33,5 +34,31 @@ describe("claimsUtilizationCostAgent", () => {
         }
       }
     }
+  });
+
+  it("with a model configured, boxplots only real states the model picked, and the national headline is unaffected by that selection", async () => {
+    const [baseline] = await claimsUtilizationCostAgent.run({ modelProvider: null });
+    const provider = bottomPickingProvider();
+    const [insight] = await claimsUtilizationCostAgent.run({ modelProvider: provider });
+
+    expect(provider.prompts).toHaveLength(1);
+    expect(() => validateInsight(insight)).not.toThrow();
+    expect(insight.headline).toBe(baseline.headline);
+    expect(insight.magnitude).toEqual(baseline.magnitude);
+    if (insight.chart?.type !== "boxplot" || baseline.chart?.type !== "boxplot") throw new Error("expected boxplots");
+    expect(insight.chart.title).toMatch(/selected as most noteworthy/);
+    const labels = insight.chart.boxes.map((b) => b.label);
+    expect(new Set(labels)).not.toEqual(new Set(baseline.chart.boxes.map((b) => b.label)));
+    for (const box of insight.chart.boxes) {
+      expect(provider.prompts[0]).toContain(`id="${box.label}"`);
+      expect(box.sampleSize).toBeGreaterThanOrEqual(30);
+    }
+    expect(insight.drivers[0].description).toMatch(/model-reasoned salience ranking/);
+  });
+
+  it("falls back to its exact no-model output when the model invents a candidate", async () => {
+    const baseline = await claimsUtilizationCostAgent.run({ modelProvider: null });
+    const insights = await claimsUtilizationCostAgent.run({ modelProvider: inventingProvider() });
+    expect(withoutGeneratedAt(insights)).toEqual(withoutGeneratedAt(baseline));
   });
 });

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { validateInsight } from "../../intelligence/evidence/validate";
+import { bottomPickingProvider, inventingProvider, TEST_RATIONALE, withoutGeneratedAt } from "../../intelligence/salience/testProviders";
 import { marketGrowthAgent } from "./agent";
 
 /** Runs against real committed data: Hospital General Information + Home Health Care Agencies. */
@@ -37,5 +38,30 @@ describe("marketGrowthAgent", () => {
         }
       }
     }
+  });
+
+  it("with a model configured, charts only real states the model picked, while 'most concentrated'/'highest' headline claims still come from the full real ranking", async () => {
+    const baseline = await marketGrowthAgent.run({ modelProvider: null });
+    const provider = bottomPickingProvider();
+    const insights = await marketGrowthAgent.run({ modelProvider: provider });
+
+    expect(provider.prompts).toHaveLength(2);
+    expect(insights).toHaveLength(baseline.length);
+    for (const [i, insight] of insights.entries()) {
+      expect(() => validateInsight(insight)).not.toThrow();
+      expect(insight.headline).toBe(baseline[i].headline);
+      expect(insight.magnitude).toEqual(baseline[i].magnitude);
+      const before = baseline[i].chart;
+      if (insight.chart?.type !== "bar" || before?.type !== "bar") throw new Error("expected bar charts");
+      expect(insight.chart.bars.map((b) => b.label)).not.toEqual(before.bars.map((b) => b.label));
+      for (const bar of insight.chart.bars) expect(provider.prompts[i]).toContain(`id="${bar.label}"`);
+      expect(insight.drivers[0].description).toContain(TEST_RATIONALE);
+    }
+  });
+
+  it("falls back to its exact no-model output when the model invents a candidate", async () => {
+    const baseline = await marketGrowthAgent.run({ modelProvider: null });
+    const insights = await marketGrowthAgent.run({ modelProvider: inventingProvider() });
+    expect(withoutGeneratedAt(insights)).toEqual(withoutGeneratedAt(baseline));
   });
 });

@@ -267,9 +267,9 @@ export default async function HealthcareIntelligencePage() {
                 real provider — no API key is configured anywhere for this project yet.
               </li>
               <li>
-                The salience/triage reasoning layer (choosing which real findings matter most) runs in only 3 of the
-                9 real agents so far (Medicare Advantage/Part D, Marketplace, Market/Catalyst); the rest still use a
-                fixed top-N rule.
+                The salience/triage reasoning layer (choosing which real findings matter most) runs in 8 of the 9 real
+                agents, but with no model provider configured it always falls back to the same deterministic top-N
+                ranking — so every chart you see today is still a fixed ranking, not a model&apos;s judgment.
               </li>
               <li>
                 The physician dataset is a 5-state sample, not the full national file; the Federal Register feed,
