@@ -25,4 +25,7 @@ export const SOURCE_LABELS: Record<string, SourceLabel> = {
   "openfda:drugsfda-novel-approvals": { name: "openFDA novel drug approvals", group: "other-federal", url: "https://open.fda.gov/apis/drug/drugsfda/" },
   "nih-reporter:project-awards": { name: "NIH RePORTER award notices", group: "other-federal", url: "https://reporter.nih.gov/" },
   "clinicaltrials-gov:phase3-results": { name: "ClinicalTrials.gov Phase 3 results postings", group: "other-federal", url: "https://clinicaltrials.gov/" },
+  "cms:provider-of-services": { name: "Provider of Services files (certified facilities and beds)", group: "cms", url: "https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/provider-of-services-file-quality-improvement-and-evaluation-system" },
+  "cms:facility-change-of-ownership": { name: "Hospital and SNF Change of Ownership", group: "cms", url: "https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/hospital-change-of-ownership" },
+  "cms:facility-all-owners": { name: "Hospital and SNF All Owners", group: "cms", url: "https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/hospital-all-owners" },
 };

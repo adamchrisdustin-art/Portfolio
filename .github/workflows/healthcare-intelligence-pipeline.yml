@@ -74,6 +74,13 @@ jobs:
       - name: Pull ClinicalTrials.gov Phase 3 results postings
         run: npx tsx cms-intelligence/data/adapters/pull-clinicaltrials-results.ts
 
+      - name: Summarize CMS Provider of Services files (QIES and iQIES, new quarters only)
+        # Past quarters are already committed; a new quarter takes about 10 seconds per file.
+        run: npx tsx cms-intelligence/data/adapters/pull-provider-of-services.ts
+
+      - name: Pull CMS hospital and SNF change of ownership and private equity owner files
+        run: npx tsx cms-intelligence/data/adapters/pull-facility-ownership.ts
+
       - name: Check watched datasets for new data (flags only, never pulls)
         # A watch-list network failure must never block the data pull.
         continue-on-error: true

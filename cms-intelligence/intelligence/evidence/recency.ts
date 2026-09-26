@@ -45,6 +45,9 @@ export const SOURCE_TIMING: Record<string, SourceTiming> = {
   "openfda:drugsfda-novel-approvals": { updateIntervalMonths: 1, publicationLagMonths: 0 },
   "nih-reporter:project-awards": { updateIntervalMonths: 1, publicationLagMonths: 0 },
   "clinicaltrials-gov:phase3-results": { updateIntervalMonths: 1, publicationLagMonths: 0 },
+  "cms:provider-of-services": { updateIntervalMonths: 3, publicationLagMonths: 2 },
+  "cms:facility-change-of-ownership": { updateIntervalMonths: 3, publicationLagMonths: 1 },
+  "cms:facility-all-owners": { updateIntervalMonths: 1, publicationLagMonths: 0 },
 };
 
 export const AGING_AFTER_MONTHS = 12;

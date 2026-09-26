@@ -13,3 +13,6 @@ const NAMES: Record<string, string> = {
 export function stateCode(name: string | null | undefined): string | null {
   return NAMES[(name ?? "").trim().replace(/\s+/g, " ").toLowerCase()] ?? null;
 }
+
+/** The 50 states and DC as two-letter codes, for filtering sources that also report territories. */
+export const STATE_CODES: ReadonlySet<string> = new Set(Object.values(NAMES));

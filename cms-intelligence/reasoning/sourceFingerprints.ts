@@ -31,6 +31,9 @@ export const SOURCE_ID_BY_DATASET: Record<string, string> = {
   "medicare-physician-by-service-summary": "cms:medicare-physician-by-service",
   "nih-reporter-awards": "nih-reporter:project-awards",
   "sec-edgar-healthcare-filings": "sec-edgar:healthcare-8k-filings",
+  "provider-of-services-summary": "cms:provider-of-services",
+  "facility-change-of-ownership": "cms:facility-change-of-ownership",
+  "facility-private-equity-owners": "cms:facility-all-owners",
 };
 
 export function toSourceIds(datasets: string[]): string[] {
