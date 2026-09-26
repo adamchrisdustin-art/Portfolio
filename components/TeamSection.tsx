@@ -45,7 +45,7 @@ function MemberTile({ member }: { member: TeamMember }) {
 
 export default function TeamSection() {
   return (
-    <section className="container" style={{ padding: "32px 24px", borderTop: "1px solid var(--border)" }}>
+    <section id="team" className="container page-section" style={{ padding: "32px 24px", borderTop: "1px solid var(--border)" }}>
       <p className="eyebrow" style={{ marginBottom: 6 }}>
         Meet the team
       </p>

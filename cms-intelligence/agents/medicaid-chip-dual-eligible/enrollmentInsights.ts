@@ -40,7 +40,7 @@ const monthEnd = (month: string) => {
 const COMMON_LIMITATIONS = [
   "State-reported counts from each state's eligibility system, not T-MSIS claims data; states differ in reporting cadence and definitions, so each state figure names its own report month and status.",
   "Preliminary reports run lower than the final reports that replace them about a month later; every comparison here pairs preliminary with preliminary or final with final.",
-  "No disenrollment or renewal counts in this file, so these are net changes, not churn (Q057).",
+  "No disenrollment or renewal counts in this file, so these are net changes, not churn.",
   "The file has a September 2013 baseline and then continuous months from June 2017, so monthly history starts in June 2017.",
 ];
 
@@ -152,7 +152,7 @@ function nationalTrendInsight(snapshot: MedicaidEnrollmentSnapshot, month: strin
         relationship: "correlation",
       },
     ],
-    businessRelevance: "Medicaid is the largest coverage program by enrollment; a sustained national decline shrinks managed Medicaid membership for every state contractor and can push people toward the Marketplace or uninsurance (Q056, Q061).",
+    businessRelevance: "Medicaid is the largest coverage program by enrollment; a sustained national decline shrinks managed Medicaid membership for every state contractor and can push people toward the Marketplace or uninsurance.",
     evidence: [evidenceFor(snapshot, "ev-medicaid-national", [series[0].month, month])],
     contradictoryEvidence: [],
     confidence: confidence.level,
@@ -211,7 +211,7 @@ async function stateChangeInsight(snapshot: MedicaidEnrollmentSnapshot, month: s
         relationship: "correlation",
       },
     ],
-    businessRelevance: "Where Medicaid membership is shrinking or growing fastest - the states where managed Medicaid contractors' volume, and the risk mix of who stays enrolled, are shifting most (Q056, Q065).",
+    businessRelevance: "Where Medicaid membership is shrinking or growing fastest - the states where managed Medicaid contractors' volume, and the risk mix of who stays enrolled, are shifting most.",
     evidence: [evidenceFor(snapshot, "ev-medicaid-states", [yearEarlier(month), month])],
     contradictoryEvidence: [],
     confidence: confidence.level,

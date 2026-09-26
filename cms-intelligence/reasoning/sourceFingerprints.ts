@@ -89,6 +89,14 @@ export function unchangedSinceBySource(dirs: Record<string, string> = snapshotDi
   return result;
 }
 
+/** The most recent pull date across every source's snapshots, from the snapshot file names; null before any pull. */
+export function latestPullDate(dirs: Record<string, string> = snapshotDirs()): string | null {
+  const dates = Object.values(dirs).flatMap((dir) =>
+    fs.readdirSync(dir).filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f)).map((f) => f.slice(0, 10))
+  );
+  return dates.length === 0 ? null : dates.sort()[dates.length - 1];
+}
+
 /** Sources that are new or whose latest content differs from `previous`. */
 export function changedSources(previous: Fingerprints | null, current: Fingerprints): string[] {
   return Object.keys(current)

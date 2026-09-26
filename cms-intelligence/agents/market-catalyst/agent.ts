@@ -211,10 +211,10 @@ async function buildAwardCountSignal(
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real NIH RePORTER snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
-      `Bounded to the top ${awards.length} awards by dollar amount out of ${totalAvailable.toLocaleString()} real total award notices in this window - this list names the largest awards; totals and institute breakdowns cover every award (see the Q114/Q115 insights).`,
+      `Bounded to the top ${awards.length} awards by dollar amount out of ${totalAvailable.toLocaleString()} real total award notices in this window - this list names the largest awards; the NIH total and by-institute findings cover every award.`,
       "An award notice is a real, real-dollar commitment, not a claim about the research's eventual clinical or commercial outcome.",
       "Single snapshot — a baseline reading, not yet a trend across periods.",
     ],
@@ -443,7 +443,7 @@ async function buildTopRecipientOrgsSignal(
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real NIH RePORTER snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       `Covers only the ${awards.length} sampled awards (top by dollar amount) out of ${totalAvailable.toLocaleString()} total real award notices in this window - an organization with many small awards outside this sample would be undercounted here.`,
@@ -522,7 +522,7 @@ function buildResearchThemesSignal(awards: NihAward[], pulledAt: string, windowS
       },
     ],
     businessRelevance:
-      "A real, computed read on where NIH-funded research attention is concentrating within this sample - distinct from Q113-Q116's dollar/org/agency rankings, this shows *what* the funded research is actually about, which is the signal a payer executive tracking pipeline/research trends would want.",
+      "Where NIH-funded research attention is concentrating within this sample - distinct from the dollar, organization and institute rankings, this shows *what* the funded research is actually about, which is the signal a payer executive tracking pipeline/research trends would want.",
     evidence: [
       {
         id: "ev-nih-themes",
@@ -533,11 +533,11 @@ function buildResearchThemesSignal(awards: NihAward[], pulledAt: string, windowS
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real pull of NIH RePORTER's \`terms\` field this agent has used - no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a theme counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       "NIH RePORTER's real `terms` field is a keyword-tagging system that generates many near-synonymous phrasings for the same underlying real concept (e.g. \"AD risk\", \"Alzheimer risk\", and \"Alzheimer's disease risk\" all appear as separate entries below when present) - this insight does NOT merge synonyms, so a single real research theme may appear as several adjacent, similar-looking entries rather than one combined count. Read the list as raw real keyword tags, not a finalized topic taxonomy.",
-      `Covers only the ${sampleSize} sampled awards (top by dollar amount, see Q113's own limitation), not the full real award population for this window - a theme common among smaller awards outside this sample would not appear here.`,
+      `Covers only the ${sampleSize} sampled awards (the largest by dollar amount), not every award for this window - a theme common among smaller awards outside this sample would not appear here.`,
       `The ${(GENERIC_TERM_MAX_FRACTION * 100).toFixed(0)}%-of-sample generic-term cutoff is a disclosed, documented statistical rule (excludes administrative boilerplate like "Research" or "Data"), not a hand-picked stoplist of specific words.`,
       "A term's presence describes what the award's own real record was tagged with, not this project's independent judgment about the research's actual scientific content.",
     ],
@@ -598,7 +598,7 @@ function buildNmeApprovalCountSignal(approvals: FdaApproval[], pulledAt: string,
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real openFDA snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       "Never uses the term \"breakthrough\" — openFDA's drugsfda dataset has no such field. Only the real `submission_class_code` (e.g. \"TYPE 1\") and `review_priority` (e.g. \"PRIORITY\" vs. \"STANDARD\") fields are used verbatim.",
@@ -649,7 +649,7 @@ function buildReviewPrioritySplitSignal(approvals: FdaApproval[], pulledAt: stri
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real openFDA snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       "PRIORITY review reflects FDA's own review-timeline designation, not a clinical-efficacy or safety judgment about the drug.",
@@ -710,7 +710,7 @@ function buildApprovalsByMonthSignal(approvals: FdaApproval[], pulledAt: string,
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real openFDA snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       `Small real monthly counts (${approvals.length} approvals total across ${monthBars.length} months) — month-to-month variation here is not yet statistically meaningful.`,
@@ -810,7 +810,7 @@ async function buildItemCountByCompanySignal(
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real SEC EDGAR snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       `Bounded to a fixed ${TRACKED_COMPANIES.length}-company watchlist (${TRACKED_COMPANIES.map((c) => c.name).join(", ")}) — not the full health-insurance sector or every publicly traded healthcare company.`,
@@ -898,7 +898,7 @@ function buildFilingTypeMixSignal(filings: SecFiling[], pulledAt: string, window
       },
     ],
     businessRelevance:
-      "An industry-wide 'what kind of activity is happening' read across the whole tracked watchlist at once - distinct from the per-company breakdowns (Q120, Q122), which show who is filing, not what kind of activity dominates market-wide.",
+      "An industry-wide 'what kind of activity is happening' read across the whole tracked watchlist at once - distinct from the per-company findings, which show who is filing, not what kind of activity dominates market-wide.",
     evidence: [
       {
         id: "ev-sec-filing-mix",
@@ -909,7 +909,7 @@ function buildFilingTypeMixSignal(filings: SecFiling[], pulledAt: string, window
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real SEC EDGAR snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       `Bounded to a fixed ${TRACKED_COMPANIES.length}-company watchlist — not the full health-insurance sector.`,
@@ -976,7 +976,7 @@ function buildTrialResultsCountSignal(trials: ClinicalTrialResult[], pulledAt: s
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real ClinicalTrials.gov snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       "A results posting encodes NO success/failure judgment — this insight never says \"positive result,\" only that results were posted, by whom, with what real enrollment number.",
@@ -1017,7 +1017,7 @@ function buildEnrollmentDistributionSignal(trials: ClinicalTrialResult[], pulled
       },
     ],
     businessRelevance:
-      "Trial scale (enrollment) is a real proxy for a program's evidentiary weight and eventual real-world population relevance - a useful distributional read alongside the results-posting count (Q123) for prioritizing which newly reported trials merit closer clinical/formulary review.",
+      "Trial scale (enrollment) is a proxy for a program's evidentiary weight and eventual real-world population relevance - a useful read alongside the results-posting count for prioritizing which newly reported trials merit closer clinical/formulary review.",
     evidence: [
       {
         id: "ev-ct-enrollment-distribution",
@@ -1028,7 +1028,7 @@ function buildEnrollmentDistributionSignal(trials: ClinicalTrialResult[], pulled
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real ClinicalTrials.gov snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       "Enrollment size is a real proxy for trial scale, not a measure of clinical significance or result direction.",

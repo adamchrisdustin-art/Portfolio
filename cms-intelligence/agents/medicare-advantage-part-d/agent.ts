@@ -126,7 +126,7 @@ async function buildPlanTypeMixSignal(
 
   const insight: Insight = {
     id: `sig-ma-partd-${reportPeriod}-plan-type-mix`,
-    headline: `${largestByEnrollment.label} is the largest Medicare Advantage/Part D plan type by enrollment (${((largestByEnrollment.primaryMetric / totalEnrollment) * 100).toFixed(0)}% of ${totalEnrollment.toLocaleString()} total enrollees), per CMS's ${reportPeriod} report.`,
+    headline: `${largestByEnrollment.label} is the largest plan type across Medicare Advantage and standalone Part D combined (${((largestByEnrollment.primaryMetric / totalEnrollment) * 100).toFixed(0)}% of ${totalEnrollment.toLocaleString()} total enrollees), per CMS's ${reportPeriod} report.`,
     questionId: "Q049",
     signalType: "baseline",
     period: { start: `${reportPeriod}-01`, end: `${reportPeriod}-01` },
@@ -146,7 +146,7 @@ async function buildPlanTypeMixSignal(
       },
     ],
     businessRelevance:
-      "A real, national baseline read on how Medicare Advantage/Part D enrollment is distributed across plan structures (HMO, PPO, PDP, etc.) - the starting point for any future plan-structure or benefit-design competitive read (Q049), never attributed to a specific named carrier by design (see this agent's file header).",
+      "How Medicare Advantage and Part D enrollment splits across plan structures (HMO, PPO, standalone drug plans) - the starting point for any plan-design or network-strategy read.",
     evidence: [
       {
         id: "ev-ma-partd-snapshot",
@@ -157,15 +157,15 @@ async function buildPlanTypeMixSignal(
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real snapshot of this dataset this agent has pulled - no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} A single month's mix; the plan-type shift finding compares the same month a year apart.`,
     freshness: { dataAsOf: `${reportPeriod}-01`, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
-      "Plan-level enrollment aggregated nationally - no state/county geography is in this file, so Q046-Q048 (geographic enrollment/penetration questions) stay unaddressed by this insight.",
-      "Never attributes enrollment to a named organization or plan - only category-level Organization Type/Plan Type fields are used, by deliberate design (see this agent's file header).",
+      "Plan-level enrollment aggregated nationally - no state or county geography in this file.",
+      "Combines Medicare Advantage with standalone Part D drug plans, so shares here differ from Medicare Advantage-only shares.",
       `${suppressedRowCount} of ${rowCount + suppressedRowCount} real plan rows were suppressed by CMS itself (≤10 enrollees, HIPAA small-cell rule) and excluded, not imputed.`,
       "Single snapshot - a baseline reading, not yet a trend across periods.",
     ],
-    nextSignal: "Watch this plan-type mix across a second real pull for the first genuine month-over-month shift, which is what would move this from baseline to a real trend read.",
+    nextSignal: "Watch the January report, when new plan-year choices take effect and most plan-type movement happens.",
     recommendedInternalValidation: "Not applicable - this is public aggregate enrollment data, not tied to any specific payer's book of business.",
     sourceIds: [SOURCE_ID],
     generatingAgent: AGENT_ID,
@@ -225,7 +225,7 @@ async function buildParentOrganizationRankingSignal(
 
   const insight: Insight = {
     id: `sig-ma-partd-${reportPeriod}-parent-org-ranking`,
-    headline: `${leader.label} leads Medicare Advantage/Part D enrollment with ${leader.primaryMetric.toLocaleString()} enrollees (${((leader.primaryMetric / totalEnrollment) * 100).toFixed(1)}% of ${totalEnrollment.toLocaleString()} national total), per CMS's ${reportPeriod} report.`,
+    headline: `${leader.label} leads combined Medicare Advantage and standalone Part D enrollment with ${leader.primaryMetric.toLocaleString()} enrollees (${((leader.primaryMetric / totalEnrollment) * 100).toFixed(1)}% of ${totalEnrollment.toLocaleString()} MA and Part D enrollees), per CMS's ${reportPeriod} report.`,
     questionId: "Q046",
     signalType: "baseline",
     period: { start: `${reportPeriod}-01`, end: `${reportPeriod}-01` },
@@ -245,7 +245,7 @@ async function buildParentOrganizationRankingSignal(
       },
     ],
     businessRelevance:
-      "A real, national market-share baseline by parent organization (Q046) - the same kind of ranking a real industry directory like AIS Health publishes from this same public CMS data, not this project's own proprietary read on any carrier's book of business.",
+      "Who holds the most Medicare members across Medicare Advantage and standalone drug plans - the same kind of ranking industry directories publish from this public CMS file. For Medicare Advantage alone, see the share-shift finding.",
     evidence: [
       {
         id: "ev-ma-partd-parent-org-snapshot",
@@ -256,7 +256,7 @@ async function buildParentOrganizationRankingSignal(
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real snapshot of this dataset this agent has pulled - no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} A single month's ranking; the share-shift finding compares the same month a year apart.`,
     freshness: { dataAsOf: `${reportPeriod}-01`, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       "Plan-level enrollment aggregated nationally by parent organization - no state/county geography in this file.",
@@ -265,7 +265,7 @@ async function buildParentOrganizationRankingSignal(
       "Single snapshot - a baseline reading, not yet a trend across periods.",
       "A real, sourced market-share reading, not this project's own claim to any carrier's internal/proprietary data - see this file's header.",
     ],
-    nextSignal: "Watch this ranking across a second real pull for the first genuine month-over-month share shift, which is what would move this from baseline to a real trend read.",
+    nextSignal: "Watch the January report: Annual Election Period switching is when most enrollment moves between organizations.",
     recommendedInternalValidation: "Not applicable - this is public aggregate enrollment data, not tied to any specific payer's book of business.",
     sourceIds: [SOURCE_ID],
     generatingAgent: AGENT_ID,
@@ -310,7 +310,7 @@ function buildPartDAttachmentSignal(rows: MaPartDPlanRow[], reportPeriod: string
       },
     ],
     businessRelevance:
-      "A real baseline read on how much of the MA/Part D market carries an attached drug benefit vs. medical-only coverage - relevant context for Part D economics questions (Q053), distinct from the medical-benefit mechanics MA plans separately negotiate.",
+      "How much of the Medicare Advantage and Part D market carries a drug benefit versus medical-only coverage - the base that new drug costs flow through.",
     evidence: [
       {
         id: "ev-ma-partd-attachment",
@@ -321,14 +321,14 @@ function buildPartDAttachmentSignal(rows: MaPartDPlanRow[], reportPeriod: string
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real snapshot of this dataset this agent has pulled - no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} A single month's split; it moves little from month to month.`,
     freshness: { dataAsOf: `${reportPeriod}-01`, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       "A plan 'offering' Part D is a benefit-design flag, not proof every enrollee is actively using a drug benefit.",
       "National aggregate only - no state-level or plan-type cross-tab included in this specific reading.",
       "Single snapshot - a baseline reading, not yet a trend across periods.",
     ],
-    nextSignal: "Watch this attachment rate across a second real pull for a genuine shift, which would be a real signal about benefit-design trends in the market.",
+    nextSignal: "Watch the January report for a shift in how many members choose plans with a drug benefit.",
     recommendedInternalValidation: "Not applicable - this is public aggregate enrollment data, not tied to any specific payer's book of business.",
     sourceIds: [SOURCE_ID],
     generatingAgent: AGENT_ID,

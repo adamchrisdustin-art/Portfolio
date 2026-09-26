@@ -115,7 +115,7 @@ export const reimbursementPaymentAgent: DomainAgent = {
         },
       ],
       businessRelevance:
-        "Establishes a CMS-published payment benchmark by provider type - the public-data half of any future internal-vs-external reimbursement divergence comparison (see DATA_GAP_REGISTER.md #1 for why the internal half isn't available here).",
+        "Establishes a CMS-published payment benchmark by provider type - the public benchmark a plan or provider group would compare its own contracted rates against.",
       evidence: [
         {
           id: "ev-phy-summary",

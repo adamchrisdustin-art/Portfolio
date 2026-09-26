@@ -23,7 +23,7 @@ export default function AnalyticsExplorer({ overview }: { overview: AnalyticsOve
   const fullWidthPanelStyle: CSSProperties = { ...panelStyle, gridColumn: "1 / -1" };
 
   return (
-    <section style={{ borderTop: "1px solid var(--border)" }}>
+    <section id="data-explorer" className="page-section" style={{ borderTop: "1px solid var(--border)" }}>
       <div style={{ background: "var(--nav)", color: "var(--nav-text)", padding: "36px 24px" }}>
         <div className="container">
           <p className="eyebrow" style={{ color: "var(--nav-text-muted)" }}>

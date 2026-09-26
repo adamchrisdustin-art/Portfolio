@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { changedSources, currentFingerprints, fingerprintSnapshot, SOURCE_ID_BY_DATASET } from "./sourceFingerprints";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { changedSources, currentFingerprints, fingerprintSnapshot, latestPullDate, SOURCE_ID_BY_DATASET } from "./sourceFingerprints";
 
 describe("fingerprintSnapshot", () => {
   it("ignores the pull timestamp, so an unchanged re-pull fingerprints identically", () => {
@@ -38,5 +41,18 @@ describe("currentFingerprints", () => {
       if (dataset === "evaluation-runs" || dataset === "reasoned") continue;
       expect(SOURCE_ID_BY_DATASET[dataset], dataset).toBeDefined();
     }
+  });
+});
+
+describe("latestPullDate", () => {
+  it("returns the newest snapshot date across sources, ignoring other files", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulls-"));
+    const a = path.join(root, "a");
+    const b = path.join(root, "b");
+    fs.mkdirSync(a);
+    fs.mkdirSync(b);
+    for (const [dir, file] of [[a, "2026-08-01.json"], [a, "2026-09-01.json"], [b, "2026-09-25.json"], [b, "notes.json"]]) fs.writeFileSync(path.join(dir, file), "{}");
+    expect(latestPullDate({ a, b })).toBe("2026-09-25");
+    expect(latestPullDate({})).toBeNull();
   });
 });

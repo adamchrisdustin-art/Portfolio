@@ -96,7 +96,8 @@ export const emergingTrendsAgent: DomainAgent = {
       headline: `Across ${comparableStates.length} states with data in both sources, hospital ownership concentration (CR4) and standardized Medicare physician payment per service show a ${Math.abs(r) < 0.3 ? "weak" : Math.abs(r) < 0.6 ? "moderate" : "strong"} ${r >= 0 ? "positive" : "negative"} correlation (r=${r.toFixed(2)}).`,
       questionId: "Q088",
       signalType: "baseline",
-      period: { start: hospitalSnapshot.pulledAt.slice(0, 10), end: hospitalSnapshot.pulledAt.slice(0, 10) },
+      // Spans both sides: the physician data year through the hospital directory pull (the two are different vintages, see limitations).
+      period: { start: `${physicianYear.dataYear}-01-01`, end: hospitalSnapshot.pulledAt.slice(0, 10) },
       population: "medicare-ffs",
       geography: { level: "state", code: "US-STATES", label: `${comparableStates.length} states and DC with data in both sources` },
       magnitude: { value: r, unit: "pearson-r", comparedTo: "0 (no linear relationship)" },
@@ -108,7 +109,7 @@ export const emergingTrendsAgent: DomainAgent = {
         },
       ],
       businessRelevance:
-        "Unlike a facility-count comparison (mechanically expected to track physician staffing), hospital ownership concentration has no definitional link to physician payment levels - this is a real market-power question (does a more consolidated hospital market coincide with higher or lower physician reimbursement?) worth an executive's attention regardless of which direction the result points. The kind of cross-dataset check that's only possible because two independent agents' sources happen to cover the same states - exactly the 'agents working together' pattern this system is meant to demonstrate, not just two agents each reporting in isolation.",
+        "Unlike a facility-count comparison (mechanically expected to track physician staffing), hospital ownership concentration has no definitional link to physician payment levels - this is a market-power question (does a more consolidated hospital market coincide with higher or lower physician reimbursement?) worth an executive's attention whichever direction the result points. It takes two agents' data together: neither dataset can answer it alone.",
       evidence: [
         {
           id: "ev-hospital-snapshot",

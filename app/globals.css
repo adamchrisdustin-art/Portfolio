@@ -161,3 +161,82 @@ button:focus-visible {
 .chart-panel > .chart > :last-child {
   margin-bottom: auto;
 }
+
+/* Dashboard section menu: stays at the top while scrolling (SectionMenu.tsx). */
+.section-menu {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.section-menu-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 24px;
+  font-size: 0.9rem;
+}
+.section-menu-details {
+  position: relative;
+}
+.section-menu-details > summary {
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.section-menu-details > summary::-webkit-details-marker {
+  display: none;
+}
+.section-menu-details > summary::after {
+  content: " ▾";
+}
+.section-menu-details nav {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 220px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 6px 0;
+}
+.section-menu-details ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.section-menu-details a {
+  display: block;
+  padding: 7px 14px;
+  text-decoration: none;
+}
+.section-menu-details a:hover,
+.section-menu-details a:focus-visible {
+  background: var(--surface-2);
+}
+.section-menu-primary {
+  font-weight: 600;
+  text-decoration: none;
+}
+/* Keep a jumped-to heading clear of the sticky menu bar. */
+.page-section {
+  scroll-margin-top: 56px;
+}
+/* "What to watch next" rows: date column beside the event, stacked on a phone. */
+.watch-item {
+  display: grid;
+  grid-template-columns: minmax(96px, 120px) 1fr;
+  gap: 14px;
+  font-size: 0.9rem;
+}
+@media (max-width: 520px) {
+  .watch-item {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}

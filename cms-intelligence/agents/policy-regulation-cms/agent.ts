@@ -156,7 +156,7 @@ async function buildFinalizedRulesSignal(
       },
     ],
     businessRelevance:
-      "Distinguishes what CMS has actually finalized — and is therefore binding — from what's merely proposed (see the companion proposed-rules signal below), which is the master orchestrator's single most emphasized policy-analysis rule. Which specific domain(s) each rule affects (payment, providers, beneficiaries, utilization — Q077-Q080) is a routing judgment reserved for this agent's LLM step, not yet run here.",
+      "Distinguishes what CMS has actually finalized — and is therefore binding — from what's merely proposed (see the proposed-rules finding). Final rules are what budgets and operations must plan around; proposed ones are scenarios.",
     evidence: [
       {
         id: "ev-fr-rules",
@@ -167,12 +167,12 @@ async function buildFinalizedRulesSignal(
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real Federal Register snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       `Bounded to CMS-attributed documents published in the trailing ${daysBetween(stamp, windowStart)} days, not full regulatory history.`,
-      "Does not yet determine which domain(s) (payment, providers, beneficiaries, utilization) each rule actually affects — that routing judgment is this agent's LLM step, gated behind a live model provider and not run for this dashboard cycle (see COST_AND_OPERATING_MODEL.md).",
-      "A rule being 'finalized' here means it appeared in the Federal Register with type=Rule — it does not yet confirm downstream claims-level or provider-behavior impact (Q084 stays unaddressed for that reason).",
+      "Does not yet determine which domain(s) (payment, providers, beneficiaries, utilization) each rule actually affects — that sorting is not done yet.",
+      "A rule being 'finalized' here means it appeared in the Federal Register with type=Rule — it does not yet confirm downstream claims-level or provider-behavior impact.",
     ],
     nextSignal: "Watch for whether these rules' effective dates arrive as scheduled, and whether a second real pull shows a new batch of finalizations (the persistence signal this agent can't yet compute from one snapshot).",
     recommendedInternalValidation: "Cross-check against a real payer's own regulatory-affairs tracking before treating any single rule here as fully assessed — this reflects only what's structurally present in the Federal Register API today.",
@@ -250,7 +250,7 @@ async function buildProposedRulesSignal(
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real Federal Register snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       "A closed comment period does not mean a final rule is imminent — CMS sets no fixed deadline between comment close and finalization, and this system does not estimate one.",
@@ -328,7 +328,7 @@ async function buildUpcomingEffectiveSignal(
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} This is the first real Federal Register snapshot this agent has pulled — no prior pull exists yet to assess persistence or build a baseline.`,
+    confidenceRationale: `${confidence.rationale} Each monthly pull recounts the trailing two-year window; a change counts as a trend only once it holds across consecutive pulls.`,
     limitations: [
       "Only rules already finalized are included — proposed rules with no effective date are covered separately (see the proposed-rules signal) and are explicitly excluded here.",
       `Limited to the ${daysBetween(stamp, windowStart)}-day publication window this pull covers — a rule published earlier with a still-future effective date would not appear here if it fell outside that window.`,

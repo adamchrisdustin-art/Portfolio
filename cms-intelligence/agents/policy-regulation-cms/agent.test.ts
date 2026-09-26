@@ -40,8 +40,8 @@ describe("policyRegulationCmsAgent", () => {
     const insights = await policyRegulationCmsAgent.run({ modelProvider: null });
     const finalized = insights.find((i) => i.questionId === "Q074");
     expect(finalized).toBeDefined();
-    // Q077-Q080 (which domain a rule routes to) is explicitly the LLM step this agent hasn't run yet.
-    expect(finalized?.limitations.join(" ")).toMatch(/routing|LLM/i);
+    // Which domain a rule routes to (payment, providers, beneficiaries, utilization) isn't determined yet, and the finding says so.
+    expect(finalized?.limitations.join(" ")).toMatch(/does not yet determine which domain/i);
   });
 
   it("ranks by recency/proximity with direction 'lowest' - the model is told fewer days is the noteworthy signal", async () => {

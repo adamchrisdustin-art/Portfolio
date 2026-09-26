@@ -218,7 +218,7 @@ export const providerNetworkAgent: DomainAgent = {
       businessRelevance:
         signalType === "trend"
           ? "A real, multi-pull shift in national ownership concentration - worth checking what ownership changes are driving it."
-          : "A CR4 concentration baseline for hospital ownership - no real concentration change has been observed yet across the pulls collected so far.",
+          : "A CR4 concentration baseline for hospital ownership - no concentration change has been observed yet across the pulls collected so far.",
       evidence: [
         {
           id: "ev-hgi-snapshot",
@@ -229,7 +229,7 @@ export const providerNetworkAgent: DomainAgent = {
       ],
       contradictoryEvidence: [],
       confidence: confidence.level,
-      confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} real snapshot(s) spanning ${history.daysOfHistory} day(s) (TREND_FRAMEWORK.md's full baseline window is 730 days).`,
+      confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} snapshot(s) spanning ${history.daysOfHistory} day(s); full confidence needs a 2-year baseline.`,
       freshness: { dataAsOf: history.latestDate, generatedAt: new Date().toISOString(), isStale: false },
       limitations: [
         "Ownership-type concentration, not entity-level concentration - two facilities under the same ownership *type* are not necessarily the same owner.",
@@ -510,7 +510,7 @@ async function buildQualityOutcomeByStateSignal(qualityRows: HospitalQualityRow[
       },
     ],
     businessRelevance:
-      "A real, state-level read on hospital quality *outcomes* specifically (not the composite star rating) - useful alongside Q126 to see whether a state's star-rating standing and its underlying outcome-measure performance tell the same story.",
+      "A state-level read on hospital quality *outcomes* specifically (not the composite star rating) - useful alongside the star-rating-by-state finding to see whether a state's star-rating standing and its underlying outcome-measure performance tell the same story.",
     evidence: [
       {
         id: "ev-outcome-by-state",
@@ -646,7 +646,7 @@ async function buildQualityByGeographyTrendSignal(
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} real snapshot(s) spanning ${history.daysOfHistory} day(s) (TREND_FRAMEWORK.md's full baseline window is 730 days); this CMS dataset itself refreshes quarterly, so genuine movement isn't expected at a sub-quarterly cadence regardless of pull frequency.`,
+    confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} snapshot(s) spanning ${history.daysOfHistory} day(s), short of the 2-year baseline full confidence needs; this CMS dataset itself refreshes quarterly, so genuine movement isn't expected at a sub-quarterly cadence regardless of pull frequency.`,
     freshness: { dataAsOf: history.latestDate, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       `Limited to the ${statesInEvery.length} states with at least ${MIN_HOSPITALS_FOR_STATE_BOX} hospitals with a real, non-suppressed net quality-outcome score in every real pull collected so far.`,
@@ -752,8 +752,8 @@ function buildFacilityChangeSignal(
     ],
     businessRelevance:
       eventNoun === "entry"
-        ? "A real facility entry (Q042) is a market-expansion signal worth an executive's attention - new capacity entering a market can affect network-adequacy and competitive positioning."
-        : "A real facility exit (Q043) is an access-risk signal worth an executive's attention - lost capacity can affect network adequacy and shift utilization to remaining facilities.",
+        ? "A facility entry is a market-expansion signal worth an executive's attention - new capacity entering a market can affect network-adequacy and competitive positioning."
+        : "A facility exit is an access-risk signal worth an executive's attention - lost capacity can affect network adequacy and shift utilization to remaining facilities.",
     evidence: [
       {
         id: "ev-hgi-facility-changes",
@@ -764,14 +764,14 @@ function buildFacilityChangeSignal(
     ],
     contradictoryEvidence: [],
     confidence: confidence.level,
-    confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} real snapshot(s) spanning ${history.daysOfHistory} day(s) (TREND_FRAMEWORK.md's full baseline window is 730 days); this CMS dataset itself refreshes quarterly, so a real entry/exit is not expected at a sub-quarterly cadence regardless of pull frequency.`,
+    confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} snapshot(s) spanning ${history.daysOfHistory} day(s), short of the 2-year baseline full confidence needs; this CMS dataset itself refreshes quarterly, so an entry or exit is not expected at a sub-quarterly cadence regardless of pull frequency.`,
     freshness: { dataAsOf: history.latestDate, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
-      `Bounded to what this project has actually observed across ${history.snapshotCount} real pull(s) spanning ${history.daysOfHistory} real day(s) - CMS itself does not publish a historical archive of past Hospital General Information vintages via its live datastore API (verified 2026-09-24), so entries/exits from before this project's own first real pull cannot be recovered retroactively; this list can only grow from here as real future pulls accumulate.`,
+      `Bounded to what this project has actually observed across ${history.snapshotCount} pull(s) spanning ${history.daysOfHistory} day(s). CMS's live data API keeps no archive of past versions of this directory, so entries and exits before this project's first pull can't be recovered; the list grows only from here.`,
       "A facility disappearing from this dataset means it stopped appearing in CMS's own published file - it does not by itself confirm the facility physically closed (e.g. a real ownership/ID change could also cause this), and a facility appearing does not by itself confirm a genuinely new physical location rather than a reporting change.",
       "Never a claim about why a facility entered or exited - only that its real facility_id appeared or disappeared between two real pulls.",
     ],
-    nextSignal: "Watch for the first real facility_id addition or removal across a future pull - that would be this signal's first genuine, non-zero observation.",
+    nextSignal: "Watch CMS's next quarterly refresh of the hospital directory for the first facility added or removed.",
     recommendedInternalValidation: "Confirm any specific facility change here against internal network-adequacy or provider-directory data before acting on it.",
     sourceIds: [SOURCE_ID],
     generatingAgent: AGENT_ID,

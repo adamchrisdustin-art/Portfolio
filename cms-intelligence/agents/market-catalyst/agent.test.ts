@@ -60,7 +60,7 @@ describe("marketCatalystAgent", () => {
     expect(awardCount?.headline).toMatch(/largest single award/i);
     expect(awardCount?.chart?.type).toBe("bar");
     // The top-N list must say it isn't the whole population
-    expect(awardCount?.limitations.join(" ")).toMatch(/names the largest awards; totals and institute breakdowns cover every award/);
+    expect(awardCount?.limitations.join(" ")).toMatch(/names the largest awards; the NIH total and by-institute findings cover every award/);
   });
 
   it("NIH total-dollars insight (Q114) is a distinct aggregate KPI from Q113", async () => {

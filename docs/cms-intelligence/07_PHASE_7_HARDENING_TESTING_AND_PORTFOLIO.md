@@ -179,6 +179,19 @@ Can you answer within five minutes:
 
 If not, improve the product.
 
+**Run 2026-09-25 (fallback state: no reasoned run matched the data, so no
+briefing showed).** Result: failed. Pass: Q3 where, Q6 evidence. Partial:
+Q2 why (internal references in copy), Q4 who (no stakeholder, mixed MA
+denominators), Q7 freshness ("data as of" mixed pull and data dates), Q8
+uncertain (almost all findings low; false "about a week" limitation), Q9
+watch (buried, undated), Q10 architecture (told, not shown). Fail: Q1 what
+changed (nothing brings changes together across categories), Q5 drivers.
+Fixed the same day: data-period label, recency chip, "Affects" line,
+dated watch list, related-finding links, source links, Market Catalysts
+layer, copy cleanup with a guard test, sticky section menu. Held: confidence
+on the card face (until findings stop all reading low). Open: a
+deterministic lead list for Q1 when no reasoned run matches.
+
 ## Final engineering standard
 
 Favor clarity over cleverness.

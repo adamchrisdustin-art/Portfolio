@@ -201,7 +201,7 @@ export const marketGrowthAgent: DomainAgent = {
       businessRelevance:
         signalType === "trend"
           ? "A real, multi-pull change in national facility count - worth checking what's driving it before the next refresh."
-          : "Identifies where hospital capacity is currently concentrated - a starting point for market-prioritization questions. No real change has been observed yet across the pulls collected so far.",
+          : "Identifies where hospital capacity is currently concentrated - a starting point for market-prioritization questions. No change has been observed yet across the pulls collected so far.",
       evidence: [
         {
           id: "ev-hgi-snapshot",
@@ -212,7 +212,7 @@ export const marketGrowthAgent: DomainAgent = {
       ],
       contradictoryEvidence: [],
       confidence: confidence.level,
-      confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} real snapshot(s) spanning ${history.daysOfHistory} day(s) (TREND_FRAMEWORK.md's full baseline window is 730 days).`,
+      confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} snapshot(s) spanning ${history.daysOfHistory} day(s); full confidence needs a 2-year baseline.`,
       freshness: { dataAsOf: history.latestDate, generatedAt: new Date().toISOString(), isStale: false },
       limitations: [
         "Facility count is a capacity proxy, not a utilization or enrollment measure.",
@@ -321,11 +321,11 @@ async function buildHomeHealthCapacitySignal(ctx: AgentContext): Promise<Insight
     contradictoryEvidence: [],
     confidence: "low",
     confidenceRationale:
-      "Single snapshot (cross-sectional, not a trend across periods) and no independent corroborating source for this specific combined read - meets none of TREND_FRAMEWORK.md's three confidence criteria yet.",
+      "Single snapshot (cross-sectional, not a trend across periods) and no independent corroborating source for this specific combined read - meets none of the three confidence criteria (history, persistence, corroboration) yet.",
     freshness: { dataAsOf: stamp, generatedAt: new Date().toISOString(), isStale: false },
     limitations: [
       "Episodes-per-agency is a demand proxy derived from this dataset itself (total episodes billed), not an independent population or Medicare-eligible-beneficiary denominator — it says a state's existing agencies are handling high volume, not that the state is under-served relative to true demand.",
-      "Not a growth trend — this is a single-snapshot ranking; call it a trend only once persistence is observed across multiple real pulls, per TREND_FRAMEWORK.md.",
+      "Not a growth trend — this is a single-snapshot ranking; it becomes a trend only once it persists across several pulls.",
       `States with fewer than ${MIN_AGENCIES_PER_STATE} agencies are excluded to avoid a noisy per-agency average from a handful of agencies.`,
       "\"Full-service-line\" means an agency reports offering all 6 tracked service types (nursing, PT, OT, speech, medical social, home health aide) - it does not measure service quality or capacity within each service line.",
     ],

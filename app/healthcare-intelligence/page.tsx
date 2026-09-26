@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
-import { LAYER_LABELS } from "@/cms-intelligence/agents/dashboardLayers";
+import { LAYER_LABELS, layerForQuestion, type DashboardLayer } from "@/cms-intelligence/agents/dashboardLayers";
 import { SPECIALISTS } from "@/cms-intelligence/agents/teamRoster";
 import { buildCaseStudyFacts, describeDuration } from "@/cms-intelligence/analytics/caseStudyFacts";
 import { SOURCE_LABELS } from "@/cms-intelligence/data/sources/sourceLabels";
 import { runFullSweep } from "@/cms-intelligence/agents/orchestrator/fullSweep";
 import { buildAnalyticsOverview } from "@/cms-intelligence/analytics/overview";
 import { currentReasonedRun } from "@/cms-intelligence/reasoning/monthlyRun";
-import { unchangedSinceBySource } from "@/cms-intelligence/reasoning/sourceFingerprints";
+import { latestPullDate, unchangedSinceBySource } from "@/cms-intelligence/reasoning/sourceFingerprints";
+import { relatedFindings } from "@/cms-intelligence/analytics/findingPresentation";
+import { buildWatchCalendar, formatWatchDate } from "@/cms-intelligence/analytics/watchCalendar";
+import { loadLatestSnapshot as loadLatestFederalRegister } from "@/cms-intelligence/data/adapters/federalRegisterDocuments";
 import { applyRecency, RECENCY_ORDER } from "@/cms-intelligence/intelligence/evidence/recency";
 import AnalyticsExplorer from "@/components/AnalyticsExplorer";
 import InsightCard from "@/components/InsightCard";
 import EmptyLayerState from "@/components/EmptyLayerState";
 import StatTile from "@/components/charts/StatTile";
 import OpenOnHash from "@/components/OpenOnHash";
+import SectionMenu from "@/components/SectionMenu";
 import TeamSection from "@/components/TeamSection";
 
 export const metadata: Metadata = {
@@ -35,7 +39,21 @@ const LAYER_EMPTY_REASONS: Record<string, string> = {
     "This layer's agent watches the Federal Register for CMS rules - no documents matched its most recent pull window.",
   "emerging-signals":
     "This layer synthesizes findings across the other layers - it needs at least two independent real signals to compare, and there isn't enough real data yet to do that honestly.",
+  "market-catalysts": "This layer's agent logs SEC filings, FDA approvals, NIH awards and trial results - none returned findings this cycle.",
 };
+
+const SECTIONS = [
+  { id: "how-this-works", label: "How this works" },
+  { id: "agent-findings", label: "At a glance" },
+  { id: "team", label: "Meet the team" },
+  { id: "executive-pulse", label: "Executive Pulse" },
+  { id: "watch-next", label: "What to watch next" },
+  { id: "data-explorer", label: "Data Explorer" },
+  { id: "case-study", label: "Case study" },
+];
+
+const dayLabel = (iso: string) =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 
 export default async function HealthcareIntelligencePage() {
   // A saved autonomous run is used only while it describes exactly the committed data (see monthlyRun.ts); otherwise the zero-cost deterministic sweep.
@@ -61,29 +79,37 @@ export default async function HealthcareIntelligencePage() {
     return weight[b.confidence] - weight[a.confidence];
   });
 
-  const sortedByLayer = Object.fromEntries(
-    Object.keys(sweep.insightsByLayer).map((key) => [key, pulseInsights.filter((i) => sweep.insightsByLayer[key as keyof typeof sweep.insightsByLayer].some((l) => l.id === i.id))])
-  ) as typeof sweep.insightsByLayer;
+  // Layers are assigned here rather than read from the sweep, so a saved run from before a layer existed still renders.
+  const sortedByLayer = (key: DashboardLayer) => pulseInsights.filter((i) => layerForQuestion(i.questionId) === key);
 
-  const dashboardLayers: { key: keyof typeof sweep.insightsByLayer; label: string }[] = [
+  const dashboardLayers: { key: DashboardLayer; label: string }[] = [
     { key: "market-growth", label: LAYER_LABELS["market-growth"] },
     { key: "claims-cost", label: LAYER_LABELS["claims-cost"] },
     { key: "reimbursement-provider-economics", label: LAYER_LABELS["reimbursement-provider-economics"] },
     { key: "provider-network", label: LAYER_LABELS["provider-network"] },
     { key: "policy-program-watch", label: LAYER_LABELS["policy-program-watch"] },
     { key: "emerging-signals", label: LAYER_LABELS["emerging-signals"] },
+    { key: "market-catalysts", label: LAYER_LABELS["market-catalysts"] },
   ];
 
   // Case-study copy is computed from the data so each monthly refresh keeps it true.
   const facts = buildCaseStudyFacts();
-  const liveSources = Array.from(new Set(sweep.allInsights.flatMap((i) => i.sourceIds))).map((id) => SOURCE_LABELS[id] ?? { name: id, group: "other-federal" as const });
+  const liveSources = Array.from(new Set(sweep.allInsights.flatMap((i) => i.sourceIds))).map((id) => SOURCE_LABELS[id] ?? { name: id, group: "other-federal" as const, url: "" });
   const cmsSources = liveSources.filter((s) => s.group === "cms").map((s) => s.name);
   const otherSources = liveSources.filter((s) => s.group === "other-federal").map((s) => s.name);
   const domainAgents = SPECIALISTS.filter((m) => m.status !== "infrastructure");
   const infrastructureAgents = SPECIALISTS.filter((m) => m.status === "infrastructure");
   const snapshotHistory = describeDuration(facts.snapshotHistoryDays);
   const rollingWindow = facts.rollingWindowDays.map((d) => `${d}-day`).join(" / ");
-  const layersWithFindings = dashboardLayers.filter(({ key }) => sweep.insightsByLayer[key].length > 0).length;
+  const layersWithFindings = dashboardLayers.filter(({ key }) => sortedByLayer(key).length > 0).length;
+  const lastPull = latestPullDate();
+  const watchList = buildWatchCalendar({
+    insights: allInsights,
+    ruleDocuments: loadLatestFederalRegister()?.documents ?? [],
+    unchangedSince: unchangedSinceBySource(),
+    now: new Date(),
+  });
+  const nextRefresh = watchList.find((w) => w.title === "Monthly data refresh");
   const elevatedFindings = sweep.allInsights.filter((i) => i.confidence !== "low").length;
   const backfilled = [
     facts.physician && `physician payments ${facts.physician.firstYear}–${facts.physician.lastYear}`,
@@ -94,6 +120,7 @@ export default async function HealthcareIntelligencePage() {
   return (
     <>
       <OpenOnHash />
+      <SectionMenu sections={SECTIONS} primary={{ id: "executive-pulse", label: "Executive Pulse" }} />
       <section className="container" style={{ padding: "56px 24px 32px" }}>
         <p className="eyebrow">Portfolio Project · In Progress</p>
         <h1 style={{ fontSize: "2rem", margin: "10px 0 12px" }}>Healthcare Intelligence Dashboard</h1>
@@ -104,7 +131,7 @@ export default async function HealthcareIntelligencePage() {
         </p>
       </section>
 
-      <section className="container" style={{ padding: "32px 24px", borderTop: "1px solid var(--border)" }}>
+      <section id="how-this-works" className="container page-section" style={{ padding: "32px 24px", borderTop: "1px solid var(--border)" }}>
         <h2 style={{ fontSize: "1.3rem", marginBottom: 14 }}>How this works</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 18 }}>
           <div>
@@ -140,7 +167,7 @@ export default async function HealthcareIntelligencePage() {
         </div>
       </section>
 
-      <section className="container" style={{ padding: "32px 24px 32px", borderTop: "1px solid var(--border)" }}>
+      <section id="agent-findings" className="container page-section" style={{ padding: "32px 24px 32px", borderTop: "1px solid var(--border)" }}>
         <p className="eyebrow" style={{ marginBottom: 6 }}>
           Agent findings
         </p>
@@ -164,8 +191,14 @@ export default async function HealthcareIntelligencePage() {
         </section>
       )}
 
-      <section className="container" style={{ padding: "32px 24px", borderTop: "1px solid var(--border)" }}>
+      <section id="executive-pulse" className="container page-section" style={{ padding: "32px 24px", borderTop: "1px solid var(--border)" }}>
         <h2 style={{ fontSize: "1.4rem", marginBottom: 6 }}>Executive Pulse</h2>
+        {lastPull && (
+          <p className="mono" style={{ fontSize: "0.8rem", color: "var(--text-muted)", margin: "0 0 8px" }}>
+            Data last pulled {dayLabel(lastPull)}
+            {nextRefresh && ` · next monthly refresh ${dayLabel(nextRefresh.date)}`} · each finding shows the period its data covers
+          </p>
+        )}
         <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: 20 }}>
           {analyst
             ? "Ranked by the executive-analyst agent's judgment of what matters most to a healthcare leader this cycle, then by confidence."
@@ -233,7 +266,7 @@ export default async function HealthcareIntelligencePage() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {dashboardLayers.map(({ key, label }) => {
-              const insights = sortedByLayer[key];
+              const insights = sortedByLayer(key);
               return (
                 <details key={key} className="card category-details" data-testid={`category-${key}`} style={{ padding: "14px 18px" }}>
                   <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: "1.05rem" }}>
@@ -246,7 +279,9 @@ export default async function HealthcareIntelligencePage() {
                     {insights.length === 0 ? (
                       <EmptyLayerState reason={LAYER_EMPTY_REASONS[key] ?? "A live data source hasn't been wired to this layer yet."} />
                     ) : (
-                      insights.map((insight) => <InsightCard key={insight.id} insight={insight} collapsible />)
+                      insights.map((insight) => (
+                        <InsightCard key={insight.id} insight={insight} collapsible related={relatedFindings(insight, allInsights)} />
+                      ))
                     )}
                   </div>
                 </details>
@@ -256,9 +291,44 @@ export default async function HealthcareIntelligencePage() {
         )}
       </section>
 
+      <section id="watch-next" className="container page-section" style={{ padding: "32px 24px", borderTop: "1px solid var(--border)" }}>
+        <h2 style={{ fontSize: "1.4rem", marginBottom: 6 }}>What to watch next</h2>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: 16 }}>
+          Coming events that will update the findings above. Exact dates come from the data itself (rule effective dates,
+          comment deadlines) or a fixed calendar; a month marked &quot;~&quot; is an estimate from the source&apos;s own
+          release history.
+        </p>
+        <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+          {watchList.map((w) => (
+            <li key={`${w.date}-${w.title}`} className="watch-item">
+              <span className="mono" style={{ color: w.kind === "expected" ? "var(--text-muted)" : "var(--text)", fontWeight: 600 }}>
+                {formatWatchDate(w)}
+              </span>
+              <span>
+                <strong>{w.title}</strong>
+                <span style={{ color: "var(--text-muted)" }}> — {w.detail}</span>
+                {w.insightIds.length > 0 && (
+                  <span style={{ color: "var(--text-muted)" }}>
+                    {" "}
+                    See{" "}
+                    {w.insightIds.map((id, i) => (
+                      <span key={id}>
+                        {i > 0 && ", "}
+                        <a href={`#${id}`}>{w.insightIds.length === 1 ? "the finding" : `finding ${i + 1}`}</a>
+                      </span>
+                    ))}
+                    .
+                  </span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <AnalyticsExplorer overview={analyticsOverview} />
 
-      <section className="container" style={{ padding: "48px 24px 72px", borderTop: "1px solid var(--border)" }}>
+      <section id="case-study" className="container page-section" style={{ padding: "48px 24px 72px", borderTop: "1px solid var(--border)" }}>
         <p className="eyebrow">Case study</p>
         <h2 style={{ fontSize: "1.5rem", margin: "10px 0 28px" }}>Why this project exists, and how it&apos;s built</h2>
 
@@ -324,8 +394,8 @@ export default async function HealthcareIntelligencePage() {
               Confidence levels aren&apos;t a vibe — they&apos;re computed from whether a finding has enough history,
               persists, and is corroborated by an independent source, and each finding&apos;s evidence drawer shows the
               level with its reasoning, not just a label. The level stays inside that drawer rather than on the
-              finding itself, since with only {snapshotHistory} of hospital and home health snapshot history most
-              findings read low for now. Every
+              finding itself for now: most findings read low until their sources show a second period of change,
+              so a label on every card wouldn&apos;t tell them apart yet. Every
               number is still computed by deterministic code, never an LLM — but which of several real,
               computed candidates is worth an executive&apos;s attention is a judgment call, so agents route that
               specific decision through a reasoning layer that can only choose among and briefly explain real
@@ -392,8 +462,11 @@ export default async function HealthcareIntelligencePage() {
               </li>
               <li>
                 {sweep.allInsights.length - elevatedFindings} of {sweep.allInsights.length} findings read low confidence —
-                genuinely, not a bug. Confidence needs a pattern that persists across periods, and most findings rest
-                on {snapshotHistory} of snapshot history; {elevatedFindings === 0 ? "none has" : `the ${elevatedFindings} that reach medium or higher have`} enough history to check.
+                genuinely, not a bug. Confidence needs a change that holds across consecutive periods. Most findings
+                rest on years of history ({listOf(backfilled)}) but show one period of change so far, and hospital and home health data
+                have only {snapshotHistory} of snapshots;{" "}
+                {elevatedFindings === 0 ? "none has" : `the ${elevatedFindings} that reach medium or higher have`} a
+                change that persists.
               </li>
               <li>
                 No proprietary insurer data is used anywhere — every number on this page is public data. A real

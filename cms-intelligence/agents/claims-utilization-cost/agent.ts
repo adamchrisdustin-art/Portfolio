@@ -194,7 +194,7 @@ async function homeHealthInsights(ctx: AgentContext): Promise<Insight[]> {
       ],
       contradictoryEvidence: [],
       confidence: confidence.level,
-      confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} real snapshot(s) spanning ${history.daysOfHistory} day(s) (TREND_FRAMEWORK.md's full baseline window is 730 days).`,
+      confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} snapshot(s) spanning ${history.daysOfHistory} day(s); full confidence needs a 2-year baseline.`,
       freshness: { dataAsOf: history.latestDate, generatedAt: new Date().toISOString(), isStale: false },
       limitations: [
         "This is a risk-adjusted ratio published by CMS, not a raw dollar cost-per-episode figure.",

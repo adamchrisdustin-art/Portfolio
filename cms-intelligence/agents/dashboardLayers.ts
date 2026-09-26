@@ -17,7 +17,8 @@ export type DashboardLayer =
   | "reimbursement-provider-economics"
   | "provider-network"
   | "policy-program-watch"
-  | "emerging-signals";
+  | "emerging-signals"
+  | "market-catalysts";
 
 export const LAYER_LABELS: Record<DashboardLayer, string> = {
   "executive-pulse": "Executive Pulse",
@@ -27,6 +28,7 @@ export const LAYER_LABELS: Record<DashboardLayer, string> = {
   "provider-network": "Provider & Network",
   "policy-program-watch": "Policy & Program Watch",
   "emerging-signals": "Emerging Signals",
+  "market-catalysts": "Market Catalysts",
 };
 
 interface LayerRange {
@@ -46,9 +48,9 @@ const LAYER_RANGES: LayerRange[] = [
   { from: 96, to: 101, layer: "claims-cost" }, // pharmacy/Part D economics
   { from: 102, to: 107, layer: "provider-network" }, // value-based care
   { from: 108, to: 112, layer: "executive-pulse" },
-  { from: 113, to: 124, layer: "emerging-signals" }, // Market/Catalyst Intelligence - reuses Emerging Signals rather than an 8th layer, see AGENT_ARCHITECTURE.md
+  { from: 113, to: 124, layer: "market-catalysts" }, // Market/Catalyst Intelligence - its own layer since the 2026-09-25 reviewer test, so Emerging Signals holds only cross-domain findings
   { from: 125, to: 128, layer: "provider-network" }, // hospital star rating vs. quality outcomes - same layer as Q036-045/Q102-107
-  { from: 129, to: 129, layer: "emerging-signals" }, // NIH research-theme frequency - same layer as the rest of Market/Catalyst Intelligence
+  { from: 129, to: 129, layer: "market-catalysts" }, // NIH research-theme frequency - same layer as the rest of Market/Catalyst Intelligence
 ];
 
 export function layerForQuestion(questionId: string): DashboardLayer {
@@ -65,4 +67,5 @@ export const ALL_LAYERS: DashboardLayer[] = [
   "provider-network",
   "policy-program-watch",
   "emerging-signals",
+  "market-catalysts",
 ];

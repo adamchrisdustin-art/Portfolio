@@ -15,9 +15,18 @@ repository secrets named per-project, `HEALTHCARE_INTEL_ANTH` and
 the standard `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` variables the code
 reads; if either secret is missing, reasoning skips at $0.
 
-**Resume here (end of 2026-09-25, second session):** everything is
-pushed and live; 359 tests pass. **Next: Phase 7's final reviewer test**
-(07_PHASE_7_HARDENING_TESTING_AND_PORTFOLIO.md section 9), then Adam's
+**Resume here (2026-09-25, third session):** Phase 7's reviewer test is
+done (results in 07_PHASE_7_HARDENING_TESTING_AND_PORTFOLIO.md section 9).
+The page failed it; fixes approved by Adam are built: a sticky "Jump to"
+menu (the agent roster stays above the Pulse, Adam's call), each card shows
+the period its data covers plus an always-on recency chip and an "Affects"
+line, a dated "What to watch next" list, "Read alongside" links between
+findings, clickable sources, Market Catalysts as its own layer, and
+executive copy cleaned of internal references (a test now blocks them).
+Confidence on the card face is **held** until findings stop all reading low
+(Adam). **Open decision:** a deterministic "what changed" lead list at the
+top of the Pulse for when no reasoned run matches (explained to Adam, no
+answer yet). **Next:** new data sources in parallel sessions, then Adam's
 design-agent reskin, then the final reasoning rerun (held until project
 completion, the next live test, or the Oct 1 cron, whichever comes first).
 
@@ -260,8 +269,10 @@ Model choices, costs, and all evaluation evidence: `MODEL_EVALUATION.md`.
   original 11. 2 agents are infrastructure-only (Source Monitor, Data
   Architecture). All 7 dashboard layers have at least one real finding
   (Market/Catalyst's Q113-Q124/Q129 and Provider & Network's Q125-Q128
-  both fold into existing layers — Emerging Signals and Provider &
-  Network respectively — rather than adding new ones).
+  folded into existing layers at first; since the 2026-09-25 reviewer test
+  Market/Catalyst has its own "Market Catalysts" layer so Emerging Signals
+  holds only cross-domain findings, and Q125-Q128 stay in Provider &
+  Network).
 - **12th agent: Market/Catalyst Intelligence** (`agents/market-catalyst/`,
   Q113-Q124, Q129) — a new question category beyond the original
   112-question catalog, tracking real corporate-disclosure (SEC 8-K),

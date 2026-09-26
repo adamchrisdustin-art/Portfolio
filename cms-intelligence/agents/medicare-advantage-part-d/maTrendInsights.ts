@@ -140,7 +140,7 @@ async function shareShiftInsight(months: MaMonthSummary[], ctx: AgentContext): P
 
   return validateInsight({
     id: `sig-ma-partd-${latest.reportPeriod}-ma-share-shift`,
-    headline: `${gainer.name} gained the most Medicare Advantage share from ${yearAgo.reportPeriod} to ${latest.reportPeriod} (${pts(gainer.change)} to ${share(gainer.now)}); ${loser.name} lost the most (${pts(loser.change)} to ${share(loser.now)}), while MA overall grew ${pct(maYoY)}.`,
+    headline: `${gainer.name} gained the most Medicare Advantage share from ${yearAgo.reportPeriod} to ${latest.reportPeriod} (${pts(gainer.change)} to ${share(gainer.now)} of MA enrollment); ${loser.name} lost the most (${pts(loser.change)} to ${share(loser.now)}), while MA overall grew ${pct(maYoY)}.`,
     questionId: "Q046",
     signalType: "structural-change",
     period: { start: `${yearAgo.reportPeriod}-01`, end: `${latest.reportPeriod}-01` },
