@@ -26,9 +26,49 @@ executive copy cleaned of internal references (a test now blocks them).
 Confidence on the card face is **held** until findings stop all reading low
 (Adam). Adam approved a "What changed" lead list, built: when no reasoned run
 matches the data, fixed rules pick up to six findings that show a change
-and list them in the synthesis box above the categories. **Next:** new data sources in parallel sessions, then Adam's
-design-agent reskin, then the final reasoning rerun (held until project
-completion, the next live test, or the Oct 1 cron, whichever comes first).
+and list them in the synthesis box above the categories.
+
+**Resume here (2026-09-26, fourth session):** six new sources are merged
+into `main` (three parallel worktree sessions, A/B/C, each on its own
+branch, all conflicts add-only, 433 tests / tsc / eslint clean after the
+merge — not yet pushed):
+- **Reimbursement & Payment agent** (session A): Physician Fee Schedule
+  RVU files (`cms:physician-fee-schedule`, Q026/Q028/Q034/Q035 — fee
+  changes read against existing physician-by-service volumes) and
+  hospital penalty programs (`cms:hospital-penalty-programs`: HRRP, HAC
+  Reduction, Hospital VBP, plus IPPS Tables 15/16B payment-adjustment
+  factors, Q029/Q030). This agent had 1 finding before; it now has real
+  reimbursement-exposure findings by specialty, procedure and hospital.
+  FY2027's adjustment tables post in fall 2026 — flagged as a near-term
+  follow-up in `analytics/watchCalendar.ts`, current data is FY2026.
+- **Market Growth + Provider & Network agents** (session B): Provider of
+  Services (`cms:provider-of-services`, QIES/iQIES, replaces the old
+  hospital-count capacity proxy with real certified beds and a real
+  quarterly history) and hospital/SNF change of ownership plus the
+  private-equity owner flag (`cms:facility-change-of-ownership`,
+  `cms:facility-all-owners`, Q039/Q041) — facility M&A including private
+  equity buyers.
+- **Market Catalyst agent** (session C): SEC 8-K widened from the
+  6-insurer watchlist to every health-industry SIC code
+  (`sec-edgar:health-industry-8k`, Q160-Q162, reused the existing SEC
+  adapter and its fair-access rate limiting) and SEC Form D private
+  offerings for health-care issuers (`sec-edgar:form-d-health`,
+  Q163-Q165).
+- Merge mechanics: source registry, `sourceLabels.ts`, `recency.ts`'s
+  `SOURCE_TIMING`, `sourceFingerprints.ts`'s `SOURCE_ID_BY_DATASET`,
+  `findingPresentation.ts`'s stakeholder/related-group tables, and the
+  monthly pipeline workflow all took clean add-only merges. The salience
+  benchmark's call count moved 27 → 31 (session A) → 35 (session C);
+  session B added no new salience calls of its own.
+
+**Next:** confirm with Adam, then push `main`; a second round of parallel
+sessions for the remaining priority sources (Medicare Monthly Enrollment,
+Part D Prescribers/Spending, Shared Savings Program ACOs, Payroll-Based
+Journal); then Adam's design-agent reskin; then the final reasoning
+rerun (held until project completion, the next live test, or the Oct 1
+cron, whichever comes first — the new sources will also invalidate the
+last reasoned run's fingerprint, so the dashboard falls back to the "What
+changed" list again until that rerun happens).
 
 Done this session (details live in the linked docs, not here):
 - **Salience prompt:** copy numbers exactly, never calculate. Benchmarked:
