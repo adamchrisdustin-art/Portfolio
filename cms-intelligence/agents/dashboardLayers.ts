@@ -51,6 +51,7 @@ const LAYER_RANGES: LayerRange[] = [
   { from: 113, to: 124, layer: "market-catalysts" }, // Market/Catalyst Intelligence - its own layer since the 2026-09-25 reviewer test, so Emerging Signals holds only cross-domain findings
   { from: 125, to: 128, layer: "provider-network" }, // hospital star rating vs. quality outcomes - same layer as Q036-045/Q102-107
   { from: 129, to: 129, layer: "market-catalysts" }, // NIH research-theme frequency - same layer as the rest of Market/Catalyst Intelligence
+  { from: 160, to: 165, layer: "market-catalysts" }, // health-industry 8-Ks (Q160-Q162) and Form D private offerings (Q163-Q165), added 2026-09-25
 ];
 
 export function layerForQuestion(questionId: string): DashboardLayer {

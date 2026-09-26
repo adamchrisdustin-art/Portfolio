@@ -72,6 +72,12 @@ const STAKEHOLDER_OVERRIDES: Record<string, string[]> = {
   "market-catalyst-sec-material-agreement-by-company": ["Health insurers", "Investors"],
   "market-catalyst-ct-results-count": ["Drug makers", "Health plans"],
   "market-catalyst-ct-enrollment-distribution": ["Drug makers", "Health plans"],
+  "market-catalyst-sec-health-asset-deals": ["Life sciences", "Providers", "Investors"],
+  "market-catalyst-sec-health-material-agreements": ["Life sciences", "Providers", "Investors"],
+  "market-catalyst-sec-health-leadership-changes": ["Life sciences", "Providers", "Investors"],
+  "market-catalyst-formd-health-raises": ["Life sciences", "Investors"],
+  "market-catalyst-formd-health-largest-raises": ["Life sciences", "Investors"],
+  "market-catalyst-formd-health-by-state": ["Life sciences", "Investors"],
 };
 
 export function stakeholdersFor(insight: Insight): string[] {
@@ -103,6 +109,10 @@ export const RELATED_GROUPS: string[][] = [
   ["market-catalyst-fda-nme-count", "market-catalyst-fda-priority-split", "market-catalyst-fda-by-month"],
   ["market-catalyst-sec-leadership-change-by-company", "market-catalyst-sec-filing-mix", "market-catalyst-sec-material-agreement-by-company"],
   ["market-catalyst-ct-results-count", "market-catalyst-ct-enrollment-distribution"],
+  ["market-catalyst-sec-health-asset-deals", "market-catalyst-sec-health-material-agreements", "market-catalyst-sec-health-leadership-changes", "market-catalyst-sec-filing-mix"],
+  ["market-catalyst-sec-health-leadership-changes", "market-catalyst-sec-leadership-change-by-company"],
+  ["market-catalyst-sec-health-material-agreements", "market-catalyst-sec-material-agreement-by-company"],
+  ["market-catalyst-formd-health-raises", "market-catalyst-formd-health-largest-raises", "market-catalyst-formd-health-by-state", "market-catalyst-nih-total-dollars"],
 ];
 
 const MAX_RELATED = 4;

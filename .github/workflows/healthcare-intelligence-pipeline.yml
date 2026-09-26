@@ -64,6 +64,10 @@ jobs:
 
       - name: Pull SEC EDGAR 8-K filings (health-insurer watchlist)
         run: npx tsx cms-intelligence/data/adapters/pull-sec-edgar-filings.ts
+      - name: Pull SEC EDGAR 8-K filings (every health-industry SIC code)
+        run: npx tsx cms-intelligence/data/adapters/pull-sec-health-industry-8k.ts
+      - name: Pull SEC Form D data sets (health-care private offerings, latest 8 quarters)
+        run: npx tsx cms-intelligence/data/adapters/pull-sec-form-d.ts
 
       - name: Pull openFDA novel drug approvals
         run: npx tsx cms-intelligence/data/adapters/pull-fda-drug-approvals.ts

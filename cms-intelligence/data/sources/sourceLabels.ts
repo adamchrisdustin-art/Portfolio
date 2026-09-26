@@ -25,4 +25,6 @@ export const SOURCE_LABELS: Record<string, SourceLabel> = {
   "openfda:drugsfda-novel-approvals": { name: "openFDA novel drug approvals", group: "other-federal", url: "https://open.fda.gov/apis/drug/drugsfda/" },
   "nih-reporter:project-awards": { name: "NIH RePORTER award notices", group: "other-federal", url: "https://reporter.nih.gov/" },
   "clinicaltrials-gov:phase3-results": { name: "ClinicalTrials.gov Phase 3 results postings", group: "other-federal", url: "https://clinicaltrials.gov/" },
+  "sec-edgar:health-industry-8k": { name: "SEC EDGAR 8-K filings by health-industry companies", group: "other-federal", url: "https://www.sec.gov/edgar/search/#/forms=8-K" },
+  "sec-edgar:form-d-health": { name: "SEC Form D data sets (health-care private offerings)", group: "other-federal", url: "https://www.sec.gov/data-research/sec-markets-data/form-d-data-sets" },
 };

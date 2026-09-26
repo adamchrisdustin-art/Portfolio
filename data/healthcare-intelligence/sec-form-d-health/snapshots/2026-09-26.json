@@ -1,0 +1,1312 @@
+{
+ "dataset": "sec-form-d-health",
+ "pulledAt": "2026-09-26T03:37:52.421Z",
+ "quarters": [
+  "2024Q3",
+  "2024Q4",
+  "2025Q1",
+  "2025Q2",
+  "2025Q3",
+  "2025Q4",
+  "2026Q1",
+  "2026Q2"
+ ],
+ "windowStart": "2024-07-01",
+ "windowEnd": "2026-06-30",
+ "sourceFiles": [
+  "https://www.sec.gov/files/datastandardsinnovation/data/form-d-data-sets/2026q2_d.zip",
+  "https://www.sec.gov/files/structureddata/data/form-d-data-sets/2026q1_d.zip",
+  "https://www.sec.gov/files/structureddata/data/form-d-data-sets/2025q4_d.zip",
+  "https://www.sec.gov/files/structureddata/data/form-d-data-sets/2025q3_d.zip",
+  "https://www.sec.gov/files/structureddata/data/form-d-data-sets/2025q2_d.zip",
+  "https://www.sec.gov/files/structureddata/data/form-d-data-sets/2025q1_d.zip",
+  "https://www.sec.gov/files/structureddata/data/form-d-data-sets/2024q4_d.zip",
+  "https://www.sec.gov/files/structureddata/data/form-d-data-sets/2024q3_d.zip"
+ ],
+ "counts": {
+  "healthFilings": 3899,
+  "offerings": 3221,
+  "amendmentsFolded": 363,
+  "amendmentsToEarlierOfferings": 315
+ },
+ "byQuarterIndustry": [
+  {
+   "quarter": "2024Q3",
+   "industry": "Biotechnology",
+   "offerings": 158,
+   "amountSold": 2826404638
+  },
+  {
+   "quarter": "2024Q3",
+   "industry": "Health Insurance",
+   "offerings": 1,
+   "amountSold": 10000
+  },
+  {
+   "quarter": "2024Q3",
+   "industry": "Hospitals and Physicians",
+   "offerings": 4,
+   "amountSold": 3105000
+  },
+  {
+   "quarter": "2024Q3",
+   "industry": "Other Health Care",
+   "offerings": 217,
+   "amountSold": 2250607358
+  },
+  {
+   "quarter": "2024Q3",
+   "industry": "Pharmaceuticals",
+   "offerings": 37,
+   "amountSold": 803871006
+  },
+  {
+   "quarter": "2024Q4",
+   "industry": "Biotechnology",
+   "offerings": 169,
+   "amountSold": 2982292369
+  },
+  {
+   "quarter": "2024Q4",
+   "industry": "Health Insurance",
+   "offerings": 1,
+   "amountSold": 721504
+  },
+  {
+   "quarter": "2024Q4",
+   "industry": "Hospitals and Physicians",
+   "offerings": 8,
+   "amountSold": 14477790
+  },
+  {
+   "quarter": "2024Q4",
+   "industry": "Other Health Care",
+   "offerings": 176,
+   "amountSold": 1585971512
+  },
+  {
+   "quarter": "2024Q4",
+   "industry": "Pharmaceuticals",
+   "offerings": 42,
+   "amountSold": 615832983
+  },
+  {
+   "quarter": "2025Q1",
+   "industry": "Biotechnology",
+   "offerings": 160,
+   "amountSold": 2722569836
+  },
+  {
+   "quarter": "2025Q1",
+   "industry": "Health Insurance",
+   "offerings": 2,
+   "amountSold": 5492644
+  },
+  {
+   "quarter": "2025Q1",
+   "industry": "Hospitals and Physicians",
+   "offerings": 10,
+   "amountSold": 34459356
+  },
+  {
+   "quarter": "2025Q1",
+   "industry": "Other Health Care",
+   "offerings": 219,
+   "amountSold": 2074890838
+  },
+  {
+   "quarter": "2025Q1",
+   "industry": "Pharmaceuticals",
+   "offerings": 39,
+   "amountSold": 724709794
+  },
+  {
+   "quarter": "2025Q2",
+   "industry": "Biotechnology",
+   "offerings": 146,
+   "amountSold": 2731590987
+  },
+  {
+   "quarter": "2025Q2",
+   "industry": "Health Insurance",
+   "offerings": 2,
+   "amountSold": 155479918
+  },
+  {
+   "quarter": "2025Q2",
+   "industry": "Hospitals and Physicians",
+   "offerings": 10,
+   "amountSold": 751678034
+  },
+  {
+   "quarter": "2025Q2",
+   "industry": "Other Health Care",
+   "offerings": 200,
+   "amountSold": 1837792039
+  },
+  {
+   "quarter": "2025Q2",
+   "industry": "Pharmaceuticals",
+   "offerings": 40,
+   "amountSold": 490036609
+  },
+  {
+   "quarter": "2025Q3",
+   "industry": "Biotechnology",
+   "offerings": 150,
+   "amountSold": 2197641286
+  },
+  {
+   "quarter": "2025Q3",
+   "industry": "Health Insurance",
+   "offerings": 2,
+   "amountSold": 18275489
+  },
+  {
+   "quarter": "2025Q3",
+   "industry": "Hospitals and Physicians",
+   "offerings": 5,
+   "amountSold": 71900000
+  },
+  {
+   "quarter": "2025Q3",
+   "industry": "Other Health Care",
+   "offerings": 189,
+   "amountSold": 1533627912
+  },
+  {
+   "quarter": "2025Q3",
+   "industry": "Pharmaceuticals",
+   "offerings": 27,
+   "amountSold": 398376336
+  },
+  {
+   "quarter": "2025Q4",
+   "industry": "Biotechnology",
+   "offerings": 164,
+   "amountSold": 2351787345
+  },
+  {
+   "quarter": "2025Q4",
+   "industry": "Health Insurance",
+   "offerings": 1,
+   "amountSold": 152549994
+  },
+  {
+   "quarter": "2025Q4",
+   "industry": "Hospitals and Physicians",
+   "offerings": 5,
+   "amountSold": 17253662
+  },
+  {
+   "quarter": "2025Q4",
+   "industry": "Other Health Care",
+   "offerings": 189,
+   "amountSold": 2295900007
+  },
+  {
+   "quarter": "2025Q4",
+   "industry": "Pharmaceuticals",
+   "offerings": 36,
+   "amountSold": 1617300902
+  },
+  {
+   "quarter": "2026Q1",
+   "industry": "Biotechnology",
+   "offerings": 136,
+   "amountSold": 2057016198
+  },
+  {
+   "quarter": "2026Q1",
+   "industry": "Hospitals and Physicians",
+   "offerings": 4,
+   "amountSold": 4332224
+  },
+  {
+   "quarter": "2026Q1",
+   "industry": "Other Health Care",
+   "offerings": 172,
+   "amountSold": 885828335
+  },
+  {
+   "quarter": "2026Q1",
+   "industry": "Pharmaceuticals",
+   "offerings": 35,
+   "amountSold": 406927310
+  },
+  {
+   "quarter": "2026Q2",
+   "industry": "Biotechnology",
+   "offerings": 184,
+   "amountSold": 1730835863
+  },
+  {
+   "quarter": "2026Q2",
+   "industry": "Health Insurance",
+   "offerings": 1,
+   "amountSold": 49999999
+  },
+  {
+   "quarter": "2026Q2",
+   "industry": "Hospitals and Physicians",
+   "offerings": 13,
+   "amountSold": 25075573
+  },
+  {
+   "quarter": "2026Q2",
+   "industry": "Other Health Care",
+   "offerings": 235,
+   "amountSold": 1374499537
+  },
+  {
+   "quarter": "2026Q2",
+   "industry": "Pharmaceuticals",
+   "offerings": 32,
+   "amountSold": 187724075
+  }
+ ],
+ "byState": [
+  {
+   "state": "CALIFORNIA",
+   "offerings": 505,
+   "amountSold": 10544593501
+  },
+  {
+   "state": "MASSACHUSETTS",
+   "offerings": 319,
+   "amountSold": 6602801274
+  },
+  {
+   "state": "NEW YORK",
+   "offerings": 189,
+   "amountSold": 3671894783
+  },
+  {
+   "state": "TEXAS",
+   "offerings": 285,
+   "amountSold": 1725010396
+  },
+  {
+   "state": "PENNSYLVANIA",
+   "offerings": 142,
+   "amountSold": 1647590250
+  },
+  {
+   "state": "UTAH",
+   "offerings": 29,
+   "amountSold": 1565779648
+  },
+  {
+   "state": "FLORIDA",
+   "offerings": 188,
+   "amountSold": 1261154715
+  },
+  {
+   "state": "COLORADO",
+   "offerings": 85,
+   "amountSold": 1064446840
+  },
+  {
+   "state": "ILLINOIS",
+   "offerings": 75,
+   "amountSold": 1050004044
+  },
+  {
+   "state": "CONNECTICUT",
+   "offerings": 62,
+   "amountSold": 1047148471
+  },
+  {
+   "state": "NORTH CAROLINA",
+   "offerings": 96,
+   "amountSold": 993163659
+  },
+  {
+   "state": "MISSOURI",
+   "offerings": 22,
+   "amountSold": 980218716
+  },
+  {
+   "state": "NEW JERSEY",
+   "offerings": 99,
+   "amountSold": 874072424
+  },
+  {
+   "state": "MINNESOTA",
+   "offerings": 93,
+   "amountSold": 853135627
+  },
+  {
+   "state": "MARYLAND",
+   "offerings": 78,
+   "amountSold": 790748691
+  },
+  {
+   "state": "WASHINGTON",
+   "offerings": 44,
+   "amountSold": 677293690
+  },
+  {
+   "state": "VIRGINIA",
+   "offerings": 58,
+   "amountSold": 563465222
+  },
+  {
+   "state": "DELAWARE",
+   "offerings": 60,
+   "amountSold": 453091624
+  },
+  {
+   "state": "TENNESSEE",
+   "offerings": 59,
+   "amountSold": 397170330
+  },
+  {
+   "state": "MICHIGAN",
+   "offerings": 43,
+   "amountSold": 326243384
+  },
+  {
+   "state": "FRANCE",
+   "offerings": 5,
+   "amountSold": 311473643
+  },
+  {
+   "state": "GEORGIA",
+   "offerings": 43,
+   "amountSold": 269356276
+  },
+  {
+   "state": "OHIO",
+   "offerings": 77,
+   "amountSold": 248274965
+  },
+  {
+   "state": "UNITED STATES",
+   "offerings": 2,
+   "amountSold": 200050000
+  },
+  {
+   "state": "ISRAEL",
+   "offerings": 31,
+   "amountSold": 195357489
+  },
+  {
+   "state": "ARIZONA",
+   "offerings": 63,
+   "amountSold": 172298813
+  },
+  {
+   "state": "OREGON",
+   "offerings": 26,
+   "amountSold": 120535426
+  },
+  {
+   "state": "ONTARIO, CANADA",
+   "offerings": 33,
+   "amountSold": 114549912
+  },
+  {
+   "state": "NEVADA",
+   "offerings": 26,
+   "amountSold": 109149363
+  },
+  {
+   "state": "AUSTRALIA",
+   "offerings": 9,
+   "amountSold": 107286533
+  },
+  {
+   "state": "IRELAND",
+   "offerings": 3,
+   "amountSold": 90571912
+  },
+  {
+   "state": "WISCONSIN",
+   "offerings": 35,
+   "amountSold": 78878561
+  },
+  {
+   "state": "CHINA",
+   "offerings": 8,
+   "amountSold": 78342645
+  },
+  {
+   "state": "INDIANA",
+   "offerings": 28,
+   "amountSold": 69770295
+  },
+  {
+   "state": "UNITED KINGDOM",
+   "offerings": 13,
+   "amountSold": 58704970
+  },
+  {
+   "state": "NEW HAMPSHIRE",
+   "offerings": 12,
+   "amountSold": 56978935
+  },
+  {
+   "state": "LOUISIANA",
+   "offerings": 12,
+   "amountSold": 54664065
+  },
+  {
+   "state": "BRITISH COLUMBIA, CANADA",
+   "offerings": 26,
+   "amountSold": 51469782
+  },
+  {
+   "state": "KENTUCKY",
+   "offerings": 11,
+   "amountSold": 45664526
+  },
+  {
+   "state": "CANADA (FEDERAL LEVEL)",
+   "offerings": 3,
+   "amountSold": 41109712
+  },
+  {
+   "state": "DISTRICT OF COLUMBIA",
+   "offerings": 14,
+   "amountSold": 38428097
+  },
+  {
+   "state": "VIRGIN ISLANDS, BRITISH",
+   "offerings": 1,
+   "amountSold": 36081418
+  },
+  {
+   "state": "OKLAHOMA",
+   "offerings": 9,
+   "amountSold": 34251955
+  },
+  {
+   "state": "INDIA",
+   "offerings": 4,
+   "amountSold": 33621494
+  },
+  {
+   "state": "RHODE ISLAND",
+   "offerings": 7,
+   "amountSold": 31019019
+  },
+  {
+   "state": "ALABAMA",
+   "offerings": 48,
+   "amountSold": 25649333
+  },
+  {
+   "state": "MONTANA",
+   "offerings": 13,
+   "amountSold": 24943011
+  },
+  {
+   "state": "NEW MEXICO",
+   "offerings": 11,
+   "amountSold": 23792252
+  },
+  {
+   "state": "KANSAS",
+   "offerings": 9,
+   "amountSold": 23501154
+  },
+  {
+   "state": "NORWAY",
+   "offerings": 1,
+   "amountSold": 17560063
+  },
+  {
+   "state": "SWITZERLAND",
+   "offerings": 7,
+   "amountSold": 14915648
+  },
+  {
+   "state": "SOUTH CAROLINA",
+   "offerings": 19,
+   "amountSold": 12502310
+  },
+  {
+   "state": "NEBRASKA",
+   "offerings": 6,
+   "amountSold": 12149160
+  },
+  {
+   "state": "IDAHO",
+   "offerings": 11,
+   "amountSold": 10974599
+  },
+  {
+   "state": "KOREA, REPUBLIC OF",
+   "offerings": 1,
+   "amountSold": 10800000
+  },
+  {
+   "state": "WYOMING",
+   "offerings": 5,
+   "amountSold": 10740000
+  },
+  {
+   "state": "NORTH DAKOTA",
+   "offerings": 4,
+   "amountSold": 9294066
+  },
+  {
+   "state": "SOUTH DAKOTA",
+   "offerings": 7,
+   "amountSold": 9017964
+  },
+  {
+   "state": "ARKANSAS",
+   "offerings": 5,
+   "amountSold": 6076155
+  },
+  {
+   "state": "MISSISSIPPI",
+   "offerings": 6,
+   "amountSold": 5757565
+  },
+  {
+   "state": "NETHERLANDS",
+   "offerings": 1,
+   "amountSold": 5000000
+  },
+  {
+   "state": "MEXICO",
+   "offerings": 1,
+   "amountSold": 4619156
+  },
+  {
+   "state": "IOWA",
+   "offerings": 5,
+   "amountSold": 4571250
+  },
+  {
+   "state": "VERMONT",
+   "offerings": 3,
+   "amountSold": 4246504
+  },
+  {
+   "state": "MAINE",
+   "offerings": 4,
+   "amountSold": 3810963
+  },
+  {
+   "state": "LUXEMBOURG",
+   "offerings": 1,
+   "amountSold": 3020500
+  },
+  {
+   "state": "ALASKA",
+   "offerings": 2,
+   "amountSold": 2652679
+  },
+  {
+   "state": "NOVA SCOTIA, CANADA",
+   "offerings": 1,
+   "amountSold": 1999999
+  },
+  {
+   "state": "QUEBEC, CANADA",
+   "offerings": 2,
+   "amountSold": 1564967
+  },
+  {
+   "state": "WEST VIRGINIA",
+   "offerings": 1,
+   "amountSold": 999990
+  },
+  {
+   "state": "ALBERTA, CANADA",
+   "offerings": 1,
+   "amountSold": 895076
+  },
+  {
+   "state": "SASKATCHEWAN, CANADA",
+   "offerings": 4,
+   "amountSold": 874803
+  },
+  {
+   "state": "CAYMAN ISLANDS",
+   "offerings": 2,
+   "amountSold": 0
+  },
+  {
+   "state": "HAWAII",
+   "offerings": 1,
+   "amountSold": 0
+  },
+  {
+   "state": "HONG KONG",
+   "offerings": 4,
+   "amountSold": 0
+  },
+  {
+   "state": "MACAU",
+   "offerings": 1,
+   "amountSold": 0
+  },
+  {
+   "state": "PUERTO RICO",
+   "offerings": 1,
+   "amountSold": 0
+  },
+  {
+   "state": "SINGAPORE",
+   "offerings": 1,
+   "amountSold": 0
+  }
+ ],
+ "topOfferings": [
+  {
+   "accessionNumber": "0002051407-25-000001",
+   "entity": "Fovea Investment Holdings, LLC",
+   "cik": "2051407",
+   "state": "PENNSYLVANIA",
+   "industry": "Other Health Care",
+   "filingDate": "2025-01-17",
+   "quarter": "2025Q1",
+   "amountSold": 800000000,
+   "offeringAmount": 1240000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2051407/000205140725000001/"
+  },
+  {
+   "accessionNumber": "0001193125-25-296931",
+   "entity": "Par Health, Inc.",
+   "cik": "2096530",
+   "state": "MISSOURI",
+   "industry": "Pharmaceuticals",
+   "filingDate": "2025-11-25",
+   "quarter": "2025Q4",
+   "amountSold": 763000000,
+   "offeringAmount": 763000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2096530/000119312525296931/"
+  },
+  {
+   "accessionNumber": "0001641172-25-016576",
+   "entity": "Kindly MD, Inc.",
+   "cik": "1946573",
+   "state": "UTAH",
+   "industry": "Hospitals and Physicians",
+   "filingDate": "2025-06-26",
+   "quarter": "2025Q2",
+   "amountSold": 711694558,
+   "offeringAmount": 711694558,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1946573/000164117225016576/"
+  },
+  {
+   "accessionNumber": "0001708503-25-000003",
+   "entity": "Neuralink Corp.",
+   "cik": "1708503",
+   "state": "CALIFORNIA",
+   "industry": "Biotechnology",
+   "filingDate": "2025-06-12",
+   "quarter": "2025Q2",
+   "amountSold": 649000093,
+   "offeringAmount": 649000093,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1708503/000170850325000003/"
+  },
+  {
+   "accessionNumber": "0001990354-25-000017",
+   "entity": "Waystar Holding Corp.",
+   "cik": "1990354",
+   "state": "UTAH",
+   "industry": "Other Health Care",
+   "filingDate": "2025-10-10",
+   "quarter": "2025Q4",
+   "amountSold": 620835415,
+   "offeringAmount": 620835415,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1990354/000199035425000017/"
+  },
+  {
+   "accessionNumber": "0002065307-25-000001",
+   "entity": "Transcarent, Inc.",
+   "cik": "2065307",
+   "state": "COLORADO",
+   "industry": "Other Health Care",
+   "filingDate": "2025-04-22",
+   "quarter": "2025Q2",
+   "amountSold": 480999962,
+   "offeringAmount": 699999999,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2065307/000206530725000001/"
+  },
+  {
+   "accessionNumber": "0001231919-25-000012",
+   "entity": "Immunovant, Inc.",
+   "cik": "1764013",
+   "state": "NEW YORK",
+   "industry": "Pharmaceuticals",
+   "filingDate": "2025-01-21",
+   "quarter": "2025Q1",
+   "amountSold": 450000000,
+   "offeringAmount": 450000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1764013/000123191925000012/"
+  },
+  {
+   "accessionNumber": "0001600001-24-000005",
+   "entity": "ROM Technologies, Inc.",
+   "cik": "1600001",
+   "state": "CONNECTICUT",
+   "industry": "Other Health Care",
+   "filingDate": "2024-11-29",
+   "quarter": "2024Q4",
+   "amountSold": 448056161,
+   "offeringAmount": null,
+   "amendments": 3,
+   "url": "https://www.sec.gov/Archives/edgar/data/1600001/000160000124000005/"
+  },
+  {
+   "accessionNumber": "0001856619-24-000002",
+   "entity": "Treeline Biosciences, Inc.",
+   "cik": "1856619",
+   "state": "MASSACHUSETTS",
+   "industry": "Biotechnology",
+   "filingDate": "2024-10-17",
+   "quarter": "2024Q4",
+   "amountSold": 421779808,
+   "offeringAmount": 421779808,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1856619/000185661924000002/"
+  },
+  {
+   "accessionNumber": "0001465818-25-000011",
+   "entity": "Sharps Technology Inc.",
+   "cik": "1737995",
+   "state": "NEW YORK",
+   "industry": "Other Health Care",
+   "filingDate": "2025-10-31",
+   "quarter": "2025Q4",
+   "amountSold": 410880000,
+   "offeringAmount": 1000000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1737995/000146581825000011/"
+  },
+  {
+   "accessionNumber": "0002028122-24-000001",
+   "entity": "TrialSpark, Inc.",
+   "cik": "2028122",
+   "state": "NEW YORK",
+   "industry": "Pharmaceuticals",
+   "filingDate": "2024-07-02",
+   "quarter": "2024Q3",
+   "amountSold": 372249945,
+   "offeringAmount": 512000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2028122/000202812224000001/"
+  },
+  {
+   "accessionNumber": "0001861123-25-000001",
+   "entity": "Eikon Therapeutics, Inc.",
+   "cik": "1861123",
+   "state": "CALIFORNIA",
+   "industry": "Biotechnology",
+   "filingDate": "2025-02-28",
+   "quarter": "2025Q1",
+   "amountSold": 350700037,
+   "offeringAmount": 399999934,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1861123/000186112325000001/"
+  },
+  {
+   "accessionNumber": "0001829802-26-000001",
+   "entity": "Sensei Biotherapeutics, Inc.",
+   "cik": "1829802",
+   "state": "MARYLAND",
+   "industry": "Biotechnology",
+   "filingDate": "2026-03-04",
+   "quarter": "2026Q1",
+   "amountSold": 348906500,
+   "offeringAmount": 348906500,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1829802/000182980226000001/"
+  },
+  {
+   "accessionNumber": "0001945638-24-000001",
+   "entity": "Arsenal Biosciences, Inc.",
+   "cik": "1945638",
+   "state": "CALIFORNIA",
+   "industry": "Biotechnology",
+   "filingDate": "2024-09-04",
+   "quarter": "2024Q3",
+   "amountSold": 325352578,
+   "offeringAmount": 325352578,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1945638/000194563824000001/"
+  },
+  {
+   "accessionNumber": "0001699031-25-000183",
+   "entity": "GRAIL, Inc.",
+   "cik": "1699031",
+   "state": "CALIFORNIA",
+   "industry": "Biotechnology",
+   "filingDate": "2025-11-07",
+   "quarter": "2025Q4",
+   "amountSold": 324997989,
+   "offeringAmount": 324997989,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1699031/000169903125000183/"
+  },
+  {
+   "accessionNumber": "0001811209-25-000002",
+   "entity": "Kriya Therapeutics, Inc.",
+   "cik": "1811209",
+   "state": "NORTH CAROLINA",
+   "industry": "Biotechnology",
+   "filingDate": "2025-08-15",
+   "quarter": "2025Q3",
+   "amountSold": 320822412,
+   "offeringAmount": 320822412,
+   "amendments": 1,
+   "url": "https://www.sec.gov/Archives/edgar/data/1811209/000181120925000002/"
+  },
+  {
+   "accessionNumber": "0001231919-25-000030",
+   "entity": "DBV Technologies S.A.",
+   "cik": "1613780",
+   "state": "FRANCE",
+   "industry": "Pharmaceuticals",
+   "filingDate": "2025-04-17",
+   "quarter": "2025Q2",
+   "amountSold": 306900000,
+   "offeringAmount": 306900000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1613780/000123191925000030/"
+  },
+  {
+   "accessionNumber": "0001193125-25-291332",
+   "entity": "Galecto, Inc.",
+   "cik": "1800315",
+   "state": "MASSACHUSETTS",
+   "industry": "Biotechnology",
+   "filingDate": "2025-11-21",
+   "quarter": "2025Q4",
+   "amountSold": 285000000,
+   "offeringAmount": 285000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1800315/000119312525291332/"
+  },
+  {
+   "accessionNumber": "0001967854-25-000001",
+   "entity": "Pathos AI, Inc.",
+   "cik": "1967854",
+   "state": "ILLINOIS",
+   "industry": "Biotechnology",
+   "filingDate": "2025-05-01",
+   "quarter": "2025Q2",
+   "amountSold": 282999950,
+   "offeringAmount": 399999933,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1967854/000196785425000001/"
+  },
+  {
+   "accessionNumber": "0001702453-24-000001",
+   "entity": "Cardurion Pharmaceuticals, Inc.",
+   "cik": "1702453",
+   "state": "MASSACHUSETTS",
+   "industry": "Biotechnology",
+   "filingDate": "2024-07-24",
+   "quarter": "2024Q3",
+   "amountSold": 260410720,
+   "offeringAmount": 260410720,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1702453/000170245324000001/"
+  },
+  {
+   "accessionNumber": "0002105633-26-000001",
+   "entity": "Rhodenergy An Environmental Co Corp",
+   "cik": "2105633",
+   "state": "NEW JERSEY",
+   "industry": "Biotechnology",
+   "filingDate": "2026-01-15",
+   "quarter": "2026Q1",
+   "amountSold": 250000000,
+   "offeringAmount": 250000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2105633/000210563326000001/"
+  },
+  {
+   "accessionNumber": "0001243233-24-000002",
+   "entity": "Olema Pharmaceuticals, Inc.",
+   "cik": "1750284",
+   "state": "CALIFORNIA",
+   "industry": "Pharmaceuticals",
+   "filingDate": "2024-12-12",
+   "quarter": "2024Q4",
+   "amountSold": 249999225,
+   "offeringAmount": 249999986,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1750284/000124323324000002/"
+  },
+  {
+   "accessionNumber": "0001599298-24-000142",
+   "entity": "Summit Therapeutics Inc.",
+   "cik": "1599298",
+   "state": "FLORIDA",
+   "industry": "Biotechnology",
+   "filingDate": "2024-09-26",
+   "quarter": "2024Q3",
+   "amountSold": 234999889,
+   "offeringAmount": 234999889,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1599298/000159929824000142/"
+  },
+  {
+   "accessionNumber": "0002038004-24-000002",
+   "entity": "RICHMOND BUYER L.P.",
+   "cik": "2038004",
+   "state": "ILLINOIS",
+   "industry": "Other Health Care",
+   "filingDate": "2024-09-26",
+   "quarter": "2024Q3",
+   "amountSold": 232617659,
+   "offeringAmount": null,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2038004/000203800424000002/"
+  },
+  {
+   "accessionNumber": "0002042347-24-000001",
+   "entity": "Seaport Therapeutics, Inc.",
+   "cik": "2042347",
+   "state": "MASSACHUSETTS",
+   "industry": "Biotechnology",
+   "filingDate": "2024-10-31",
+   "quarter": "2024Q4",
+   "amountSold": 225899940,
+   "offeringAmount": 225999937,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2042347/000204234724000001/"
+  },
+  {
+   "accessionNumber": "0002040807-24-000003",
+   "entity": "Metsera, Inc.",
+   "cik": "2040807",
+   "state": "NEW YORK",
+   "industry": "Biotechnology",
+   "filingDate": "2024-11-20",
+   "quarter": "2024Q4",
+   "amountSold": 214999939,
+   "offeringAmount": 214999939,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2040807/000204080724000003/"
+  },
+  {
+   "accessionNumber": "0001104659-25-118426",
+   "entity": "Odyssey Therapeutics, Inc.",
+   "cik": "1882782",
+   "state": "MASSACHUSETTS",
+   "industry": "Biotechnology",
+   "filingDate": "2025-12-04",
+   "quarter": "2025Q4",
+   "amountSold": 214025200,
+   "offeringAmount": 214025200,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1882782/000110465925118426/"
+  },
+  {
+   "accessionNumber": "0002035778-24-000001",
+   "entity": "Candid Therapeutics, Inc.",
+   "cik": "2035778",
+   "state": "CALIFORNIA",
+   "industry": "Other Health Care",
+   "filingDate": "2024-09-13",
+   "quarter": "2024Q3",
+   "amountSold": 206203454,
+   "offeringAmount": 206203454,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2035778/000203577824000001/"
+  },
+  {
+   "accessionNumber": "0001856619-25-000002",
+   "entity": "Treeline Biosciences, Inc.",
+   "cik": "1856619",
+   "state": "MASSACHUSETTS",
+   "industry": "Biotechnology",
+   "filingDate": "2025-09-04",
+   "quarter": "2025Q3",
+   "amountSold": 200099964,
+   "offeringAmount": 249999967,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1856619/000185661925000002/"
+  },
+  {
+   "accessionNumber": "0001193805-26-000217",
+   "entity": "IMMUNIC, INC.",
+   "cik": "1280776",
+   "state": "UNITED STATES",
+   "industry": "Biotechnology",
+   "filingDate": "2026-03-04",
+   "quarter": "2026Q1",
+   "amountSold": 200000000,
+   "offeringAmount": 200000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1280776/000119380526000217/"
+  },
+  {
+   "accessionNumber": "0001521898-25-000001",
+   "entity": "LUMICELL, INC.",
+   "cik": "1521898",
+   "state": "MASSACHUSETTS",
+   "industry": "Biotechnology",
+   "filingDate": "2025-05-06",
+   "quarter": "2025Q2",
+   "amountSold": 198128718,
+   "offeringAmount": null,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1521898/000152189825000001/"
+  },
+  {
+   "accessionNumber": "0002062885-25-000001",
+   "entity": "Cognito Therapeutics Group, Inc.",
+   "cik": "2062885",
+   "state": "MASSACHUSETTS",
+   "industry": "Other Health Care",
+   "filingDate": "2025-04-01",
+   "quarter": "2025Q2",
+   "amountSold": 196250015,
+   "offeringAmount": 196250015,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2062885/000206288525000001/"
+  },
+  {
+   "accessionNumber": "0001231919-25-000129",
+   "entity": "MapLight Therapeutics, Inc.",
+   "cik": "1770069",
+   "state": "CALIFORNIA",
+   "industry": "Biotechnology",
+   "filingDate": "2025-07-28",
+   "quarter": "2025Q3",
+   "amountSold": 188187915,
+   "offeringAmount": 372449989,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1770069/000123191925000129/"
+  },
+  {
+   "accessionNumber": "0001231919-25-000022",
+   "entity": "Tectonic Therapeutic, Inc.",
+   "cik": "1681087",
+   "state": "MASSACHUSETTS",
+   "industry": "Biotechnology",
+   "filingDate": "2025-02-14",
+   "quarter": "2025Q1",
+   "amountSold": 185027642,
+   "offeringAmount": 185027642,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1681087/000123191925000022/"
+  },
+  {
+   "accessionNumber": "0002053139-25-000001",
+   "entity": "Tune Therapeutics, Inc.",
+   "cik": "2053139",
+   "state": "WASHINGTON",
+   "industry": "Biotechnology",
+   "filingDate": "2025-01-24",
+   "quarter": "2025Q1",
+   "amountSold": 182414405,
+   "offeringAmount": 208045929,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2053139/000205313925000001/"
+  },
+  {
+   "accessionNumber": "0000950123-25-007031",
+   "entity": "SAB Biotherapeutics, Inc.",
+   "cik": "1833214",
+   "state": "FLORIDA",
+   "industry": "Biotechnology",
+   "filingDate": "2025-08-05",
+   "quarter": "2025Q3",
+   "amountSold": 175000000,
+   "offeringAmount": 175000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1833214/000095012325007031/"
+  },
+  {
+   "accessionNumber": "0002035832-24-000001",
+   "entity": "Aktis Oncology, Inc.",
+   "cik": "2035832",
+   "state": "MASSACHUSETTS",
+   "industry": "Biotechnology",
+   "filingDate": "2024-10-02",
+   "quarter": "2024Q4",
+   "amountSold": 175000000,
+   "offeringAmount": 175000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2035832/000203583224000001/"
+  },
+  {
+   "accessionNumber": "0002141184-26-000002",
+   "entity": "Ollin Biosciences, Inc.",
+   "cik": "2141184",
+   "state": "TEXAS",
+   "industry": "Biotechnology",
+   "filingDate": "2026-06-24",
+   "quarter": "2026Q2",
+   "amountSold": 156249990,
+   "offeringAmount": 330000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2141184/000214118426000002/"
+  },
+  {
+   "accessionNumber": "0002099105-25-000001",
+   "entity": "Curative Inc.",
+   "cik": "2099105",
+   "state": "TEXAS",
+   "industry": "Health Insurance",
+   "filingDate": "2025-12-04",
+   "quarter": "2025Q4",
+   "amountSold": 152549994,
+   "offeringAmount": 199999922,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2099105/000209910525000001/"
+  },
+  {
+   "accessionNumber": "0001585592-25-000002",
+   "entity": "Gravie, Inc.",
+   "cik": "1585592",
+   "state": "MINNESOTA",
+   "industry": "Health Insurance",
+   "filingDate": "2025-06-26",
+   "quarter": "2025Q2",
+   "amountSold": 149999991,
+   "offeringAmount": 150000000,
+   "amendments": 1,
+   "url": "https://www.sec.gov/Archives/edgar/data/1585592/000158559225000002/"
+  },
+  {
+   "accessionNumber": "0001673772-25-000001",
+   "entity": "RAPT Therapeutics, Inc.",
+   "cik": "1673772",
+   "state": "CALIFORNIA",
+   "industry": "Biotechnology",
+   "filingDate": "2025-01-03",
+   "quarter": "2025Q1",
+   "amountSold": 149984200,
+   "offeringAmount": 149984200,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1673772/000167377225000001/"
+  },
+  {
+   "accessionNumber": "0001288320-25-000004",
+   "entity": "Vascular Perfusion Solutions, Inc.",
+   "cik": "1779735",
+   "state": "TEXAS",
+   "industry": "Biotechnology",
+   "filingDate": "2025-05-30",
+   "quarter": "2025Q2",
+   "amountSold": 147017491,
+   "offeringAmount": 343766315,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1779735/000128832025000004/"
+  },
+  {
+   "accessionNumber": "0001955312-24-000001",
+   "entity": "Syncromune, Inc.",
+   "cik": "1955312",
+   "state": "FLORIDA",
+   "industry": "Biotechnology",
+   "filingDate": "2024-12-17",
+   "quarter": "2024Q4",
+   "amountSold": 144828791,
+   "offeringAmount": 144828791,
+   "amendments": 2,
+   "url": "https://www.sec.gov/Archives/edgar/data/1955312/000195531224000001/"
+  },
+  {
+   "accessionNumber": "0002028496-25-000001",
+   "entity": "Veronica Holdings, LLC",
+   "cik": "2028496",
+   "state": "NEW YORK",
+   "industry": "Biotechnology",
+   "filingDate": "2025-03-03",
+   "quarter": "2025Q1",
+   "amountSold": 142311559,
+   "offeringAmount": 142311559,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2028496/000202849625000001/"
+  },
+  {
+   "accessionNumber": "0002029767-24-000001",
+   "entity": "NGM Bio Holdings, Inc.",
+   "cik": "2029767",
+   "state": "CALIFORNIA",
+   "industry": "Biotechnology",
+   "filingDate": "2024-07-17",
+   "quarter": "2024Q3",
+   "amountSold": 142039949,
+   "offeringAmount": 142039949,
+   "amendments": 1,
+   "url": "https://www.sec.gov/Archives/edgar/data/2029767/000202976724000001/"
+  },
+  {
+   "accessionNumber": "0001231919-25-000361",
+   "entity": "Veradermics, Inc",
+   "cik": "1827635",
+   "state": "CONNECTICUT",
+   "industry": "Other Health Care",
+   "filingDate": "2025-10-28",
+   "quarter": "2025Q4",
+   "amountSold": 134999978,
+   "offeringAmount": 149999978,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1827635/000123191925000361/"
+  },
+  {
+   "accessionNumber": "0001231919-25-000372",
+   "entity": "Electra Therapeutics, Inc.",
+   "cik": "2088082",
+   "state": "CALIFORNIA",
+   "industry": "Biotechnology",
+   "filingDate": "2025-10-30",
+   "quarter": "2025Q4",
+   "amountSold": 134188389,
+   "offeringAmount": 184133425,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2088082/000123191925000372/"
+  },
+  {
+   "accessionNumber": "0001453687-24-000096",
+   "entity": "Cartesian Therapeutics, Inc.",
+   "cik": "1453687",
+   "state": "MARYLAND",
+   "industry": "Biotechnology",
+   "filingDate": "2024-07-17",
+   "quarter": "2024Q3",
+   "amountSold": 130023000,
+   "offeringAmount": 130023000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1453687/000145368724000096/"
+  },
+  {
+   "accessionNumber": "0001661181-24-000001",
+   "entity": "Organogenesis Holdings Inc.",
+   "cik": "1661181",
+   "state": "MASSACHUSETTS",
+   "industry": "Biotechnology",
+   "filingDate": "2024-11-27",
+   "quarter": "2024Q4",
+   "amountSold": 130000000,
+   "offeringAmount": 130000000,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1661181/000166118124000001/"
+  },
+  {
+   "accessionNumber": "0002134859-26-000001",
+   "entity": "EVMS Holdco, LLC",
+   "cik": "2134859",
+   "state": "NEW JERSEY",
+   "industry": "Other Health Care",
+   "filingDate": "2026-05-27",
+   "quarter": "2026Q2",
+   "amountSold": 129821124,
+   "offeringAmount": 129821124,
+   "amendments": 0,
+   "url": "https://www.sec.gov/Archives/edgar/data/2134859/000213485926000001/"
+  }
+ ]
+}

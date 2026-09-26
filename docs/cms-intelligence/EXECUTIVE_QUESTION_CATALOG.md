@@ -315,3 +315,28 @@ and Q001/Q038's existing use of this same dataset).
 ## Coverage check against the master orchestrator's required topics
 
 Market growth (§1) · enrollment (§1, §5, §6, §7) · claims (§2) · utilization (§2) · cost (§2, §3) · reimbursement (§3) · provider/network (§4, §14) · site of care (§2 Q018–Q021, §9 Q094) · Medicare Advantage (§5) · Part D (§5, §10) · Medicaid (§6) · dual eligibles (§6 Q060) · Marketplace (§7) · pharmacy (§10) · value-based care (§11) · policy (§8) · CMS programs (§8) · emerging trends (§9). All 18 named topics are represented by at least one dedicated question.
+
+---
+
+## 15. Market Catalysts: health-industry 8-Ks and Form D (Q160–Q165)
+
+Added 2026-09-25, owned by `market-catalyst-intelligence` and shown in the
+Market Catalysts layer. Numbered from Q160 so three sessions adding sources
+in parallel that day could each take a separate block. Two SEC sources: 8-K
+filings by every company in 24 health-industry SIC codes (widening the
+6-insurer watchlist behind Q120–Q122, which keeps running), and SEC's
+quarterly Form D data sets filtered to health-care issuers. See
+SOURCE_REGISTRY.md.
+
+**Dimensions:** Population — N/A (corporate filings). Geography — national;
+issuer state for Q165. Time horizon — trailing 730 days for the 8-Ks; the
+latest 8 quarterly Form D files (two full years) for Q163–Q165.
+
+| # | Question | Why leadership needs it / decision supported | Leading indicator | Lagging indicator | Notable limitation |
+|---|---|---|---|---|---|
+| Q160 | Which health-industry companies completed an acquisition or disposition of assets (8-K Item 2.01), and in which sectors? | Consolidation and divestitures among drug makers, device makers, distributors, insurers and providers change who a plan contracts with and what it pays | A new Item 2.01 filing | Sector mix of completed deals across pulls | Item 2.01 covers disposals as well as acquisitions; deal size and counterparty are in the filing text, not read |
+| Q161 | Which health-industry companies filed the most material definitive agreements (Item 1.01)? | Licensing, supply, financing and merger agreements often come before a launch, a financing or an acquisition | A cluster of Item 1.01 filings at one company | Confirmed deal activity in later filings | Item 1.01 covers far more than partnerships; frequent small financings dominate the top counts |
+| Q162 | Which health-industry companies filed the most director or officer changes (Item 5.02)? | Leadership changes at competitors and suppliers often come before shifts in strategy | A cluster of Item 5.02 filings | Confirmed strategy change | Covers appointments as well as departures; never read as a firing or resignation, and never tied to enrollment or performance |
+| Q163 | How much private capital did health-care companies report raising on Form D, by industry group and quarter? | The funding behind the next wave of drugs, devices and care-delivery competitors | A quarter's amount sold against the same quarter a year earlier | A sustained multi-quarter shift | Form D covers listed-company private placements and debt as well as venture rounds; amendments folded into their original offering, never double counted |
+| Q164 | Which health-care companies reported the largest private offerings? | Names well-funded entrants and expanding competitors from their own SEC notices | A new large notice | Amendments raising the amount sold | Amounts are as the issuer reported them; naming reports the filing, not an assessment of the company |
+| Q165 | Where are health-care private offering dollars concentrated by issuer state? | Shows the clusters most likely to produce new competitors and partners | A state's share of amount sold | Share held across later quarters | Located by the primary issuer's principal place of business, not where the money is spent |

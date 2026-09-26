@@ -16,6 +16,11 @@
  *   - NIH RePORTER award notices (data/adapters/nihReporterAwards.ts)
  *   - ClinicalTrials.gov industry-sponsored Phase 3 results postings
  *     (data/adapters/clinicalTrialsResults.ts)
+ * Two more SEC sources added 2026-09-25, each in its own module:
+ *   - 8-Ks by every company in a health-industry SIC code, Items 1.01,
+ *     2.01 and 5.02 (Q160-Q162, healthIndustryFilingInsights.ts)
+ *   - Form D private offerings by health-care issuers (Q163-Q165,
+ *     formDInsights.ts)
  * Each is loaded independently below - a missing snapshot for one source
  * only skips that source's insights, never the whole agent (same
  * per-source isolation fullSweep.ts already applies per-agent).
@@ -58,6 +63,8 @@ import {
 } from "../../data/adapters/nihReporterAwards";
 import { loadLatestSnapshot as loadCtSnapshot, SOURCE_ID as CT_SOURCE_ID, type ClinicalTrialResult } from "../../data/adapters/clinicalTrialsResults";
 import type { Insight } from "../../intelligence/evidence/schema";
+import { buildFormDInsights } from "./formDInsights";
+import { buildHealthIndustryFilingInsights } from "./healthIndustryFilingInsights";
 import { validateInsight } from "../../intelligence/evidence/validate";
 import { tukeyBox } from "../../intelligence/metrics/metrics";
 import { selectNoteworthy, type Candidate } from "../../intelligence/salience/selectNoteworthy";
@@ -95,6 +102,8 @@ export const marketCatalystAgent: DomainAgent = {
     "Q117", "Q118", "Q119",
     "Q120", "Q121", "Q122",
     "Q123", "Q124", "Q129",
+    "Q160", "Q161", "Q162",
+    "Q163", "Q164", "Q165",
   ],
 
   async run(ctx: AgentContext): Promise<Insight[]> {
@@ -133,6 +142,9 @@ export const marketCatalystAgent: DomainAgent = {
       const materialAgreementByCompany = await buildMaterialAgreementByCompanySignal(secSnapshot.filings, secSnapshot.pulledAt, secSnapshot.windowStart, ctx);
       if (materialAgreementByCompany) insights.push(materialAgreementByCompany);
     }
+
+    insights.push(...(await buildHealthIndustryFilingInsights(ctx)));
+    insights.push(...(await buildFormDInsights(ctx)));
 
     const ctSnapshot = loadCtSnapshot();
     if (ctSnapshot && ctSnapshot.trials.length > 0) {

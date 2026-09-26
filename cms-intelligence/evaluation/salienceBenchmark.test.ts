@@ -9,7 +9,7 @@ beforeAll(async () => {
 
 describe("captureSalienceCalls", () => {
   it("captures the real prompts production sends - one per ranked selection with more candidates than it shows", () => {
-    expect(calls).toHaveLength(27); // 16 measured 2026-09-24; on 2026-09-25 +2 physician (provider types, states), +1 NIH institutes, +1 MA share shift, +2 services (categories, codes), +2 Marketplace (benchmark by state, issuers by state - the old 5-state issuer call showed every candidate, so it never counted), +1 Marketplace enrollment by state, +1 Medicaid enrollment by state, +1 Medicaid managed care by state
+    expect(calls).toHaveLength(31); // 16 measured 2026-09-24; on 2026-09-25 +2 physician (provider types, states), +1 NIH institutes, +1 MA share shift, +2 services (categories, codes), +2 Marketplace (benchmark by state, issuers by state - the old 5-state issuer call showed every candidate, so it never counted), +1 Marketplace enrollment by state, +1 Medicaid enrollment by state, +1 Medicaid managed care by state, +2 health-industry 8-K companies (Items 1.01, 5.02), +2 Form D (largest offerings, by state)
     for (const call of calls) {
       expect(call.topN).toBeGreaterThan(0);
       expect(Object.keys(call.candidates).length).toBeGreaterThan(call.topN);

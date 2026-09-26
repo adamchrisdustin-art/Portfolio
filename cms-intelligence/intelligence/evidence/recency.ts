@@ -45,6 +45,8 @@ export const SOURCE_TIMING: Record<string, SourceTiming> = {
   "openfda:drugsfda-novel-approvals": { updateIntervalMonths: 1, publicationLagMonths: 0 },
   "nih-reporter:project-awards": { updateIntervalMonths: 1, publicationLagMonths: 0 },
   "clinicaltrials-gov:phase3-results": { updateIntervalMonths: 1, publicationLagMonths: 0 },
+  "sec-edgar:health-industry-8k": { updateIntervalMonths: 1, publicationLagMonths: 0 },
+  "sec-edgar:form-d-health": { updateIntervalMonths: 3, publicationLagMonths: 1 },
 };
 
 export const AGING_AFTER_MONTHS = 12;
