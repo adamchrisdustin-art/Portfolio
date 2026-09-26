@@ -59,8 +59,19 @@ panel or modal, written for a general audience, separate from any
 technical "About the agent architecture" content that might exist
 elsewhere for a technical audience).
 
-**Drilldowns:** each headline card links to its originating layer (2–7)
+**Drilldowns:** each headline card links to its originating layer (2–8)
 for full context.
+
+**As built (2026-09-25, after the Phase 7 reviewer test):** when the
+monthly executive-analyst run matches the committed data, its briefing and
+ranking lead the Pulse. When it doesn't (every data change hides it until
+the next run), a "What changed" list takes its place, picked by fixed
+rules in `analytics/leadFindings.ts`: findings that show a change, no
+stale data, higher confidence first, at most two per agent, six total. The
+Pulse header states when data was last pulled and the next monthly
+refresh. A dated "What to watch next" section follows the Pulse
+(`analytics/watchCalendar.ts`), and a sticky "Jump to" menu reaches every
+section (the agent roster stays above the Pulse, Adam's call).
 
 **Evidence behavior:** every card visible on this layer must be backed by
 an `Insight` object per `EVIDENCE_MODEL.md` — no summary statistic
@@ -273,6 +284,17 @@ detected.
 
 ---
 
+## Layer 8 — Market Catalysts (added 2026-09-25)
+
+**Executive questions:** Q113–Q124 and Q129 (Market/Catalyst
+Intelligence): SEC 8-K filings, FDA novel approvals, NIH awards and
+Phase 3 trial results. These first shared Emerging Signals; the Phase 7
+reviewer test found they buried the one cross-domain finding there, so
+they moved to their own layer and Emerging Signals holds only findings
+that combine agents' data.
+
+---
+
 ## Chart conventions (binding on every chart component, not just Phase 5)
 
 Learned the hard way across several rounds of direct feedback on the
@@ -381,7 +403,7 @@ BI-style section separate from agent-finding cards, backed by
 `cms-intelligence/analytics/overview.ts`, reading the real adapters
 directly rather than only what an agent judged insight-worthy).
 
-## Shared components across all seven layers
+## Shared components across every layer
 
 - **Evidence drawer** — a single reusable component (consistent with the
   existing site's component-reuse pattern, e.g. `TableauEmbed.tsx` being
@@ -389,10 +411,12 @@ directly rather than only what an agent judged insight-worthy).
   object's full evidence trail: sources, vintage, limitations,
   contradictory evidence, confidence rationale. Every layer opens the same
   drawer, never a bespoke per-layer evidence view.
-- **Freshness indicator** — a consistent visual treatment (e.g., a dated
-  badge) for `Freshness.dataAsOf` and `isStale`, present on every card/
-  chart across every layer, so staleness is always visible without a
-  click.
+- **Freshness indicator** — a consistent visual treatment present on
+  every card across every layer, so staleness is always visible without a
+  click. As built: the period the data covers (`Insight.period`, not the
+  pull date) and a recency chip (current, aging or stale, from
+  `recency.ts`) on every card; "who it affects", "read alongside" links
+  and source links come from `analytics/findingPresentation.ts`.
 - **Population badge** — a consistent, always-visible tag showing which
   `PopulationType` a given chart/card represents (FFS, MA, Medicaid,
   etc.) — the UI-level enforcement of the population-integrity rule that

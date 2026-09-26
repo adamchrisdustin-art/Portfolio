@@ -24,9 +24,9 @@ line, a dated "What to watch next" list, "Read alongside" links between
 findings, clickable sources, Market Catalysts as its own layer, and
 executive copy cleaned of internal references (a test now blocks them).
 Confidence on the card face is **held** until findings stop all reading low
-(Adam). **Open decision:** a deterministic "what changed" lead list at the
-top of the Pulse for when no reasoned run matches (explained to Adam, no
-answer yet). **Next:** new data sources in parallel sessions, then Adam's
+(Adam). Adam approved a "What changed" lead list, built: when no reasoned run
+matches the data, fixed rules pick up to six findings that show a change
+and list them in the synthesis box above the categories. **Next:** new data sources in parallel sessions, then Adam's
 design-agent reskin, then the final reasoning rerun (held until project
 completion, the next live test, or the Oct 1 cron, whichever comes first).
 

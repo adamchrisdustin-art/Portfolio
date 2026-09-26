@@ -7,7 +7,8 @@ import { runFullSweep } from "@/cms-intelligence/agents/orchestrator/fullSweep";
 import { buildAnalyticsOverview } from "@/cms-intelligence/analytics/overview";
 import { currentReasonedRun } from "@/cms-intelligence/reasoning/monthlyRun";
 import { latestPullDate, unchangedSinceBySource } from "@/cms-intelligence/reasoning/sourceFingerprints";
-import { relatedFindings } from "@/cms-intelligence/analytics/findingPresentation";
+import { formatPeriod, relatedFindings } from "@/cms-intelligence/analytics/findingPresentation";
+import { leadFindings } from "@/cms-intelligence/analytics/leadFindings";
 import { buildWatchCalendar, formatWatchDate } from "@/cms-intelligence/analytics/watchCalendar";
 import { loadLatestSnapshot as loadLatestFederalRegister } from "@/cms-intelligence/data/adapters/federalRegisterDocuments";
 import { applyRecency, RECENCY_ORDER } from "@/cms-intelligence/intelligence/evidence/recency";
@@ -109,6 +110,7 @@ export default async function HealthcareIntelligencePage() {
     unchangedSince: unchangedSinceBySource(),
     now: new Date(),
   });
+  const leads = leadFindings(pulseInsights);
   const nextRefresh = watchList.find((w) => w.title === "Monthly data refresh");
   const elevatedFindings = sweep.allInsights.filter((i) => i.confidence !== "low").length;
   const backfilled = [
@@ -259,6 +261,31 @@ export default async function HealthcareIntelligencePage() {
               Every number and company name above was checked against the agents&apos; real computed facts before
               publishing{analyst.rejected.length > 0 ? `; ${analyst.rejected.length} statement(s) that failed that check were dropped` : ""}.
             </p>
+          )}
+          {!analyst && leads.length > 0 && (
+            <>
+              <p className="eyebrow" style={{ margin: "16px 0 8px" }}>
+                What changed
+              </p>
+              <ol style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 10, fontSize: "0.9rem" }}>
+                {leads.map((insight) => (
+                  <li key={insight.id}>
+                    <a href={`#${insight.id}`} style={{ fontWeight: 600 }}>
+                      {insight.headline}
+                    </a>
+                    <span style={{ color: "var(--text-muted)" }}>
+                      {" "}
+                      — {insight.businessRelevance} <span className="mono">({formatPeriod(insight.period)})</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+              <p style={{ margin: "12px 0 0", fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                Picked by fixed rules while no analyst briefing matches the current data: findings that show a change,
+                higher confidence first, at most two per agent. The monthly analyst run replaces this list with its own
+                ranking.
+              </p>
+            </>
           )}
         </div>
         {pulseInsights.length === 0 ? (

@@ -188,9 +188,10 @@ watch (buried, undated), Q10 architecture (told, not shown). Fail: Q1 what
 changed (nothing brings changes together across categories), Q5 drivers.
 Fixed the same day: data-period label, recency chip, "Affects" line,
 dated watch list, related-finding links, source links, Market Catalysts
-layer, copy cleanup with a guard test, sticky section menu. Held: confidence
-on the card face (until findings stop all reading low). Open: a
-deterministic lead list for Q1 when no reasoned run matches.
+layer, copy cleanup with a guard test, sticky section menu. Also built, for Q1:
+a "What changed" lead list picked by fixed rules whenever no reasoned run
+matches the data. Held: confidence on the card face (until findings stop
+all reading low).
 
 ## Final engineering standard
 
