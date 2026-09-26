@@ -74,6 +74,12 @@ jobs:
       - name: Pull ClinicalTrials.gov Phase 3 results postings
         run: npx tsx cms-intelligence/data/adapters/pull-clinicaltrials-results.ts
 
+      - name: Pull CMS Physician Fee Schedule RVU files (latest release per year from 2013; only changed years download)
+        run: npx tsx cms-intelligence/data/adapters/pull-physician-fee-schedule.ts
+
+      - name: Pull CMS hospital penalty programs (HRRP, HAC Reduction, Hospital VBP, IPPS Tables 15 and 16B)
+        run: npx tsx cms-intelligence/data/adapters/pull-hospital-penalty-programs.ts
+
       - name: Check watched datasets for new data (flags only, never pulls)
         # A watch-list network failure must never block the data pull.
         continue-on-error: true

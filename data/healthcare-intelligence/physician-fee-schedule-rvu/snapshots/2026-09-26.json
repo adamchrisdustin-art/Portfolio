@@ -1,0 +1,62 @@
+{
+  "dataset": "physician-fee-schedule-rvu",
+  "pulledAt": "2026-09-26T04:04:27.875Z",
+  "years": {
+    "2013": {
+      "release": "RVU13D",
+      "sha256": "323f059d4d07902c49b9e2b68e8bab1ff1a3ae729114c36a61b4ec25acfa6aba"
+    },
+    "2014": {
+      "release": "RVU14D",
+      "sha256": "8045c012dcc3c8110b214f1f6bf5e71f284ac42d5c2b889965f41f179f3b6b1c"
+    },
+    "2015": {
+      "release": "RVU15D",
+      "sha256": "5310e2193c0c4e14b7c76c304fb2a1c6ba5c2af240eb9a42917002bf5c3c138a"
+    },
+    "2016": {
+      "release": "RVU16D",
+      "sha256": "53ec7a2ce644fc12a1e5267758244d89c9147ccb8a61ef791d25e512aa6a905d"
+    },
+    "2017": {
+      "release": "RVU17D",
+      "sha256": "69d380b0428a7b733989e3df7e2bd1d58055f0e3d7bc271d685cef4d6f8999b6"
+    },
+    "2018": {
+      "release": "RVU18D",
+      "sha256": "85888081f011c5d92ab5a26b75e3c1b508174b91aff7d68fcd3c88cf8b89bea7"
+    },
+    "2019": {
+      "release": "RVU19D",
+      "sha256": "4e5b6b85194b063a15bbdc6e92f6a845f1acf55722e58c3782cfb23b4bd84778"
+    },
+    "2020": {
+      "release": "RVU20D",
+      "sha256": "7cb6b7955e4692711fdd8072c96f074a53b550a7be8532438c6001e6656b2954"
+    },
+    "2021": {
+      "release": "RVU21D",
+      "sha256": "eac9aff1202bb146f5a0bcc70dfa34e54b3ea2abc6e30c9af15625c5597a4f34"
+    },
+    "2022": {
+      "release": "RVU22D",
+      "sha256": "ee0789c3046e0a45d8fb8cbd46eab1f1abea03f794ff8fd6cb9d35831995c361"
+    },
+    "2023": {
+      "release": "RVU23D",
+      "sha256": "7afe763284d728c8331528f4fecc76b70fad9458cc20ac16dab840023c489031"
+    },
+    "2024": {
+      "release": "RVU24D",
+      "sha256": "55a46a413cae1f89bd53e4dba9401704f902e0c8137f62f12c052651dc40e735"
+    },
+    "2025": {
+      "release": "RVU25D",
+      "sha256": "7a36326fcbd46313a14401a04c4752c2d6bb8c90f75787d954609f01094b3aaa"
+    },
+    "2026": {
+      "release": "RVU26D",
+      "sha256": "b60717e7cb3916fae5a21fc8c65b4969ec4facc0b7e34f06ced258d6d874aae7"
+    }
+  }
+}
