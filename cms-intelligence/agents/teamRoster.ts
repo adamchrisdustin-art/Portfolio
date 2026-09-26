@@ -78,7 +78,7 @@ export const SPECIALISTS: TeamMember[] = [
     agentId: "market-catalyst-intelligence",
     title: "Competitive Intelligence Analyst",
     domain: "Market Catalysts",
-    role: "Logs dated market events: insurer SEC filings, FDA new-drug approvals, NIH research awards and Phase 3 trial results.",
+    role: "Logs dated market events: health-industry SEC filings and private funding notices, FDA new-drug approvals, NIH research awards and Phase 3 trial results.",
   },
   {
     agentId: "data-source-cms-change-monitor",

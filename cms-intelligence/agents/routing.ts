@@ -45,6 +45,7 @@ export const QUESTION_ROUTING: QuestionRange[] = [
   { from: 113, to: 124, agentId: "market-catalyst-intelligence" },
   { from: 125, to: 128, agentId: "provider-network-intelligence" },
   { from: 129, to: 129, agentId: "market-catalyst-intelligence" },
+  { from: 160, to: 165, agentId: "market-catalyst-intelligence" }, // health-industry 8-Ks and Form D, added 2026-09-25
 ];
 
 export function questionNumberFrom(questionId: string): number {

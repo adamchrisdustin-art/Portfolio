@@ -391,3 +391,95 @@ question" and "every source should map back to one or more questions" —
 enforced in code, not just by convention: see
 `cms-intelligence/data/sources/registry.test.ts`'s assertion that every
 registry entry has a non-empty `relatedQuestionIds` array.
+
+## SEC EDGAR 8-K filings, every health-industry SIC code (added 2026-09-25)
+
+`sec-edgar:health-industry-8k` · `data/adapters/secHealthIndustry8k.ts` ·
+Market Catalyst agent, Q160–Q162 · pulled monthly, trailing 730 days.
+
+Widens the 6-insurer watchlist (`sec-edgar:healthcare-8k-filings`, which
+keeps running unchanged) to every company in a health SIC code, tracking
+Items 1.01 (material definitive agreement), 2.01 (completion of
+acquisition or disposition of assets) and 5.02 (director/officer
+departure or election).
+
+**Health SIC codes**, checked 2026-09-25 against SEC's own list
+(sec.gov/search-filings/standard-industrial-classification-sic-code-list):
+
+| Sector | SIC codes |
+|---|---|
+| Pharma & biotech | 2833, 2834, 2835, 2836 |
+| Medical devices & supplies | 3841, 3842, 3843, 3844, 3845, 3851 |
+| Drug & supply distribution, pharmacies | 5047, 5122, 5912 |
+| Health insurers | 6324 |
+| Hospitals & health services | 8000, 8011, 8050, 8051, 8060, 8062, 8071, 8082, 8090, 8093 |
+
+Left out: 6321 (accident & health insurance) and 8731 (commercial
+physical & biological research), because most registrants there are
+disability/supplemental insurers or non-medical labs.
+
+**Primary path: EDGAR full-text search**
+(`efts.sec.gov/LATEST/search-index?forms=8-K&sics=…&startdt=…&enddt=…&from=…`).
+Verified live 2026-09-25: one hit per filing, `_source` carries `ciks`,
+`display_names`, `sics`, `items`, `form`, `file_date`, `adsh`; 57 hits for
+SIC 8062 in 2026. Pages hold 100 hits and a query stops counting at
+10,000 (SIC 2834 alone had 13,259 in the window), so each SIC is queried
+in quarter-sized date ranges, halved at the cap. `forms=8-K` also returns
+8-K/A amendments, which are dropped.
+
+**Real gotcha found live:** `sics` is undocumented and SEC's CDN cache
+ignores it (and parameter order, and unknown parameters). A request for
+SIC 3841 came back with SIC 5912's cached answer, and every SIC briefly
+returned the same 438 hits. The response echoes the query that actually
+ran, so the adapter checks every page's echoed SIC, dates and offset,
+retries once, then splits the date range to get a fresh cache key. Each
+SIC's ranges also start on different days, so the SICs never share keys.
+
+**Fallback (documented path):** daily form index
+(`Archives/edgar/daily-index/YYYY/QTRn/form.YYYYMMDD.idx`) for every 8-K
+filer, then each CIK's `data.sec.gov/submissions/CIK##########.json` for
+its SIC and items. Used automatically if full-text search errors or the
+echo check fails at a single day. Several thousand requests, about 20
+minutes.
+
+**First pull (2026-09-26 UTC):** 25,894 original 8-Ks from 1,234
+companies; 4,389 with Item 1.01, 470 with Item 2.01, 4,376 with Item 5.02.
+**Cross-check:** the six watchlist insurers' 8-K, 1.01, 2.01 and 5.02
+counts match the submissions API exactly. Requests are spaced 150ms
+apart (under SEC's 10/second) with the same descriptive User-Agent as
+the watchlist adapter. Summarized at pull time (164KB): counts by SIC and
+month and by company, plus every Item 2.01 filing with its link.
+
+## SEC Form D data sets, health-care issuers (added 2026-09-25)
+
+`sec-edgar:form-d-health` · `data/adapters/secFormD.ts` · Market Catalyst
+agent, Q163–Q165 · pulled monthly; SEC publishes quarterly.
+
+Form D is the notice filed within 15 days of first selling securities in
+an exempt offering: venture and growth rounds, but also private
+placements by listed companies and debt. Quarterly zips are linked from
+`sec.gov/data-research/sec-markets-data/form-d-data-sets`. The link path
+changed between quarters (2026q2 under `/files/datastandardsinnovation/`,
+earlier under `/files/structureddata/`), so the adapter reads the links
+from the page each pull.
+
+`FORMDSUBMISSION.tsv`, `OFFERING.tsv` and `ISSUERS.tsv` (primary issuer)
+are joined by `ACCESSIONNUMBER`; columns are found by header name.
+Health care is the form's five health industry groups: Biotechnology,
+Pharmaceuticals, Health Insurance, Hospitals and Physicians, Other Health
+Care. Health-focused investment funds file as pooled investment funds and
+are not included. Verified: 2026 Q2 had 555 health-care filings (465 D,
+90 D/A), and the 2024 Q3 file has the same columns.
+
+**Amendments:** a D/A restates an earlier notice and `TOTALAMOUNTSOLD` is
+cumulative, so each D/A is followed back through `PREVIOUSACCESSIONNUMBER`
+to its original D. An offering counts once, in its original notice's
+quarter, at the amount sold in its latest amendment. Amendments to notices
+filed before the window restate older offerings and are left out.
+
+**Window:** the latest 8 quarterly files (two full years), the closest
+match to the other Market Catalyst sources' 730 days. **First pull:**
+2024 Q3–2026 Q2, 3,899 health-care filings: 3,221 offerings, 363
+amendments folded in, 315 amendments to earlier offerings left out;
+$39.99B sold. Summarized at pull time (31KB): by quarter and industry
+group, by issuer state, and the 50 largest offerings.

@@ -30,4 +30,6 @@ export const SOURCE_LABELS: Record<string, SourceLabel> = {
   "cms:provider-of-services": { name: "Provider of Services files (certified facilities and beds)", group: "cms", url: "https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/provider-of-services-file-quality-improvement-and-evaluation-system" },
   "cms:facility-change-of-ownership": { name: "Hospital and SNF Change of Ownership", group: "cms", url: "https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/hospital-change-of-ownership" },
   "cms:facility-all-owners": { name: "Hospital and SNF All Owners", group: "cms", url: "https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/hospital-all-owners" },
+  "sec-edgar:health-industry-8k": { name: "SEC EDGAR 8-K filings by health-industry companies", group: "other-federal", url: "https://www.sec.gov/edgar/search/#/forms=8-K" },
+  "sec-edgar:form-d-health": { name: "SEC Form D data sets (health-care private offerings)", group: "other-federal", url: "https://www.sec.gov/data-research/sec-markets-data/form-d-data-sets" },
 };

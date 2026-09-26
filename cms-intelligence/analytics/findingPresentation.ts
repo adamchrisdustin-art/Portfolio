@@ -82,6 +82,12 @@ const STAKEHOLDER_OVERRIDES: Record<string, string[]> = {
   "market-growth-facility-count-by-type": ["Health plans", "Providers"],
   "provider-network-snf-ownership-changes-by-state": ["Nursing homes", "Health plans"],
   "provider-network-private-equity-owners": ["Hospitals", "Nursing homes", "Health plans"],
+  "market-catalyst-sec-health-asset-deals": ["Life sciences", "Providers", "Investors"],
+  "market-catalyst-sec-health-material-agreements": ["Life sciences", "Providers", "Investors"],
+  "market-catalyst-sec-health-leadership-changes": ["Life sciences", "Providers", "Investors"],
+  "market-catalyst-formd-health-raises": ["Life sciences", "Investors"],
+  "market-catalyst-formd-health-largest-raises": ["Life sciences", "Investors"],
+  "market-catalyst-formd-health-by-state": ["Life sciences", "Investors"],
 };
 
 export function stakeholdersFor(insight: Insight): string[] {
@@ -119,6 +125,10 @@ export const RELATED_GROUPS: string[][] = [
   ["market-growth-hospital-beds-by-state", "market-growth-facility-count-by-type", "market-growth-nursing-home-beds-by-state"],
   ["provider-network-hospital-ownership-changes", "provider-network-private-equity-owners", "provider-network-ownership-concentration"],
   ["provider-network-snf-ownership-changes-by-state", "market-growth-nursing-home-beds-by-state", "provider-network-private-equity-owners"],
+  ["market-catalyst-sec-health-asset-deals", "market-catalyst-sec-health-material-agreements", "market-catalyst-sec-health-leadership-changes", "market-catalyst-sec-filing-mix"],
+  ["market-catalyst-sec-health-leadership-changes", "market-catalyst-sec-leadership-change-by-company"],
+  ["market-catalyst-sec-health-material-agreements", "market-catalyst-sec-material-agreement-by-company"],
+  ["market-catalyst-formd-health-raises", "market-catalyst-formd-health-largest-raises", "market-catalyst-formd-health-by-state", "market-catalyst-nih-total-dollars"],
 ];
 
 const MAX_RELATED = 4;

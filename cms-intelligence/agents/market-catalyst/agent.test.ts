@@ -15,13 +15,15 @@ describe("marketCatalystAgent", () => {
     }
   });
 
-  it("covers all 13 question IDs (Q113-Q124 plus Q129) on the agent definition", () => {
+  it("covers all 19 question IDs (Q113-Q124, Q129, Q160-Q165) on the agent definition", () => {
     expect(marketCatalystAgent.id).toBe("market-catalyst-intelligence");
     expect(marketCatalystAgent.questionIds).toEqual([
       "Q113", "Q114", "Q115", "Q116",
       "Q117", "Q118", "Q119",
       "Q120", "Q121", "Q122",
       "Q123", "Q124", "Q129",
+      "Q160", "Q161", "Q162",
+      "Q163", "Q164", "Q165",
     ]);
   });
 
@@ -38,13 +40,15 @@ describe("marketCatalystAgent", () => {
     expect(themes?.limitations.join(" ")).toMatch(/synonym/i);
   });
 
-  it("every insight cites exactly one of the 4 new real source IDs", async () => {
+  it("every insight cites only this agent's real source IDs", async () => {
     const insights = await marketCatalystAgent.run({ modelProvider: null });
     const validSourceIds = [
       "nih-reporter:project-awards",
       "openfda:drugsfda-novel-approvals",
       "sec-edgar:healthcare-8k-filings",
       "clinicaltrials-gov:phase3-results",
+      "sec-edgar:health-industry-8k",
+      "sec-edgar:form-d-health",
     ];
     for (const insight of insights) {
       expect(insight.sourceIds.length).toBeGreaterThan(0);
@@ -191,6 +195,47 @@ describe("marketCatalystAgent", () => {
         }
       }
     }
+  });
+
+  it("health-industry Item 2.01 insight (Q160) says acquisition or disposition, lists named filings with links, and never ties counts to performance", async () => {
+    const insights = await marketCatalystAgent.run({ modelProvider: null });
+    const deals = insights.find((i) => i.questionId === "Q160");
+    expect(deals?.sourceIds).toEqual(["sec-edgar:health-industry-8k"]);
+    expect(deals?.headline).toMatch(/acquisition or disposition of assets \(Item 2\.01\)/);
+    if (deals?.chart?.type !== "list") throw new Error("expected a list");
+    expect(deals.chart.items.length).toBeGreaterThan(0);
+    for (const item of deals.chart.items) expect(item.url).toMatch(/^https:\/\/www\.sec\.gov\/Archives\/edgar\/data\//);
+    expect(deals.limitations.join(" ")).toMatch(/not evidence of a company's enrollment, revenue or performance/);
+    expect(deals.series?.points.length).toBeGreaterThan(12);
+  });
+
+  it("health-industry Item 1.01 and 5.02 insights (Q161, Q162) rank named companies and keep the item wording rules", async () => {
+    const insights = await marketCatalystAgent.run({ modelProvider: null });
+    const agreements = insights.find((i) => i.questionId === "Q161")!;
+    const leadership = insights.find((i) => i.questionId === "Q162")!;
+    expect(agreements.headline).toMatch(/Item 1\.01/);
+    expect(leadership.headline).toMatch(/Item 5\.02/);
+    for (const insight of [agreements, leadership]) {
+      if (insight.chart?.type !== "bar") throw new Error("expected a bar chart");
+      expect(insight.chart.bars).toHaveLength(10);
+      const substantive = JSON.stringify({ headline: insight.headline, drivers: insight.drivers, businessRelevance: insight.businessRelevance });
+      expect(substantive).not.toMatch(/\bfired\b|\bresigned\b|announced a partnership/i);
+    }
+  });
+
+  it("Form D insights (Q163-Q165) cover the quarterly window and never call an offering a venture round", async () => {
+    const insights = await marketCatalystAgent.run({ modelProvider: null });
+    const formD = insights.filter((i) => i.sourceIds.includes("sec-edgar:form-d-health"));
+    expect(formD.map((i) => i.questionId).sort()).toEqual(["Q163", "Q164", "Q165"]);
+    for (const insight of formD) {
+      expect(insight.period.start).toMatch(/-(01|04|07|10)-01$/);
+      expect(insight.period.end).toMatch(/-(03-31|06-30|09-30|12-31)$/);
+      expect(JSON.stringify({ headline: insight.headline, drivers: insight.drivers, businessRelevance: insight.businessRelevance })).not.toMatch(/venture round/i);
+      expect(insight.limitations.join(" ")).toMatch(/amendments to offerings first reported before the window are left out/);
+    }
+    const totals = formD.find((i) => i.questionId === "Q163")!;
+    expect(totals.magnitude.unit).toBe("usd");
+    expect(totals.series?.points).toHaveLength(8);
   });
 
   it("never fabricates a number - every magnitude value is finite", async () => {

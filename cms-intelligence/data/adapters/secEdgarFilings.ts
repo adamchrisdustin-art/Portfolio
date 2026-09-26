@@ -52,7 +52,7 @@ const DATASET_NAME = "sec-edgar-healthcare-filings";
 // tracked companies.
 export const WINDOW_DAYS = 730;
 const REQUEST_DELAY_MS = 150; // SEC's documented rate-limit courtesy ask (~10 req/s ceiling; this is far under that)
-const USER_AGENT = "healthcare-intelligence-dashboard adamdustin.me (adam.chris.dustin@gmail.com)";
+export const USER_AGENT = "healthcare-intelligence-dashboard adamdustin.me (adam.chris.dustin@gmail.com)";
 
 const SNAPSHOTS_DIR = path.resolve(process.cwd(), "data", "healthcare-intelligence", DATASET_NAME, "snapshots");
 
@@ -89,16 +89,22 @@ export interface SecEdgarSnapshot {
   filings: SecFiling[];
 }
 
-interface RawSubmissionsResponse {
+/** A submissions response's `filings.recent` block; each older page listed in `filings.files` has the same parallel-array shape. */
+export interface RawRecentFilings {
+  form: string[];
+  filingDate: string[];
+  reportDate: string[];
+  items: string[];
+  accessionNumber: string[];
+  primaryDocument: string[];
+}
+
+export interface RawSubmissionsResponse {
+  name?: string;
+  sic?: string;
   filings: {
-    recent: {
-      form: string[];
-      filingDate: string[];
-      reportDate: string[];
-      items: string[];
-      accessionNumber: string[];
-      primaryDocument: string[];
-    };
+    recent: RawRecentFilings;
+    files?: { name: string; filingFrom: string; filingTo: string }[];
   };
 }
 
@@ -108,11 +114,11 @@ function windowStartDate(): string {
   return d.toISOString().slice(0, 10);
 }
 
-function padCik(cik: string): string {
+export function padCik(cik: string): string {
   return cik.padStart(10, "0");
 }
 
-function filingUrl(cik: string, accessionNumber: string, primaryDocument: string): string {
+export function filingUrl(cik: string, accessionNumber: string, primaryDocument: string): string {
   const cikNoLeadingZeros = String(Number(cik));
   const accessionNoDashes = accessionNumber.replace(/-/g, "");
   return `https://www.sec.gov/Archives/edgar/data/${cikNoLeadingZeros}/${accessionNoDashes}/${primaryDocument}`;
@@ -129,20 +135,24 @@ async function fetchCompanyFilings(company: TrackedCompany, windowStart: string)
     throw new Error(`SEC EDGAR submissions query failed for ${company.name} (CIK ${company.cik}): ${res.status} ${res.statusText} (${url})`);
   }
   const body = (await res.json()) as RawSubmissionsResponse;
-  const recent = body.filings.recent;
+  return recent8KFilings(body.filings.recent, company.cik, company.name, windowStart);
+}
+
+/** Original 8-Ks (8-K/A amendments excluded) filed on or after windowStart, from one parallel-array block of a submissions response. */
+export function recent8KFilings(recent: RawRecentFilings, cik: string, companyName: string, windowStart: string): SecFiling[] {
   const out: SecFiling[] = [];
   for (let i = 0; i < recent.form.length; i++) {
     if (recent.form[i] !== "8-K") continue;
     if (recent.filingDate[i] < windowStart) continue;
     out.push({
-      cik: company.cik,
-      companyName: company.name,
+      cik,
+      companyName,
       form: recent.form[i],
       filingDate: recent.filingDate[i],
       reportDate: recent.reportDate[i],
       items: recent.items[i] ? recent.items[i].split(",").map((s) => s.trim()).filter(Boolean) : [],
       accessionNumber: recent.accessionNumber[i],
-      url: filingUrl(company.cik, recent.accessionNumber[i], recent.primaryDocument[i]),
+      url: filingUrl(cik, recent.accessionNumber[i], recent.primaryDocument[i]),
     });
   }
   return out;
