@@ -59,6 +59,7 @@ export default function InsightCard({ insight, collapsible = false }: { insight:
         {insight.freshness.isStale && (
           <span
             className="mono"
+            title="No update in over two years past when one was due; kept for reference, not treated as a current signal."
             style={{
               fontSize: "0.72rem",
               fontWeight: 700,
@@ -69,6 +70,21 @@ export default function InsightCard({ insight, collapsible = false }: { insight:
             }}
           >
             stale
+          </span>
+        )}
+        {insight.freshness.recency === "aging" && (
+          <span
+            className="mono"
+            title="This source is 1-2 years past its next expected update; kept, but ranked below current findings."
+            style={{
+              fontSize: "0.72rem",
+              color: "var(--text-muted)",
+              border: "1px dashed var(--border)",
+              borderRadius: 999,
+              padding: "2px 9px",
+            }}
+          >
+            aging
           </span>
         )}
       </div>

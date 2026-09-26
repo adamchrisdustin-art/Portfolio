@@ -13,7 +13,8 @@ import { runExecutiveAnalyst } from "./executiveAnalyst";
 import { loadLatestReasonedRun } from "./monthlyRun";
 import { buildOutlierFacts } from "./outlierFacts";
 import { buildPeriodFacts } from "./periodFacts";
-import { toSourceIds } from "./sourceFingerprints";
+import { applyRecency } from "../intelligence/evidence/recency";
+import { toSourceIds, unchangedSinceBySource } from "./sourceFingerprints";
 
 // Not imported from run-monthly-reasoning.ts: importing it runs its main(), a full billed monthly run.
 const DEFAULT_ANALYST_MODEL = "anthropic:claude-opus-5-5";
@@ -25,7 +26,7 @@ async function main() {
   const provider = createProviderFromSpec(spec);
   if (!provider) throw new Error(`No API key for ${spec}.`);
 
-  const replay = await runExecutiveAnalyst(run.sweep.allInsights, toSourceIds(run.changedDatasets), provider, buildPeriodFacts(), buildOutlierFacts());
+  const replay = await runExecutiveAnalyst(applyRecency(run.sweep.allInsights, new Date(), unchangedSinceBySource()), toSourceIds(run.changedDatasets), provider, buildPeriodFacts(), buildOutlierFacts());
   console.log(JSON.stringify({ replayingRunFrom: run.generatedAt, published: run.analyst, replay }, null, 2));
 }
 

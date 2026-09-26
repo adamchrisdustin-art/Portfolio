@@ -66,6 +66,29 @@ export function currentFingerprints(): Fingerprints {
   return result;
 }
 
+/**
+ * For each source, the pull date of the earliest committed snapshot whose
+ * content matches the latest one: how long the source has gone without
+ * new data, as far as our own history shows (a lower bound, since history
+ * starts at the first pull). Walks back from the newest snapshot and stops
+ * at the first change, so a source that updates every month reads only
+ * two files. Keyed by SOURCE_ID.
+ */
+export function unchangedSinceBySource(dirs: Record<string, string> = snapshotDirs()): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const [dataset, dir] of Object.entries(dirs)) {
+    const sourceId = SOURCE_ID_BY_DATASET[dataset];
+    const files = fs.readdirSync(dir).filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f)).sort();
+    if (!sourceId || files.length === 0) continue;
+    const fingerprintOf = (file: string) => fingerprintSnapshot(JSON.parse(fs.readFileSync(path.join(dir, file), "utf-8")));
+    const latest = fingerprintOf(files[files.length - 1]);
+    let earliest = files.length - 1;
+    while (earliest > 0 && fingerprintOf(files[earliest - 1]) === latest) earliest--;
+    result[sourceId] = files[earliest].slice(0, 10);
+  }
+  return result;
+}
+
 /** Sources that are new or whose latest content differs from `previous`. */
 export function changedSources(previous: Fingerprints | null, current: Fingerprints): string[] {
   return Object.keys(current)

@@ -61,6 +61,7 @@ Rules - a response that breaks one is discarded:
 - A label you apply to a group ("frequent", "large", "leading") must fit every member the numbers cover; if it doesn't, name only the members it fits.
 - Never infer how something is paid for, billed, covered, or priced (for example Part B vs Part D, or cost impact) unless a fact states it.
 - Prefer facts marked newThisCycle when they are comparably important.
+- Each fact's recency says how current its source is against its normal update schedule. Rank current facts above aging ones. A stale fact (no update in over two years past when one was due) is background only: never a top finding, never the basis of a pattern, and never described as what is happening now.
 
 Period comparisons: code compared each dated metric at every period length its history supports (month, quarter, half-year, year-over-year) and marked each comparison notable or not by a fixed statistical rule. Use them to choose the time view that shows a real shift. Mention a rise or fall only where notable is true, name the period length it appears at, and cite that comparison's own counts and period labels. Never describe a comparison whose notable is false as a rise, drop, surge, slowdown or shift; you may say a metric held steady across the periods checked. A notable comparison is a shift worth watching, not a trend.
 
@@ -83,6 +84,7 @@ function factsPayload(insights: Insight[], changedSourceIds: string[]): string {
       evidence: i.drivers.map((d) => d.description.slice(0, MAX_DRIVER_CHARS)),
       keyLimitation: i.limitations[0] ?? null,
       newThisCycle: i.sourceIds.some((s) => changed.has(s)),
+      recency: i.freshness.recency ?? "current",
     }))
   );
 }
@@ -163,6 +165,8 @@ export async function runExecutiveAnalyst(
 
   const validIds = new Set(insights.map((i) => i.id));
   const agentById = new Map(insights.map((i) => [i.id, i.generatingAgent]));
+  // Stale data stays visible as background but never leads: enforced here, not only asked for in the prompt.
+  const staleIds = new Set(insights.filter((i) => i.freshness.recency === "stale").map((i) => i.id));
   const rejected: RejectedItem[] = [];
 
   const topFindings: RankedFinding[] = [];
@@ -177,6 +181,10 @@ export async function runExecutiveAnalyst(
       continue;
     }
     if (seen.has(insightId)) continue;
+    if (staleIds.has(insightId)) {
+      rejected.push({ kind: "finding", reason: `insight "${insightId}" is stale (no update in over two years past when one was due)`, text });
+      continue;
+    }
     const reason = groundingReason(text, facts);
     if (reason) {
       rejected.push({ kind: "finding", reason, text });
@@ -201,6 +209,11 @@ export async function runExecutiveAnalyst(
     }
     if (new Set(insightIds.map((id) => agentById.get(id))).size < 2) {
       rejected.push({ kind: "pattern", reason: "does not connect insights from at least two different agents", text });
+      continue;
+    }
+    const staleInPattern = insightIds.filter((id) => staleIds.has(id));
+    if (staleInPattern.length > 0) {
+      rejected.push({ kind: "pattern", reason: `built on stale insight(s): ${staleInPattern.join(", ")}`, text });
       continue;
     }
     const reason = groundingReason(text, facts);

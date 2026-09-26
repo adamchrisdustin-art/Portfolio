@@ -169,7 +169,10 @@ export interface EvidenceRef {
 export interface Freshness {
   dataAsOf: string; // ISO date
   generatedAt: string; // ISO datetime
+  /** True when recency is "stale": no update in over two years past when one was due. Set by recency.ts at sweep time. */
   isStale: boolean;
+  /** How current the data is against its source's normal update schedule (recency.ts). Set at sweep time; absent on insights saved before 2026-09-25's recency release. */
+  recency?: "current" | "aging" | "stale";
 }
 
 export interface Insight {

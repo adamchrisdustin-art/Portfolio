@@ -107,6 +107,14 @@ completion, whichever comes first. **Next, pick with Adam:**
   warning on the Actions run; nothing is pulled automatically. Watched:
   the T-MSIS-derived monthly dual-status counts (latest December 2022;
   Q060).
+- **Recency tiers: built 2026-09-25 (Adam's rule).** Every insight is
+  current, aging (1-2 years past its source's next expected update) or
+  stale (over 2 years), recomputed each sweep so a source that resumes
+  becomes current again. Stale data stays visible but ranks last, and code
+  stops the analyst from leading with it or building a pattern on it.
+  Details in TREND_FRAMEWORK.md, "Recency tiers". All 51 current insights
+  are current today. The analyst prompt changed, so replay it at the next
+  live test.
 - **Medicaid managed care by plan: added 2026-09-25** (`cms:medicaid-managed-care-plans`,
   annual 2016-2024, Q064). Only comprehensive managed care is counted,
   since people are counted once per program; Tennessee's dental and

@@ -6,6 +6,8 @@ import { SOURCE_LABELS } from "@/cms-intelligence/data/sources/sourceLabels";
 import { runFullSweep } from "@/cms-intelligence/agents/orchestrator/fullSweep";
 import { buildAnalyticsOverview } from "@/cms-intelligence/analytics/overview";
 import { currentReasonedRun } from "@/cms-intelligence/reasoning/monthlyRun";
+import { unchangedSinceBySource } from "@/cms-intelligence/reasoning/sourceFingerprints";
+import { applyRecency, RECENCY_ORDER } from "@/cms-intelligence/intelligence/evidence/recency";
 import AnalyticsExplorer from "@/components/AnalyticsExplorer";
 import InsightCard from "@/components/InsightCard";
 import EmptyLayerState from "@/components/EmptyLayerState";
@@ -42,21 +44,25 @@ export default async function HealthcareIntelligencePage() {
   const analyst = reasoned?.analyst.source === "llm" ? reasoned.analyst : null;
   const analyticsOverview = buildAnalyticsOverview();
   const failedAgents = sweep.agentStatuses.filter((s) => !s.ok);
-  const insightById = new Map(sweep.allInsights.map((i) => [i.id, i]));
+  // Recency depends on today's date, so it's re-applied at render rather than trusted from a saved run.
+  const allInsights = applyRecency(sweep.allInsights, new Date(), unchangedSinceBySource());
+  const insightById = new Map(allInsights.map((i) => [i.id, i]));
   const reasonedOn = reasoned ? reasoned.generatedAt.slice(0, 10) : null;
 
-  // The analyst's ranking leads when there is one; everything else follows by confidence.
+  // The analyst's ranking leads when there is one; everything else follows by recency (current, aging, stale), then confidence.
   const analystRank = new Map((analyst?.topFindings ?? []).map((f, i) => [f.insightId, i]));
-  const pulseInsights = [...sweep.allInsights].sort((a, b) => {
+  const pulseInsights = [...allInsights].sort((a, b) => {
     const ra = analystRank.get(a.id) ?? Infinity;
     const rb = analystRank.get(b.id) ?? Infinity;
     if (ra !== rb) return ra - rb;
+    const recencyDiff = RECENCY_ORDER[a.freshness.recency ?? "current"] - RECENCY_ORDER[b.freshness.recency ?? "current"];
+    if (recencyDiff !== 0) return recencyDiff;
     const weight = { high: 3, medium: 2, low: 1 } as const;
     return weight[b.confidence] - weight[a.confidence];
   });
 
   const sortedByLayer = Object.fromEntries(
-    Object.keys(sweep.insightsByLayer).map((key) => [key, pulseInsights.filter((i) => sweep.insightsByLayer[key as keyof typeof sweep.insightsByLayer].includes(i))])
+    Object.keys(sweep.insightsByLayer).map((key) => [key, pulseInsights.filter((i) => sweep.insightsByLayer[key as keyof typeof sweep.insightsByLayer].some((l) => l.id === i.id))])
   ) as typeof sweep.insightsByLayer;
 
   const dashboardLayers: { key: keyof typeof sweep.insightsByLayer; label: string }[] = [

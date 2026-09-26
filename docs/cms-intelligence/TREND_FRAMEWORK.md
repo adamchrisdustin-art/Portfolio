@@ -145,6 +145,37 @@ executive analyst.
   over time and not a cause. A metric with an empty list is reported as
   checked, with no member standing apart.
 
+## Recency tiers (implemented 2026-09-25, per Adam)
+
+Recent data leads. Older data is kept but ranked lower. A source with no
+update in over two years past when one was due isn't a current signal.
+`cms-intelligence/intelligence/evidence/recency.ts` sets each insight's
+`freshness.recency` on every sweep (and again at page render and in the
+analyst replay, since it depends on today's date), so a source that
+resumes publishing becomes current again on its own.
+
+- **Overdue is measured from when the next update was due**, not from the
+  data's own date. Some CMS files always arrive late: 2024 Medicare
+  physician data was published in 2026 and is still the newest.
+  `SOURCE_TIMING` gives each source its update interval and publication
+  lag.
+- **Two checks, the worse counts.** Data age: months since the insight's
+  period ended, minus lag plus interval. No change: months since the
+  source's content last changed in our snapshots
+  (`unchangedSinceBySource`), minus the interval. The second catches
+  sources pulled whole each time, whose dates always look new. Our
+  snapshot history starts 2026-09-16, so this check strengthens as pulls
+  accumulate.
+- **Tiers:** overdue up to 12 months is current, 12-24 aging, over 24
+  stale. A multi-source insight takes its most overdue source.
+- **Effects:** the dashboard orders current, then aging, then stale
+  (after the analyst's own ranking), with "aging" and "stale" badges. The
+  analyst sees each fact's recency; code rejects a stale insight as a top
+  finding or as part of a pattern.
+- **Datasets that stopped updating before we added them** stay off the
+  dashboard and on the monitor's watch list instead
+  (`data/sources/watchlist.ts`).
+
 ## Minimum sample sizes
 
 This system must respect CMS's own public-data suppression rules, not

@@ -20,6 +20,8 @@ import { InsightValidationError } from "../../intelligence/evidence/validate";
 import type { AgentContext } from "../types";
 import { logAgentRun } from "../../observability/log";
 import { synthesize } from "./synthesis";
+import { applyRecency } from "../../intelligence/evidence/recency";
+import { unchangedSinceBySource } from "../../reasoning/sourceFingerprints";
 
 export interface AgentRunStatus {
   agentId: string;
@@ -59,10 +61,14 @@ export async function runFullSweep(ctx: AgentContext = { modelProvider: null }):
   const allInsights: Insight[] = [];
   const agentStatuses: AgentRunStatus[] = [];
 
+  // Recency is judged against each source's update schedule once per sweep, so a source that resumes publishing becomes current again on its own.
+  const unchangedSince = unchangedSinceBySource();
+  const now = new Date(sweepStart);
+
   for (const agent of ALL_AGENTS) {
     const agentStart = Date.now();
     try {
-      const insights = await agent.run(ctx);
+      const insights = applyRecency(await agent.run(ctx), now, unchangedSince);
       const durationMs = Date.now() - agentStart;
       agentStatuses.push({
         agentId: agent.id,

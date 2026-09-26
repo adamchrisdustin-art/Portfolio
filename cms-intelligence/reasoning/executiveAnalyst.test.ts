@@ -120,6 +120,26 @@ describe("runExecutiveAnalyst", () => {
   });
 });
 
+describe("runExecutiveAnalyst with stale data", () => {
+  it("rejects a stale insight as a top finding or pattern, whatever the model says", async () => {
+    const [a, b] = twoFromDifferentAgents();
+    const staleA = { ...a, freshness: { ...a.freshness, recency: "stale" as const, isStale: true } };
+    const provider = fakeProvider((user) => {
+      expect(user).toContain('"recency":"stale"');
+      return JSON.stringify({
+        topFindings: [{ insightId: a.id, whyItMatters: "Old news." }, { insightId: b.id, whyItMatters: "Current news." }],
+        patterns: [{ insightIds: [a.id, b.id], pattern: "Linked." }],
+        briefing: null,
+      });
+    });
+    const result = await runExecutiveAnalyst([staleA, ...insights.filter((i) => i.id !== a.id)], [], provider);
+    expect(result.topFindings.map((f) => f.insightId)).toEqual([b.id]);
+    expect(result.patterns).toEqual([]);
+    expect(result.rejected.map((r) => r.kind)).toEqual(["finding", "pattern"]);
+    expect(result.rejected[0].reason).toMatch(/stale/);
+  });
+});
+
 describe("runExecutiveAnalyst with period comparisons", () => {
   const periodFacts = [
     {
