@@ -25,4 +25,6 @@ export const SOURCE_LABELS: Record<string, SourceLabel> = {
   "openfda:drugsfda-novel-approvals": { name: "openFDA novel drug approvals", group: "other-federal", url: "https://open.fda.gov/apis/drug/drugsfda/" },
   "nih-reporter:project-awards": { name: "NIH RePORTER award notices", group: "other-federal", url: "https://reporter.nih.gov/" },
   "clinicaltrials-gov:phase3-results": { name: "ClinicalTrials.gov Phase 3 results postings", group: "other-federal", url: "https://clinicaltrials.gov/" },
+  "cms:physician-fee-schedule": { name: "Physician Fee Schedule national relative value files", group: "cms", url: "https://www.cms.gov/medicare/payment/fee-schedules/physician/pfs-relative-value-files" },
+  "cms:hospital-penalty-programs": { name: "Hospital Readmissions, HAC Reduction and Value-Based Purchasing programs", group: "cms", url: "https://data.cms.gov/provider-data/dataset/9n3s-kdb3" },
 };

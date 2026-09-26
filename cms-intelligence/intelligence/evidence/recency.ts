@@ -45,6 +45,10 @@ export const SOURCE_TIMING: Record<string, SourceTiming> = {
   "openfda:drugsfda-novel-approvals": { updateIntervalMonths: 1, publicationLagMonths: 0 },
   "nih-reporter:project-awards": { updateIntervalMonths: 1, publicationLagMonths: 0 },
   "clinicaltrials-gov:phase3-results": { updateIntervalMonths: 1, publicationLagMonths: 0 },
+  // A new rate year every January (quarterly corrections in between); the period is the rate year itself.
+  "cms:physician-fee-schedule": { updateIntervalMonths: 12, publicationLagMonths: 0 },
+  // One payment year per federal fiscal year; the period is the payment year itself.
+  "cms:hospital-penalty-programs": { updateIntervalMonths: 12, publicationLagMonths: 0 },
 };
 
 export const AGING_AFTER_MONTHS = 12;

@@ -16,7 +16,7 @@ been verified this way. Every other source named in
 a **candidate** — real family/population/topic, honestly marked
 unverified rather than filled in with a guessed dataset ID or URL.
 
-## Verified & implemented (10 sources)
+## Verified & implemented (16 sources)
 
 | Source ID | Name | Real endpoint | Verified | Related questions |
 |---|---|---|---|---|
@@ -34,6 +34,39 @@ unverified rather than filled in with a guessed dataset ID or URL.
 | `openfda:drugsfda-novel-approvals` | openFDA drugsfda - novel (Type 1) drug approvals | `api.fda.gov/drug/drugsfda.json` | 2026-09-24 | Q117, Q118, Q119 |
 | `nih-reporter:project-awards` | NIH RePORTER - project award notices | `api.reporter.nih.gov/v2/projects/search` | 2026-09-24 | Q113, Q114, Q115, Q116, Q129 |
 | `clinicaltrials-gov:phase3-results` | ClinicalTrials.gov - Phase 3 results postings | `clinicaltrials.gov/api/v2/studies` | 2026-09-24 | Q123, Q124 |
+| `cms:physician-fee-schedule` | Physician Fee Schedule national RVU files (latest release per year, 2013 onward) | `cms.gov/medicare/payment/fee-schedules/physician/pfs-relative-value-files` | 2026-09-25 | Q026, Q028, Q034, Q035 |
+| `cms:hospital-penalty-programs` | HRRP, HAC Reduction and Hospital VBP, plus IPPS Tables 15 and 16B | `data.cms.gov/provider-data/api/1/datastore/query/{9n3s-kdb3, yq43-i98g, ypbt-wvdk}/0` | 2026-09-25 | Q029, Q030 |
+
+### Physician Fee Schedule and hospital penalty programs (2026-09-25)
+
+**Physician Fee Schedule RVU files** (`data/adapters/physicianFeeSchedule.ts`).
+Verified live 2026-09-25: CMS's index page links one page per quarterly
+release (anchor text "RVU26D" etc., back to 2003), each linking one zip.
+The 2020-2022 hrefs look malformed (`/medicaremedicare-fee-service-...`)
+but resolve, so links are followed as published. The national file is
+`PPRRVU*.csv`; 2026 has `_nonQPP` and `_QPP` versions (two conversion
+factors) and the nonQPP one is used every year. About nine title rows sit
+above a split header, 2026 added a column, and 2013 uses CR line endings,
+so columns are found by joining the two header rows. Conversion factors
+read match CMS's published history (2013 $34.0230, 2021 $34.8931, 2024
+$33.2875 after the March correction, 2025 $32.3465, 2026 $33.4009). The
+latest release of each year from 2013 is kept, codes with zero RVUs are
+dropped, and CPT descriptions are never stored (AMA copyright); about
+2.5MB for 14 years. GPCI and locality files in the same zip aren't used.
+
+**Hospital penalty programs** (`data/adapters/hospitalPenaltyPrograms.ts`).
+Verified live 2026-09-25: Provider Data Catalog HRRP `9n3s-kdb3` (18,330
+hospital x condition rows), HAC Reduction `yq43-i98g` (3,055 hospitals,
+`payment_reduction` Yes/No) and HVBP Total Performance Score `ypbt-wvdk`
+(2,455 hospitals), all FY2026, modified 2026-01-26. The HVBP domain
+datasets (`pudb-wetr`, `su9h-3pvj`, `avtz-f2ge`, `dgmq-aat3`) were
+checked and not stored, since the TPS file carries their domain scores.
+The payment adjustment factors come from the FY2026 IPPS final rule page:
+Table 15 (HRRP, 2,945 hospitals; 641 with no cut written as a bare "1")
+and Table 16B (HVBP, 2,448). Joined to Hospital General Information by
+CCN (2,919 of 2,945 matched). The FY2027 page says Table 16B comes in fall
+2026 and Table 15 after hospitals' review, so the adapter reads whichever
+fiscal year the datastore reports and fetches that year's tables.
 
 ### Full-population summary tables (2026-09-25)
 
@@ -278,7 +311,6 @@ of sync with the code.
 | `cms:hospice-general-information` | Hospice - General Information | Post-acute (seen live, not yet queried) | Q021 |
 | `cms:t-msis` | T-MSIS / TAF (Medicaid) | Medicaid | Q056–Q058 |
 | `cms:shared-savings-program` | Shared Savings Program (ACO) | Value-based care | Q102–Q104 |
-| `cms:physician-fee-schedule` | Physician Fee Schedule | Payment/reimbursement | Q026–Q028 |
 
 This list is intentionally not exhaustive against every dataset named in
 the master orchestrator's Phase 4 source list — provider ecosystem

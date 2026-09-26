@@ -72,6 +72,12 @@ const STAKEHOLDER_OVERRIDES: Record<string, string[]> = {
   "market-catalyst-sec-material-agreement-by-company": ["Health insurers", "Investors"],
   "market-catalyst-ct-results-count": ["Drug makers", "Health plans"],
   "market-catalyst-ct-enrollment-distribution": ["Drug makers", "Health plans"],
+  "reimbursement-conversion-factor-trend": ["Physicians", "Health plans"],
+  "reimbursement-fee-schedule-leading-indicator": ["Physicians", "Health plans"],
+  "reimbursement-procedure-fee-exposure": ["Physicians", "Health plans"],
+  "reimbursement-fee-change-by-category": ["Physicians", "Health plans"],
+  "reimbursement-hospital-penalty-exposure": ["Hospitals", "Health plans"],
+  "reimbursement-hospital-penalty-by-state": ["Hospitals", "Health plans"],
 };
 
 export function stakeholdersFor(insight: Insight): string[] {
@@ -103,6 +109,9 @@ export const RELATED_GROUPS: string[][] = [
   ["market-catalyst-fda-nme-count", "market-catalyst-fda-priority-split", "market-catalyst-fda-by-month"],
   ["market-catalyst-sec-leadership-change-by-company", "market-catalyst-sec-filing-mix", "market-catalyst-sec-material-agreement-by-company"],
   ["market-catalyst-ct-results-count", "market-catalyst-ct-enrollment-distribution"],
+  ["reimbursement-conversion-factor-trend", "reimbursement-procedure-fee-exposure", "reimbursement-fee-change-by-category", "reimbursement-fee-schedule-leading-indicator"],
+  ["reimbursement-procedure-fee-exposure", "claims-cost-service-code-growth", "policy-proposed-rules"],
+  ["reimbursement-hospital-penalty-exposure", "reimbursement-hospital-penalty-by-state", "provider-network-quality-correlation", "provider-network-star-rating-by-state"],
 ];
 
 const MAX_RELATED = 4;

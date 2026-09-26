@@ -198,6 +198,30 @@ export function buildWatchCalendar({ insights, ruleDocuments, unchangedSince, no
     });
   }
 
+  // Hospital penalty factors for the next fiscal year: CMS's FY2027 final-rule page (checked 2026-09-25) says Table 16B comes "in the Fall of 2026" and Table 15 once hospitals have reviewed it.
+  const penalties = byStem.get("reimbursement-hospital-penalty-exposure");
+  if (penalties) {
+    const nextFy = yearOf(penalties.period.end) + 1;
+    items.push({
+      date: expected(monthStart(nextFy - 1, 11)),
+      kind: "expected",
+      title: `FY${nextFy} hospital readmissions and value-based purchasing payment factors`,
+      detail: `CMS posts each hospital's FY${nextFy} readmissions cut and value-based purchasing adjustment with the inpatient final rule's supplemental tables, expected in fall ${nextFy - 1}.`,
+      insightIds: ids("reimbursement-hospital-penalty-exposure", "reimbursement-hospital-penalty-by-state"),
+    });
+  }
+  const feeYear = byStem.get("reimbursement-conversion-factor-trend");
+  if (feeYear) {
+    const nextYear = yearOf(feeYear.period.end) + 1;
+    items.push({
+      date: expected(monthStart(nextYear, 1)),
+      kind: "expected",
+      title: `${nextYear} physician fee schedule rate files`,
+      detail: `The first ${nextYear} relative value release, with the conversion factor and service prices in effect January 1.`,
+      insightIds: ids("reimbursement-conversion-factor-trend", "reimbursement-procedure-fee-exposure", "reimbursement-fee-change-by-category"),
+    });
+  }
+
   // Same date: a scheduled item before an estimate.
   return items.sort((a, b) => a.date.localeCompare(b.date) || (a.kind === b.kind ? 0 : a.kind === "scheduled" ? -1 : 1) || a.title.localeCompare(b.title)).slice(0, limit);
 }
