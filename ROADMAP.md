@@ -71,6 +71,19 @@
 - **Autonomous reasoning (built):** each month the agents re-run with a model, an executive-analyst agent ranks what matters and finds cross-domain patterns, and the result auto-publishes to `main` behind a code-level grounding check.
 - **API keys:** repository secrets `HEALTHCARE_INTEL_ANTH` and `HEALTHCARE_INTEL_OAI`, added 2026-09-25 and mapped in the workflow onto the standard variable names.
 
+**Update 2026-09-26:** a Phase 7 reviewer test found real gaps (no fallback
+briefing when the reasoned run's data fingerprint is stale, no jump menu,
+no stated data period per finding); Adam's approved fixes are built and
+live. Six new data sources were then built in three parallel git-worktree
+sessions and merged into `main`: Physician Fee Schedule RVU files and
+hospital penalty programs (Reimbursement & Payment agent, previously only
+1 finding), Provider of Services plus facility change-of-ownership/private-equity
+ownership (Market Growth and Provider & Network agents), and SEC 8-K
+widened to every health-industry SIC code plus SEC Form D (Market
+Catalyst agent). See `docs/cms-intelligence/MANIFEST.md`'s "Start here"
+for the full state and what's queued next (a second round of sources,
+then the design-agent reskin, then a reasoning rerun).
+
 ---
 
 ## Track D — Snowflake Hands-On Essentials (credential layer, not a dependency)
