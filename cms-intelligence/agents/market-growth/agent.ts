@@ -3,9 +3,11 @@
  * docs/cms-intelligence/AGENT_ARCHITECTURE.md section 2 for full scope.
  *
  * Wired to two real, live-pulled datasets:
- * - cms-intelligence/data/adapters/hospitalGeneralInformation.ts -
- *   current hospital-count distribution by state (Q001), plus a real
- *   total-facility-count series once >=2 real snapshots exist.
+ * - cms-intelligence/data/adapters/providerOfServices.ts (added
+ *   2026-09-25, see capacityInsights.ts) - certified hospital and nursing
+ *   home beds by state and active facilities by type, 2011 onward. This
+ *   replaced a hospital count by state from a single Hospital General
+ *   Information snapshot.
  * - cms-intelligence/data/adapters/homeHealthCareAgencies.ts (added
  *   2026-09-23, second Phase 5 addendum) - a state-level home-health
  *   capacity signal (Q006), after Adam asked for a "growing opportunity"
@@ -36,27 +38,19 @@
  * stay true regardless of which states the model picked to chart.
  */
 import {
-  listSnapshotFiles,
-  loadSnapshot,
-  SOURCE_ID,
-} from "../../data/adapters/hospitalGeneralInformation";
-import {
   loadLatestSnapshot as loadHomeHealthSnapshot,
   parseNumericCell,
   SOURCE_ID as HOME_HEALTH_SOURCE_ID,
   type HomeHealthAgencyRow,
 } from "../../data/adapters/homeHealthCareAgencies";
-import { assessSnapshotHistory, dateFromSnapshotFilename, directionsAcrossSnapshots } from "../../data/sources/snapshotHistory";
 import type { Insight } from "../../intelligence/evidence/schema";
 import { validateInsight } from "../../intelligence/evidence/validate";
-import { mixShare } from "../../intelligence/metrics/metrics";
 import { selectNoteworthy, type Candidate } from "../../intelligence/salience/selectNoteworthy";
-import { classifyConfidence, meetsPersistence } from "../../intelligence/trends/trend";
 import type { AgentContext, DomainAgent } from "../types";
+import { buildCapacityInsights } from "./capacityInsights";
 
 const AGENT_ID = "market-growth-geographic-intelligence";
 const TOP_N_STATES = 5;
-const CHART_TOP_N_STATES = 8;
 const MIN_AGENCIES_PER_STATE = 20; // avoid a noisy read from a small-sample state
 const SERVICE_FIELDS = [
   "offers_nursing_care_services",
@@ -125,127 +119,9 @@ export const marketGrowthAgent: DomainAgent = {
   questionIds: ["Q001", "Q004", "Q006"],
 
   async run(ctx: AgentContext): Promise<Insight[]> {
-    const files = listSnapshotFiles();
-    if (files.length === 0) return [];
-
-    const snapshots = files.map((f) => ({ date: dateFromSnapshotFilename(f), snapshot: loadSnapshot(f) }));
-    const latest = snapshots[snapshots.length - 1].snapshot;
-    if (latest.rows.length === 0) return [];
-
-    const history = assessSnapshotHistory(snapshots.map((s) => s.date));
-    const rowCounts = snapshots.map((s) => s.snapshot.rowCount);
-    const directions = directionsAcrossSnapshots(rowCounts);
-    // "corroborated by an independent source" isn't assessable from a
-    // single dataset - this agent never claims it, so confidence can
-    // reach "medium" once persistence+baseline hold, never "high" alone.
-    const confidence = classifyConfidence({
-      persistenceMet: meetsPersistence(directions),
-      hasFullBaseline: history.hasFullBaseline,
-      hasExternalCorroboration: false,
-    });
-
-    const countsByState = new Map<string, number>();
-    for (const row of latest.rows) {
-      if (!row.state) continue;
-      countsByState.set(row.state, (countsByState.get(row.state) ?? 0) + 1);
-    }
-    const total = latest.rows.length;
-    const ranked = Array.from(countsByState.entries()).sort((a, b) => b[1] - a[1]);
-    const top = ranked.slice(0, TOP_N_STATES);
-    const topDescription = top.map(([state, count]) => `${state} (${count}, ${mixShare(count, total).toFixed(1)}%)`).join(", ");
-
-    const chartCandidates: Candidate[] = ranked.map(([state, count]) => ({
-      id: state,
-      label: state,
-      summary: `${count} hospitals (${mixShare(count, total).toFixed(1)}% of ${total} nationally)`,
-      primaryMetric: count,
-    }));
-    const { selections: chartSelections, source: chartSource } = await selectNoteworthy(
-      { candidates: chartCandidates, topN: CHART_TOP_N_STATES, taskDescription: "hospital facility count by state this cycle" },
-      ctx
-    );
-    const countByState = new Map(ranked);
-    const chartPicks = chartSelections.filter((s) => countByState.has(s.candidateId));
-    const chartSelectionNote =
-      chartSource === "llm"
-        ? ` Charted states chosen by model-reasoned salience ranking over all ${ranked.length} states/territories: ${chartPicks.map((s) => `${s.candidateId} — ${s.rationale}`).join("; ")}.`
-        : "";
-
-    const signalType = meetsPersistence(directions) ? "trend" : "baseline";
-    const headline =
-      signalType === "trend"
-        ? `Total hospital facility count has moved ${directions[directions.length - 1]} across the last ${history.snapshotCount} real pulls (${history.earliestDate} → ${history.latestDate}).`
-        : `Hospital capacity is most concentrated in ${top[0][0]}, ${top[1][0]}, and ${top[2][0]} among the ${ranked.length} states/territories in the current CMS Hospital General Information snapshot.`;
-
-    const insight: Insight = {
-      id: `sig-market-growth-${history.latestDate}-state-distribution`,
-      headline,
-      questionId: "Q001",
-      signalType,
-      period: { start: history.earliestDate, end: history.latestDate },
-      population: "medicare-ffs",
-      geography: { level: "national", code: "US", label: "United States" },
-      magnitude: {
-        value: top[0][1],
-        unit: "count",
-        comparedTo: `total facilities (${total})`,
-        deltaPercent: mixShare(top[0][1], total),
-      },
-      drivers: [
-        {
-          description: `Top ${TOP_N_STATES} states by facility count: ${topDescription}. Total facility count across ${history.snapshotCount} real pulls: ${rowCounts.join(" → ")}.${chartSelectionNote}`,
-          supportingEvidenceIds: ["ev-hgi-snapshot"],
-          relationship: "correlation",
-        },
-      ],
-      businessRelevance:
-        signalType === "trend"
-          ? "A real, multi-pull change in national facility count - worth checking what's driving it before the next refresh."
-          : "Identifies where hospital capacity is currently concentrated - a starting point for market-prioritization questions. No change has been observed yet across the pulls collected so far.",
-      evidence: [
-        {
-          id: "ev-hgi-snapshot",
-          sourceId: SOURCE_ID,
-          description: `CMS Hospital General Information, ${history.snapshotCount} real snapshot(s) from ${history.earliestDate} to ${history.latestDate}`,
-          datasetVintage: history.latestDate,
-        },
-      ],
-      contradictoryEvidence: [],
-      confidence: confidence.level,
-      confidenceRationale: `${confidence.rationale} Based on ${history.snapshotCount} snapshot(s) spanning ${history.daysOfHistory} day(s); full confidence needs a 2-year baseline.`,
-      freshness: { dataAsOf: history.latestDate, generatedAt: new Date().toISOString(), isStale: false },
-      limitations: [
-        "Facility count is a capacity proxy, not a utilization or enrollment measure.",
-        `Baseline window is ${history.daysOfHistory} real day(s) so far, well short of the 24-month window this framework requires for full confidence - this will improve automatically as more real pulls accumulate, not via a code change.`,
-      ],
-      nextSignal: "Watch subsequent real pulls for the first actual added/removed/changed facility, which is what would move this from baseline to a real trend read.",
-      recommendedInternalValidation: "Not applicable - this is public aggregate data, not tied to any specific payer's book of business.",
-      sourceIds: [SOURCE_ID],
-      generatingAgent: AGENT_ID,
-      series:
-        rowCounts.length >= 2
-          ? {
-              label: "Total hospital facility count",
-              unit: "count",
-              points: snapshots.map((s) => ({ date: s.date, value: s.snapshot.rowCount })),
-            }
-          : undefined,
-      chart: {
-        type: "bar",
-        title:
-          chartSource === "llm"
-            ? `Hospital facility count, ${chartPicks.length} states selected as most noteworthy`
-            : `Hospital facility count, top ${CHART_TOP_N_STATES} states`,
-        unit: "facilities",
-        bars: chartPicks.map((s) => ({ label: s.candidateId, value: countByState.get(s.candidateId)! })),
-      },
-    };
-
-    const insights = [validateInsight(insight)];
-
+    const insights = await buildCapacityInsights(ctx);
     const homeHealthInsight = await buildHomeHealthCapacitySignal(ctx);
     if (homeHealthInsight) insights.push(homeHealthInsight);
-
     return insights;
   },
 };

@@ -41,6 +41,11 @@
  * dataset's quarterly-refresh cadence and this project's real, still-
  * short pull history, not a system limitation.
  *
+ * Q039/Q041 added 2026-09-25 (ownershipInsights.ts): hospital and SNF
+ * changes of ownership, the buyers and parent organizations behind them,
+ * and facilities reporting a private equity owner, from CMS's
+ * change-of-ownership and All Owners files.
+ *
  * Salience layer (intelligence/salience/selectNoteworthy.ts, retrofitted
  * 2026-09-24) chooses which ownership types the Q038 donut breaks out,
  * which states the Q126/Q127 boxplots show, and which states Q128 lists -
@@ -65,6 +70,7 @@ import { concentrationRatio, pearsonCorrelation, tukeyBox } from "../../intellig
 import { selectNoteworthy, type Candidate } from "../../intelligence/salience/selectNoteworthy";
 import { classifyConfidence, meetsPersistence } from "../../intelligence/trends/trend";
 import type { AgentContext, DomainAgent } from "../types";
+import { buildOwnershipInsights } from "./ownershipInsights";
 
 const AGENT_ID = "provider-network-intelligence";
 const TOP_N_OWNERSHIP_TYPES = 4;
@@ -146,7 +152,7 @@ export function cr4For(rows: { hospital_ownership?: string }[]): number {
 
 export const providerNetworkAgent: DomainAgent = {
   id: AGENT_ID,
-  questionIds: ["Q036", "Q037", "Q038", "Q042", "Q043", "Q125", "Q126", "Q127", "Q128"],
+  questionIds: ["Q036", "Q037", "Q038", "Q039", "Q041", "Q042", "Q043", "Q125", "Q126", "Q127", "Q128"],
 
   async run(ctx: AgentContext): Promise<Insight[]> {
     const files = listSnapshotFiles();
@@ -275,6 +281,8 @@ export const providerNetworkAgent: DomainAgent = {
     if (entriesInsight) insights.push(entriesInsight);
     const exitsInsight = buildFacilityExitsSignal(facilityChanges, history);
     if (exitsInsight) insights.push(exitsInsight);
+
+    insights.push(...(await buildOwnershipInsights(ctx)));
 
     return insights;
   },

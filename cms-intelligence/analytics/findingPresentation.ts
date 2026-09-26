@@ -51,7 +51,7 @@ const STAKEHOLDERS_BY_AGENT: Record<string, string[]> = {
 };
 
 const STAKEHOLDER_OVERRIDES: Record<string, string[]> = {
-  "market-growth-state-distribution": ["Hospitals", "Health plans"],
+  "market-growth-hospital-beds-by-state": ["Hospitals", "Health plans"],
   "market-growth-home-health-capacity-signal": ["Home health agencies", "Health plans"],
   "claims-cost-home-health-spending-ratio": ["Home health agencies", "Health plans"],
   "claims-cost-part-b-drug-share": ["Health plans", "Providers", "Drug makers"],
@@ -78,6 +78,10 @@ const STAKEHOLDER_OVERRIDES: Record<string, string[]> = {
   "reimbursement-fee-change-by-category": ["Physicians", "Health plans"],
   "reimbursement-hospital-penalty-exposure": ["Hospitals", "Health plans"],
   "reimbursement-hospital-penalty-by-state": ["Hospitals", "Health plans"],
+  "market-growth-nursing-home-beds-by-state": ["Nursing homes", "Medicaid health plans", "Medicare Advantage plans"],
+  "market-growth-facility-count-by-type": ["Health plans", "Providers"],
+  "provider-network-snf-ownership-changes-by-state": ["Nursing homes", "Health plans"],
+  "provider-network-private-equity-owners": ["Hospitals", "Nursing homes", "Health plans"],
 };
 
 export function stakeholdersFor(insight: Insight): string[] {
@@ -103,7 +107,7 @@ export const RELATED_GROUPS: string[][] = [
   ["market-growth-home-health-capacity-signal", "claims-cost-home-health-spending-ratio"],
   ["provider-network-ownership-concentration", "emerging-ownership-concentration-vs-payment-correlation"],
   ["provider-network-quality-correlation", "provider-network-star-rating-by-state", "provider-network-quality-outcome-by-state", "provider-network-quality-by-geography-trend"],
-  ["market-growth-state-distribution", "provider-network-facility-entries", "provider-network-facility-exits"],
+  ["market-growth-hospital-beds-by-state", "provider-network-facility-entries", "provider-network-facility-exits"],
   ["policy-finalized-rules", "policy-upcoming-effective", "policy-proposed-rules"],
   ["market-catalyst-nih-award-count", "market-catalyst-nih-total-dollars", "market-catalyst-nih-by-agency", "market-catalyst-nih-top-orgs"],
   ["market-catalyst-fda-nme-count", "market-catalyst-fda-priority-split", "market-catalyst-fda-by-month"],
@@ -112,6 +116,9 @@ export const RELATED_GROUPS: string[][] = [
   ["reimbursement-conversion-factor-trend", "reimbursement-procedure-fee-exposure", "reimbursement-fee-change-by-category", "reimbursement-fee-schedule-leading-indicator"],
   ["reimbursement-procedure-fee-exposure", "claims-cost-service-code-growth", "policy-proposed-rules"],
   ["reimbursement-hospital-penalty-exposure", "reimbursement-hospital-penalty-by-state", "provider-network-quality-correlation", "provider-network-star-rating-by-state"],
+  ["market-growth-hospital-beds-by-state", "market-growth-facility-count-by-type", "market-growth-nursing-home-beds-by-state"],
+  ["provider-network-hospital-ownership-changes", "provider-network-private-equity-owners", "provider-network-ownership-concentration"],
+  ["provider-network-snf-ownership-changes-by-state", "market-growth-nursing-home-beds-by-state", "provider-network-private-equity-owners"],
 ];
 
 const MAX_RELATED = 4;

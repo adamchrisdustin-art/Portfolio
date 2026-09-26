@@ -83,7 +83,7 @@ describe("providerNetworkAgent", () => {
     const insights = await providerNetworkAgent.run({ modelProvider: provider });
     const byQ = (list: typeof insights, q: string) => list.find((i) => i.questionId === q)!;
 
-    expect(provider.prompts).toHaveLength(4); // Q038 donut, Q126, Q127, Q128
+    expect(provider.prompts).toHaveLength(5); // Q038 donut, Q126, Q127, Q128, SNF ownership changes by state
     for (const insight of insights) expect(() => validateInsight(insight)).not.toThrow();
     for (const q of ["Q125", "Q042", "Q043"]) expect(withoutGeneratedAt([byQ(insights, q)])).toEqual(withoutGeneratedAt([byQ(baseline, q)]));
 

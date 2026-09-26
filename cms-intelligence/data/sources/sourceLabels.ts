@@ -27,4 +27,7 @@ export const SOURCE_LABELS: Record<string, SourceLabel> = {
   "clinicaltrials-gov:phase3-results": { name: "ClinicalTrials.gov Phase 3 results postings", group: "other-federal", url: "https://clinicaltrials.gov/" },
   "cms:physician-fee-schedule": { name: "Physician Fee Schedule national relative value files", group: "cms", url: "https://www.cms.gov/medicare/payment/fee-schedules/physician/pfs-relative-value-files" },
   "cms:hospital-penalty-programs": { name: "Hospital Readmissions, HAC Reduction and Value-Based Purchasing programs", group: "cms", url: "https://data.cms.gov/provider-data/dataset/9n3s-kdb3" },
+  "cms:provider-of-services": { name: "Provider of Services files (certified facilities and beds)", group: "cms", url: "https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/provider-of-services-file-quality-improvement-and-evaluation-system" },
+  "cms:facility-change-of-ownership": { name: "Hospital and SNF Change of Ownership", group: "cms", url: "https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/hospital-change-of-ownership" },
+  "cms:facility-all-owners": { name: "Hospital and SNF All Owners", group: "cms", url: "https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/hospital-all-owners" },
 };

@@ -49,6 +49,9 @@ export const SOURCE_TIMING: Record<string, SourceTiming> = {
   "cms:physician-fee-schedule": { updateIntervalMonths: 12, publicationLagMonths: 0 },
   // One payment year per federal fiscal year; the period is the payment year itself.
   "cms:hospital-penalty-programs": { updateIntervalMonths: 12, publicationLagMonths: 0 },
+  "cms:provider-of-services": { updateIntervalMonths: 3, publicationLagMonths: 2 },
+  "cms:facility-change-of-ownership": { updateIntervalMonths: 3, publicationLagMonths: 1 },
+  "cms:facility-all-owners": { updateIntervalMonths: 1, publicationLagMonths: 0 },
 };
 
 export const AGING_AFTER_MONTHS = 12;

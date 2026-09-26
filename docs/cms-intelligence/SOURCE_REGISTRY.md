@@ -16,7 +16,7 @@ been verified this way. Every other source named in
 a **candidate** — real family/population/topic, honestly marked
 unverified rather than filled in with a guessed dataset ID or URL.
 
-## Verified & implemented (16 sources)
+## Verified & implemented (21 sources)
 
 | Source ID | Name | Real endpoint | Verified | Related questions |
 |---|---|---|---|---|
@@ -36,6 +36,9 @@ unverified rather than filled in with a guessed dataset ID or URL.
 | `clinicaltrials-gov:phase3-results` | ClinicalTrials.gov - Phase 3 results postings | `clinicaltrials.gov/api/v2/studies` | 2026-09-24 | Q123, Q124 |
 | `cms:physician-fee-schedule` | Physician Fee Schedule national RVU files (latest release per year, 2013 onward) | `cms.gov/medicare/payment/fee-schedules/physician/pfs-relative-value-files` | 2026-09-25 | Q026, Q028, Q034, Q035 |
 | `cms:hospital-penalty-programs` | HRRP, HAC Reduction and Hospital VBP, plus IPPS Tables 15 and 16B | `data.cms.gov/provider-data/api/1/datastore/query/{9n3s-kdb3, yq43-i98g, ypbt-wvdk}/0` | 2026-09-25 | Q029, Q030 |
+| `cms:provider-of-services` | Provider of Services Files, QIES and iQIES (every certified facility, 2011 onward, summarized) | `data.cms.gov/data-api/v1/dataset/{per-quarter id}/data` | 2026-09-25 | Q001, Q006, Q039 |
+| `cms:facility-change-of-ownership` | Hospital and SNF Change of Ownership, with Owner Information (2016 onward) | `data.cms.gov/data-api/v1/dataset/c04031db-54ce-461c-85d1-d2613d71f167/data` (+ SNF and owner files) | 2026-09-25 | Q039, Q041 |
+| `cms:facility-all-owners` | Hospital and SNF All Owners, private equity owner flag (from 2025-04 / 2024-11) | `data.cms.gov/data-api/v1/dataset/029c119f-f79c-49be-9100-344d31d10344/data` (+ SNF file) | 2026-09-25 | Q041 |
 
 ### Physician Fee Schedule and hospital penalty programs (2026-09-25)
 
@@ -67,6 +70,28 @@ and Table 16B (HVBP, 2,448). Joined to Hospital General Information by
 CCN (2,919 of 2,945 matched). The FY2027 page says Table 16B comes in fall
 2026 and Table 15 after hospitals' review, so the adapter reads whichever
 fiscal year the datastore reports and fetches that year's tables.
+
+### Provider of Services and facility ownership (2026-09-25)
+
+**Provider of Services Files** (`data/adapters/providerOfServices.ts`).
+Verified live 2026-09-25: QIES covers hospitals and clinics from 2011-Q4
+(2018-Q4 onward every quarter), iQIES adds home health, hospice and
+surgery centers from 2023-Q4, nursing homes from 2025-Q3, and dialysis
+and ICF/IID after. Summarized at pull time into active facilities and
+certified beds by state x facility type per quarter, plus dated openings
+and closures. The 2020-Q1 QIES file (missing ~6% of nursing homes and 16%
+of home health agencies) and 2020-Q2 (lost the short-term hospital
+subtype) are skipped as defective; QIES quarters after home health and
+surgery centers stopped updating there are skipped as frozen once iQIES
+took them over.
+
+**Hospital and SNF Change of Ownership + All Owners**
+(`data/adapters/facilityOwnership.ts`). Verified live 2026-09-25: Change
+of Ownership covers 2016 onward (772 hospital and 5,227 SNF rows in the
+2026-Q2 release), joined to each buyer's 5%+ organization owners. All
+Owners is pulled monthly and filtered server-side to
+`PRIVATE EQUITY COMPANY - OWNER = Y`; the flag itself only exists from
+2025-04 (hospitals) and 2024-11 (SNFs), so earlier months aren't compared.
 
 ### Full-population summary tables (2026-09-25)
 
@@ -127,6 +152,41 @@ Each month is stored as totals by segment (Medicare Advantage, standalone
 Part D, other), by parent organization and by plan type, about 10 KB per
 month. One 2024 file's header read `Enrollment ` with a trailing space,
 so header matching now trims whitespace and a byte-order mark.
+
+### Facility capacity and ownership (added 2026-09-25, session B)
+
+**Provider of Services files** (`data/adapters/providerOfServices.ts`)
+replace the Market Growth agent's capacity proxy (a hospital count from one
+Hospital General Information snapshot) with certified beds and a history.
+CMS publishes two catalog entries. The QIES file has the fourth quarter of
+2011-2017, then every quarter from 2018-Q4; the iQIES file starts 2023-Q4.
+Verified live 2026-09-25, provider types moved from QIES to iQIES in waves
+(home health, hospice and surgery centers 2023-Q4; nursing homes 2025-Q3;
+dialysis, ICF/IID and therapy clinics after), and no type was in both files
+in the same quarter. Each quarter takes each type from the file that has it,
+so nothing is double counted. Nursing home beds moved -0.3% at the switch,
+against a typical 0.2% quarterly move. Two defects are skipped automatically:
+QIES froze home health (11,506 from 2021-Q4) and surgery center counts
+before the move, and the 2020-Q1 and 2020-Q2 QIES files were incomplete.
+Summaries are active facilities and certified beds by state and type per
+file-quarter, plus dated openings and closures by termination reason: 49
+files, 1.4MB. Trends compare fourth-quarter files.
+
+**Change of ownership** (`data/adapters/facilityOwnership.ts`): hospital
+and SNF releases are cumulative back to 2016, so only the latest is kept
+whole. A year keeps filling in for 12-18 months: SNF changes effective
+2024 were 69 in the 2024-Q2 release, 420 in 2025-Q2 and 741 in 2026-Q2.
+Every past release's counts by effective year are stored, and years are
+only compared at the same reporting lag. Owner information files name each
+buyer's 5%-or-greater organization owners, which turns single-facility SNF
+LLCs into their parent chains.
+
+**All Owners, private equity flag**: the field exists only from 2025-04
+(hospitals) and 2024-11 (SNFs). The data API silently ignores a filter on
+a column a release lacks and returns every row, so each release's columns
+are checked first. Owner association dates show most of the flag's growth
+is older ownership being reported, not new deals. Owner rows with no
+organization name (people) are never named.
 
 ### The 4 newest sources (added 2026-09-24, for the 12th agent - Market/Catalyst Intelligence)
 
