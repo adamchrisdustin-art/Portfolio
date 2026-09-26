@@ -15,120 +15,46 @@ repository secrets named per-project, `HEALTHCARE_INTEL_ANTH` and
 the standard `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` variables the code
 reads; if either secret is missing, reasoning skips at $0.
 
-**Resume here (end of 2026-09-25):** everything is pushed and live. Every
-data source now uses full data, not a sample (steps 4-8). **Late
-2026-09-25, a UI pass from Adam's annotated PDF of the live page** (layout
-only, no agent or data changes):
-- **Layout:** a new section order and a "Meet the team" section
-  (`cms-intelligence/agents/teamRoster.ts`, whose test keeps it in sync
-  with `ALL_AGENTS`). Each finding now appears once, in collapsible
-  Category > Finding > Evidence menus.
-- **Confidence** shows only inside the evidence drawer until snapshot
-  history grows.
-- **Charts:** vertical columns for three Data Explorer charts, and MA
-  enrollment and Part B payment lines in place of the flat CR4 and
-  facility-count lines. Chart rules are in DASHBOARD_BLUEPRINT.md's
-  "Chart conventions".
-- **Case study:** its data facts are now computed
-  (`cms-intelligence/analytics/caseStudyFacts.ts`,
-  `data/sources/sourceLabels.ts`), not hard-coded, so the monthly refresh
-  keeps them true.
-- **Later:** Adam plans a design-agent reskin (theme, colors, chart
-  styling) near project completion. New UI uses existing tokens and
-  placeholder avatars so that pass can restyle without touching layout. The live Executive Pulse shows the fixed ranking
-because the data changed after the last reasoning run; per Adam, the
-rerun waits for the next live test, the Oct 1 cron, or project
-completion, whichever comes first. **Next, pick with Adam:**
-- **Salience prompt fix: done and benchmarked 2026-09-25.** Both
-  prompts in `intelligence/salience/selectNoteworthy.ts` now say to copy
-  numbers exactly and never calculate new ones. On the rerun, 3 models
-  were at 100% and 3 at 96%, up from 81-100%, and Opus and Sonnet no
-  longer calculate numbers. Luna stays the salience model (details in
-  MODEL_EVALUATION.md, "Rerun after the 'copy numbers exactly' prompt
-  fix"). Run `evaluation/probe-providers.ts` (well under a cent) before
-  any billed run to confirm every key and model answers.
-- **Outlier detection for the analyst: built and replayed 2026-09-25.**
-  The replay (one Opus call) had 0 rejections. It cited Arkansas's
-  69.1% against the 21.7% median as an outlier, and read an empty list
-  correctly ("no state stood apart"). The replay reuses the committed
-  run's older insights, so it still quotes the pre-fix "AL, 330". The analyst now also gets states and service codes that
-  sit far from the rest of their group in the latest period (rule and
-  metrics in TREND_FRAMEWORK.md, "Cross-sectional outliers"; code in
-  `intelligence/trends/outliers.ts` and `reasoning/outlierFacts.ts`).
-  Its prompt has rules for them, grounding checks them, and each
-  reasoned run saves them in `outlierFacts`. On the current data:
-  - Physician metrics by state and home health spending: no state stands
-    apart.
-  - Benchmark premium, 2025 to 2026: Arkansas +69.1% against a 21.7%
-    median; West Virginia's level ($1,093.95) against a $655.44 median.
-  - Marketplace consumers: New Mexico +18.1% against a -6.0% median;
-    new consumers up in Rhode Island and Mississippi against a -23.1%
-    median.
-  - Service codes, 2023 to 2024: 36 flagged. Top dollar moves are skin
-    substitutes (Q4205 +$878.7M, Q4262 -$870.7M) and eye injections
-    (aflibercept -$602.4M, faricimab +$481.3M).
-- **Home health parsing bug: fixed 2026-09-25.** CMS writes episode
-  counts of 1,000+ with commas, and `Number()` turned them into NaN, so
-  the market-growth agent dropped 2,222 agencies holding 73% of all
-  episodes. Its headline changes from "AL, 330 episodes per agency" to
-  "NJ, 4,615". The fix is `parseNumericCell` in the home health adapter.
-  The replay pattern in step 1 below ("high-volume home health states run
-  above the 0.97 ratio") was built on the undercounted volumes; the next
-  reasoned run replaces it. The evaluation suite keeps the old figure as
-  a frozen task input.
-- **Marketplace 2017-2019 open enrollment: added 2026-09-25.** A small
-  xlsx reader (`data/adapters/xlsx.ts`, no new dependency) reads CMS's
-  report workbooks. Each year keeps the 7 columns with a clear 2020+
-  equivalent, and state rows sum exactly to CMS's platform totals. With
-  history from 2017, the 2026 drop (-4.9%) now reads as in line with the
-  2017-2025 pattern (median yearly change +9.0%), not a break: plan
-  selections also fell in 2018, 2019 and 2020. 2015-2016 have no
-  state-level file.
-- **Medicaid: first source wired 2026-09-25.** Claim-level T-MSIS (TAF)
-  needs a CMS data use agreement, so the Medicaid agent uses public data
-  from data.medicaid.gov. First source: each state's monthly Medicaid and
-  CHIP enrollment report (`cms:medicaid-state-enrollment`, June 2017 to
-  June 2026, added to the monthly workflow). States file each month as
-  preliminary, then final; preliminary runs lower, so comparisons never
-  mix the two. Each state figure names its report month and status (the
-  agent spec's per-state vintage rule). What it shows:
-  - Enrollment fell 5.9% year over year to 73.17M (June 2026,
-    preliminary), in 49 of 51 states; the peak was 94.66M in April 2023.
-  - Adults fell 7.0% in expansion states and 2.4% in non-expansion states.
-  - Indiana (-18.5%) and Louisiana (-14.0%) stand apart from the -3.8%
-    median state; California lost the most people (1,650,639).
-  Churn (Q057) has no current public source.
-- **Rule (Adam, 2026-09-25): only data we can compare with current data.**
-  A dataset that stopped updating stays off the dashboard. The Data
-  Source & CMS Change Monitor watches it instead
-  (`data/sources/watchlist.ts`, run monthly by
-  `agents/source-change-monitor/check-watchlist.ts`). If one resumes, it
-  writes `data/healthcare-intelligence/watchlist/status.json` and posts a
-  warning on the Actions run; nothing is pulled automatically. Watched:
-  the T-MSIS-derived monthly dual-status counts (latest December 2022;
-  Q060).
-- **Recency tiers: built 2026-09-25 (Adam's rule).** Every insight is
-  current, aging (1-2 years past its source's next expected update) or
-  stale (over 2 years), recomputed each sweep so a source that resumes
-  becomes current again. Stale data stays visible but ranks last, and code
-  stops the analyst from leading with it or building a pattern on it.
-  Details in TREND_FRAMEWORK.md, "Recency tiers". All 51 current insights
-  are current today. The analyst prompt changed, so replay it at the next
-  live test.
-- **Medicaid managed care by plan: added 2026-09-25** (`cms:medicaid-managed-care-plans`,
-  annual 2016-2024, Q064). Only comprehensive managed care is counted,
-  since people are counted once per program; Tennessee's dental and
-  pharmacy plans listed inside its comprehensive program are excluded by
-  name. Comprehensive enrollment fell 11.9% to 65.89M in 2024 across 42
-  states (ND -33.6%, TX -28.6%, FL -26.8%). Parent names are as states
-  report them and are merged only across spellings of one name, so
-  company totals are understated (the finding says so). Centene leads
-  with 6.97M in 20 states, -19.5%.
-**After Oct 1:** check the monthly run's log. New steps (physician by
-provider and by service, Marketplace rates and open enrollment) have
-only run locally; physician steps should take seconds, NIH about 6
-minutes, Marketplace rates about 10 seconds. Then review the first
-reasoned run over the full data.
+**Resume here (end of 2026-09-25, second session):** everything is
+pushed and live; 359 tests pass. **Next: Phase 7's final reviewer test**
+(07_PHASE_7_HARDENING_TESTING_AND_PORTFOLIO.md section 9), then Adam's
+design-agent reskin, then the final reasoning rerun (held until project
+completion, the next live test, or the Oct 1 cron, whichever comes first).
+
+Done this session (details live in the linked docs, not here):
+- **Salience prompt:** copy numbers exactly, never calculate. Benchmarked:
+  all six models 96-100% accepted; Luna stays (MODEL_EVALUATION.md).
+- **Analyst outliers:** states and service codes far from their group
+  (modified z > 3.5), in the prompt and grounding; replayed with 0
+  rejections (TREND_FRAMEWORK.md, "Cross-sectional outliers").
+- **Recency tiers (Adam's rule):** current, aging (1-2 years past a
+  source's next expected update) or stale (over 2); stale stays visible,
+  ranks last, and code stops the analyst leading with it. Recomputed each
+  sweep, so resumed sources become current again (TREND_FRAMEWORK.md,
+  "Recency tiers").
+- **Only data comparable with current data (Adam's rule).** Datasets that
+  stopped updating go on the monitor's watch list
+  (`data/sources/watchlist.ts`, checked monthly, flags only). Watched:
+  T-MSIS dual-status counts (last December 2022).
+- **New data:** Marketplace open enrollment 2017-2019 (xlsx reader);
+  Medicaid monthly state enrollment and managed care by plan and parent
+  (data.medicaid.gov; claim-level T-MSIS needs a data use agreement).
+  All in the monthly workflow (SOURCE_REGISTRY.md).
+- **Fixes:** home health counts with commas were dropped (73% of
+  episodes); providers now log the API's error message;
+  `evaluation/probe-providers.ts` checks keys for under a cent before any
+  billed run.
+
+**Also open:**
+- Replay the analyst at the next live test (prompt now has outliers and
+  recency): `npx tsx cms-intelligence/reasoning/replay-analyst.ts`.
+- Logs lack token/cost metadata (Phase 7 section 5); providers discard
+  the API's usage figures.
+- Churn (Q057) has no current public source.
+
+**After Oct 1:** check the run log, especially the new Medicaid pulls and
+the watch-list step (a warning at the top of the run means a watched
+dataset resumed), then review the reasoned output.
 
 **Earlier steps, in order:**
 1. **First live run reviewed; analyst prompt tuned and verified.** The first live autonomous run

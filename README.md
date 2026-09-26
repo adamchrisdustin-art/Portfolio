@@ -77,41 +77,24 @@ interactive surface.
 - **Track B (Salesforce playground + chat assistant) not started.** The
   Portfolio card for it is marked `planned`, not `live` — don't change
   that until it's real.
-- **`OPENAI_API_KEY` isn't set anywhere yet.** The pipeline runs today
-  with zero API cost (rule-based summaries only) — that's the correct
-  default, not a bug. Set it as a GitHub Actions secret (with a hard usage
-  cap set at platform.openai.com first) once you actually want the LLM
-  read in the weekly brief.
 - **CMS project card description on `/portfolio`** was written generically
   (see the comment in `lib/dataViz.ts`) — review it against what the live
   Tableau dashboard actually shows and tighten if needed.
-- **CMS Intelligence Executive Dashboard** (the much larger 12-agent
-  project) — Phases 1–7 done (repository discovery through hardening/
-  portfolio). Live at `/healthcare-intelligence` on the site itself
-  (also linked from its Portfolio card): 7 executive layers, evidence
-  drawers on every real finding, a demo-mode banner, a plain-language
-  "how this works" panel, and a full case study (including an explicit
-  "Known limitations" section — see `docs/cms-intelligence/MANIFEST.md`
-  for the authoritative current-state summary). 6 real data sources
-  wired, 8 of 11 domain agents producing real evidence-backed insights
-  (Medicaid/CHIP/Duals is a deliberate stub; 2 agents are
-  infrastructure-only by design). Confidence and trend detection are
-  computed dynamically from real snapshot history (never hardcoded).
-  Real charts (`components/charts/`: bar, donut, boxplot with proper
-  Tukey whiskers, stat tiles) render wherever an agent has real data to
-  show, built per the `dataviz` skill's method. A standalone "Data
-  Explorer" section (`components/AnalyticsExplorer.tsx`) gives a
-  Tableau-style overview of all the underlying data, separate from the
-  per-agent finding cards. `npm test` runs the unit/integration suite
-  (144 tests); `npm run test:e2e` runs a Playwright smoke suite against
-  the built app (zero console errors, evidence drawer opens, no
-  forbidden carrier text, no horizontal overflow, an automated
-  accessibility scan via axe-core — desktop and mobile viewports).
-  `.github/workflows/ci.yml` runs the full gate (typecheck, lint, unit
-  tests, build, e2e) on every push/PR to `main`. A minimal structured
-  logger (`cms-intelligence/observability/log.ts`) records one JSON line
-  per agent run (timing, data sources used, success/validation result)
-  — visible in Vercel/GitHub Actions logs, no paid observability backend.
+- **CMS Intelligence Executive Dashboard** (the 12-agent project) —
+  Phases 1–7 built; only Phase 7's final reviewer test remains. Live at
+  `/healthcare-intelligence`. 12 public data sources (CMS, Medicaid.gov,
+  Federal Register, SEC, FDA, NIH, ClinicalTrials.gov); 10 domain agents
+  produce evidence-backed insights, 2 are infrastructure. A monthly
+  GitHub Actions run pulls fresh data, re-runs the agents with a model
+  (gpt-6-luna picks what to surface, Claude Opus 5.5 writes the executive
+  briefing) and auto-publishes behind a grounding check that drops any
+  number or company name not traced to the data. Findings are ranked by
+  recency against each source's update schedule; stale data never leads.
+  `npm test` runs the unit/integration suite (359 tests);
+  `npm run test:e2e` runs the Playwright suite (console errors,
+  overflow, axe accessibility, drawer interactions). CI runs typecheck,
+  lint, tests, build and e2e on every push. Current state and next steps:
+  `docs/cms-intelligence/MANIFEST.md` ("Start here").
 
 ## Verified live during this build
 
