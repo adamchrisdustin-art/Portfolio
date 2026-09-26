@@ -28,6 +28,7 @@ unverified rather than filled in with a guessed dataset ID or URL.
 | `cms:ma-part-d-enrollment` | MA/Part D Monthly Enrollment by Plan | `cms.gov/.../medicare-advantagepart-d-contract-and-enrollment-data/monthly-enrollment-plan` | 2026-09-23 | Q049, Q053 |
 | `cms:marketplace-oep-state` | Marketplace Open Enrollment Period State-Level PUFs (every state and DC, 2017 onward) | `cms.gov/data-research/statistics-trends-and-reports/marketplace-products` | 2026-09-25 | Q066, Q067 |
 | `cms:medicaid-state-enrollment` | State Medicaid and CHIP Applications, Eligibility Determinations, and Enrollment Data (every state and DC, monthly, June 2017 onward) | `data.medicaid.gov/api/1/datastore/query/6165f45b-ca93-5bb5-9d06-db29c692a360/0` | 2026-09-25 | Q056, Q065 |
+| `cms:medicaid-managed-care-plans` | Medicaid Managed Care Enrollment by Program and Plan (annual, 2016 onward; comprehensive managed care counted) | `data.medicaid.gov/api/1/datastore/query/0bef7b8a-c663-5b14-9a46-0b5c2b86b0fe/0` | 2026-09-25 | Q064 |
 | `cms:marketplace-rate-puf` | Marketplace (Exchange) Rate and Plan Attributes PUFs (every HealthCare.gov state, 2014 onward) | `cms.gov/marketplace/resources/data/public-use-files` | 2026-09-25 | Q067, Q069, Q071 |
 | `sec-edgar:healthcare-8k-filings` | SEC EDGAR 8-K filings, health-insurer watchlist | `data.sec.gov/submissions/CIK{10-digit}.json` | 2026-09-24 | Q120, Q121, Q122 |
 | `openfda:drugsfda-novel-approvals` | openFDA drugsfda - novel (Type 1) drug approvals | `api.fda.gov/drug/drugsfda.json` | 2026-09-24 | Q117, Q118, Q119 |

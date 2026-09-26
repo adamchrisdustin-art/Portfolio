@@ -106,8 +106,16 @@ completion, whichever comes first. **Next, pick with Adam:**
   writes `data/healthcare-intelligence/watchlist/status.json` and posts a
   warning on the Actions run; nothing is pulled automatically. Watched:
   the T-MSIS-derived monthly dual-status counts (latest December 2022;
-  Q060). Still open, and still updated yearly: managed care enrollment by
-  plan and parent organization (2024 data published February 2026; Q064).
+  Q060).
+- **Medicaid managed care by plan: added 2026-09-25** (`cms:medicaid-managed-care-plans`,
+  annual 2016-2024, Q064). Only comprehensive managed care is counted,
+  since people are counted once per program; Tennessee's dental and
+  pharmacy plans listed inside its comprehensive program are excluded by
+  name. Comprehensive enrollment fell 11.9% to 65.89M in 2024 across 42
+  states (ND -33.6%, TX -28.6%, FL -26.8%). Parent names are as states
+  report them and are merged only across spellings of one name, so
+  company totals are understated (the finding says so). Centene leads
+  with 6.97M in 20 states, -19.5%.
 **After Oct 1:** check the monthly run's log. New steps (physician by
 provider and by service, Marketplace rates and open enrollment) have
 only run locally; physician steps should take seconds, NIH about 6

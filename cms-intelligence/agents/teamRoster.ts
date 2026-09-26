@@ -54,7 +54,7 @@ export const SPECIALISTS: TeamMember[] = [
     agentId: "medicaid-chip-dual-eligible-intelligence",
     title: "Medicaid Program Analyst",
     domain: "Medicaid, CHIP & Duals",
-    role: "Tracks Medicaid and CHIP enrollment by state from the states' monthly reports, labeling each state's report month and status, since states report on their own schedules.",
+    role: "Tracks Medicaid and CHIP enrollment by state from the states' monthly reports, labeling each state's report month and status, and which health plan companies hold Medicaid managed care membership.",
   },
   {
     agentId: "commercial-marketplace-intelligence",

@@ -17,6 +17,7 @@ export const SOURCE_LABELS: Record<string, SourceLabel> = {
   "cms:marketplace-rate-puf": { name: "ACA Marketplace Rate and Plan Attributes PUFs", group: "cms" },
   "cms:marketplace-oep-state": { name: "Marketplace Open Enrollment state-level PUFs", group: "cms" },
   "cms:medicaid-state-enrollment": { name: "State Medicaid and CHIP monthly enrollment reports", group: "cms" },
+  "cms:medicaid-managed-care-plans": { name: "Medicaid Managed Care Enrollment by Program and Plan", group: "cms" },
   "federal-register:cms-documents": { name: "Federal Register documents published by CMS", group: "cms" },
   "sec-edgar:healthcare-8k-filings": { name: "SEC EDGAR 8-K filings for a 6-company health-insurer watchlist", group: "other-federal" },
   "openfda:drugsfda-novel-approvals": { name: "openFDA novel drug approvals", group: "other-federal" },

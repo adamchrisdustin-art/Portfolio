@@ -59,6 +59,8 @@ jobs:
         run: npx tsx cms-intelligence/data/adapters/pull-marketplace-enrollment.ts
       - name: Pull State Medicaid and CHIP monthly enrollment (every state and DC, data.medicaid.gov)
         run: npx tsx cms-intelligence/data/adapters/pull-medicaid-enrollment.ts
+      - name: Pull Medicaid Managed Care Enrollment by Program and Plan (annual, data.medicaid.gov)
+        run: npx tsx cms-intelligence/data/adapters/pull-medicaid-managed-care.ts
 
       - name: Pull SEC EDGAR 8-K filings (health-insurer watchlist)
         run: npx tsx cms-intelligence/data/adapters/pull-sec-edgar-filings.ts

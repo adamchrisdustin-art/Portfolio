@@ -361,7 +361,8 @@ export default async function HealthcareIntelligencePage() {
             </p>
             <ul style={{ margin: 0, paddingLeft: 20, color: "var(--text-muted)", display: "flex", flexDirection: "column", gap: 6 }}>
               <li>
-                Medicaid coverage uses the states&apos; public monthly enrollment reports. The claim-level T-MSIS
+                Medicaid coverage uses the states&apos; public monthly enrollment reports and CMS&apos;s annual managed care
+                enrollment by plan. The claim-level T-MSIS
                 research files need a CMS data use agreement and aren&apos;t used, so Medicaid churn, provider
                 networks and service use aren&apos;t covered.
               </li>
